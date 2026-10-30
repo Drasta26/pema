@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react';
 import { EmotionalState, MeditationSession, FeedbackType } from './types';
 import CheckIn from './components/CheckIn';
-import AuthScreen from './components/AuthScreen';
 import SessionPlayer from './components/SessionPlayer';
 import SessionExit from './components/SessionExit';
-import { Calendar, RotateCcw, Award, CheckCircle, Info, Heart } from 'lucide-react';
-import { collection, getDocs, query, orderBy, setDoc, doc, deleteDoc } from 'firebase/firestore';
-import { signOut } from 'firebase/auth';
-import { db, auth, handleFirestoreError, OperationType } from './firebase';
+import { Calendar, RotateCcw, Award, Info, Lock } from 'lucide-react';
 
 interface LocalSessionLog {
   id: string;
@@ -20,59 +16,18 @@ interface LocalSessionLog {
 }
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<'checkin' | 'login' | 'player' | 'exit'>('checkin');
+  const [currentScreen, setCurrentScreen] = useState<'checkin' | 'player' | 'exit'>('checkin');
   const [session, setSession] = useState<MeditationSession | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingFeedback, setIsLoadingFeedback] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [user, setUser] = useState<{ email: string; displayName: string; providerId: string } | null>(null);
-  const [showProfileCard, setShowProfileCard] = useState(false);
-  const [pendingCheckinData, setPendingCheckinData] = useState<{ description: string; explicitState?: EmotionalState } | null>(null);
 
   // Local state persistence logs
   const [history, setHistory] = useState<LocalSessionLog[]>([]);
   const [streak, setStreak] = useState(0);
   const [isConfirmingClear, setIsConfirmingClear] = useState(false);
 
-  // Pull history from live Cloud Firestore if user authenticated
-  const syncHistoryFromFirestore = async (email: string) => {
-    try {
-      const historyRef = collection(db, 'users', email.toLowerCase().trim(), 'history');
-      const q = query(historyRef, orderBy('date', 'desc'));
-      const querySnapshot = await getDocs(q);
-      const fetchedHistory: LocalSessionLog[] = [];
-      querySnapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        fetchedHistory.push({
-          id: docSnap.id,
-          date: data.date,
-          state: data.state as EmotionalState,
-          technique: data.technique,
-          rating: data.rating,
-          notes: data.notes,
-          endState: data.endState as EmotionalState | undefined
-        });
-      });
-      setHistory(fetchedHistory);
-      calculateStreak(fetchedHistory);
-      localStorage.setItem('ai_meditation_logs', JSON.stringify(fetchedHistory));
-    } catch (err: any) {
-      console.error("Failed to sync from Firestore:", err);
-      // Fallback gracefully to local storage in case of offline/permissions issues
-      try {
-        const stored = localStorage.getItem('ai_meditation_logs');
-        if (stored) {
-          const parsed: LocalSessionLog[] = JSON.parse(stored);
-          setHistory(parsed);
-          calculateStreak(parsed);
-        }
-      } catch (innerErr) {
-        console.error(innerErr);
-      }
-    }
-  };
-
-  // Extract logs and user session on initial load
+  // Load on-device history on initial load
   useEffect(() => {
     try {
       const stored = localStorage.getItem('ai_meditation_logs');
@@ -81,12 +36,8 @@ export default function App() {
         setHistory(parsed);
         calculateStreak(parsed);
       }
-      const storedUser = localStorage.getItem('pema_user');
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-        syncHistoryFromFirestore(parsedUser.email);
-      }
+      // Remove the sign-in record left by earlier versions
+      localStorage.removeItem('pema_user');
     } catch (e) {
       console.error("Local storage lookup failed", e);
     }
@@ -144,36 +95,6 @@ export default function App() {
       }
     }
     setStreak(currentStreak);
-  };
-
-  const handleCheckInSubmit = (data: { description: string; explicitState?: EmotionalState }) => {
-    if (!user) {
-      setPendingCheckinData(data);
-      setCurrentScreen('login');
-    } else {
-      handleStartSession(data);
-    }
-  };
-
-  const handleAuthSuccess = (authenticatedUser: { email: string; displayName: string; providerId: string }) => {
-    setUser(authenticatedUser);
-    localStorage.setItem('pema_user', JSON.stringify(authenticatedUser));
-
-    // Pull historical records from live Firestore
-    syncHistoryFromFirestore(authenticatedUser.email);
-    
-    // Resume session launcher if there was pending checkin
-    if (pendingCheckinData) {
-      handleStartSession(pendingCheckinData);
-      setPendingCheckinData(null);
-    } else {
-      setCurrentScreen('checkin');
-    }
-  };
-
-  const handleAuthBack = () => {
-    setPendingCheckinData(null);
-    setCurrentScreen('checkin');
   };
 
   const handleStartSession = async (data: { description: string; explicitState?: EmotionalState }) => {
@@ -249,7 +170,7 @@ export default function App() {
     }
   };
 
-  const handleSaveExitReview = async (feedback: { rating: 'up' | 'down' | null; notes: string; endState?: EmotionalState }) => {
+  const handleSaveExitReview = (feedback: { rating: 'up' | 'down' | null; notes: string; endState?: EmotionalState }) => {
     if (!session) return;
     
     const newLog: LocalSessionLog = {
@@ -267,30 +188,9 @@ export default function App() {
     localStorage.setItem('ai_meditation_logs', JSON.stringify(updatedHistory));
     calculateStreak(updatedHistory);
 
-    // Persist log entry directly on live Cloud Firestore if the user is authenticated
-    if (user) {
-      const emailPath = user.email.toLowerCase().trim();
-      const pathForWrite = `users/${emailPath}/history/${session.id}`;
-      try {
-        const docRef = doc(db, 'users', emailPath, 'history', session.id);
-        await setDoc(docRef, {
-          id: session.id,
-          date: newLog.date,
-          state: newLog.state,
-          technique: newLog.technique,
-          rating: newLog.rating,
-          notes: newLog.notes,
-          endState: newLog.endState || null,
-          userId: emailPath
-        });
-      } catch (err: any) {
-        console.error("Failed to commit session history record to Firestore:", err);
-        handleFirestoreError(err, OperationType.WRITE, pathForWrite);
-      }
-    }
   };
 
-  const handleClearHistory = async () => {
+  const handleClearHistory = () => {
     if (!isConfirmingClear) {
       setIsConfirmingClear(true);
     } else {
@@ -298,21 +198,6 @@ export default function App() {
       setHistory([]);
       setStreak(0);
       setIsConfirmingClear(false);
-
-      // Cleanse online Firestore entries if logged in
-      if (user) {
-        const emailPath = user.email.toLowerCase().trim();
-        const pathForDeleteGroup = `users/${emailPath}/history`;
-        try {
-          const historyRef = collection(db, 'users', emailPath, 'history');
-          const querySnapshot = await getDocs(historyRef);
-          const deletePromises = querySnapshot.docs.map(docSnap => deleteDoc(docSnap.ref));
-          await Promise.all(deletePromises);
-        } catch (err: any) {
-          console.error("Failed to empty historical logs on Cloud Firestore:", err);
-          handleFirestoreError(err, OperationType.DELETE, pathForDeleteGroup);
-        }
-      }
     }
   };
 
@@ -353,57 +238,13 @@ export default function App() {
                 <Award className="w-3 h-3 text-blue-500" />
                 <span className="text-custom-blue">{streak}d</span>
               </div>
-              {user ? (
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setShowProfileCard(!showProfileCard)}
-                    className="w-7 h-7 flex items-center justify-center rounded-full bg-amber-50 hover:bg-amber-100 border border-amber-200/80 cursor-pointer transition-all duration-300 text-[12px] shadow-xs active:scale-90"
-                    title="View Profile Details 👤"
-                  >
-                    👤
-                  </button>
-                  
-                  {showProfileCard && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-md rounded-xl border border-orange-100 shadow-lg p-3.5 z-50 animate-slide-in text-left">
-                      <div className="space-y-1.5 pb-2 border-b border-orange-100/30">
-                        <span className="block text-[8px] font-mono tracking-wider text-slate-400 uppercase">
-                          Practitioner Profile
-                        </span>
-                        <span className="block font-sans font-bold text-xs text-stone-900 truncate">
-                          {user.displayName || 'Google Tester'}
-                        </span>
-                        <span className="block font-mono text-[9px] text-custom-blue truncate">
-                          {user.email}
-                        </span>
-                      </div>
-                      <div className="pt-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowProfileCard(false);
-                            signOut(auth)
-                              .catch((err) => console.error("Firebase logout issue:", err))
-                              .finally(() => {
-                                setUser(null);
-                                localStorage.removeItem('pema_user');
-                                setSession(null);
-                                setCurrentScreen('checkin');
-                              });
-                          }}
-                          className="w-full text-center text-[10px] font-mono font-bold uppercase py-1.5 px-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white cursor-pointer transition-colors duration-200"
-                        >
-                          Sign Out
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 bg-blue-50/40 border border-blue-100/30 px-2 py-0.5 rounded-full text-[8px] font-mono font-bold">
-                  <span className="text-custom-blue font-black">Guest</span>
-                </div>
-              )}
+              <div
+                className="flex items-center gap-1 bg-blue-50/40 border border-blue-100/30 px-2 py-0.5 rounded-full text-[8px] font-mono font-bold text-custom-blue"
+                title="Your history stays on this device"
+              >
+                <Lock className="w-2.5 h-2.5" />
+                <span>Private</span>
+              </div>
             </div>
 
           </div>
@@ -427,11 +268,7 @@ export default function App() {
 
           {/* Core App Screens */}
           {currentScreen === 'checkin' && (
-            <CheckIn onSubmit={handleCheckInSubmit} isLoading={isLoading} />
-          )}
-
-          {currentScreen === 'login' && (
-            <AuthScreen onAuthSuccess={handleAuthSuccess} onBack={handleAuthBack} />
+            <CheckIn onSubmit={handleStartSession} isLoading={isLoading} />
           )}
 
           {currentScreen === 'player' && session && (
