@@ -1,0 +1,6 @@
+{
+  "name": "PeMA",
+  "description": "PErsonalised Mindfulness Assistant - Adapts to your emotional and mental state dynamically in real-time.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

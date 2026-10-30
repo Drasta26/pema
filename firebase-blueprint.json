@@ -1,0 +1,73 @@
+{
+  "entities": {
+    "userProfile": {
+      "title": "UserProfile",
+      "description": "Information stored on registration or first OAuth sign-in to persist custom account profile metadata",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Primary email of the authenticated user"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's readable display or greeting title"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp indicating document creation time in Firestore"
+        }
+      },
+      "required": ["email", "displayName", "createdAt"]
+    },
+    "sessionLog": {
+      "title": "SessionLog",
+      "description": "A custom-recorded session completion trace saved by the client",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique session ID trace"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Strict ISO timestamp of the meditation session"
+        },
+        "state": {
+          "type": "string",
+          "description": "Emotional starting state selected"
+        },
+        "technique": {
+          "type": "string",
+          "description": "The specific technique delivered by Coach"
+        },
+        "rating": {
+          "type": "string",
+          "enum": ["up", "down", null],
+          "description": "Optional post-session biofeedback feeling rating indicator"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional custom narrative feedback notes"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Unique user email identifier corresponding to the logged user"
+        }
+      },
+      "required": ["id", "date", "state", "technique", "userId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "userProfile",
+      "description": "Stores user registration and profiling details uniquely keyed or referenced by their lowercase email normalized identifier"
+    },
+    "/users/{userId}/history/{logId}": {
+      "schema": "sessionLog",
+      "description": "A subcollection containing historical logs completed by the specific user"
+    }
+  }
+}

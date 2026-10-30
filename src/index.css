@@ -1,0 +1,329 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+body {
+  background: radial-gradient(circle at top, #fdba74 0%, #f97316 40%, #ea580c 75%, #c2410c 100%);
+  color: #0b1a3d;
+  font-family: var(--font-sans);
+  min-height: 100vh;
+}
+
+/* Soothing cubic-bezier transitions for premium mindfulness apps */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes breathGlow {
+  0% { transform: scale(0.96); box-shadow: 0 0 35px rgba(249, 115, 22, 0.2); border-color: rgba(249, 115, 22, 0.3); }
+  50% { transform: scale(1.06); box-shadow: 0 0 55px rgba(245, 158, 11, 0.45), 0 0 80px rgba(254, 215, 170, 0.4); border-color: rgba(254, 215, 170, 0.6); }
+  100% { transform: scale(0.96); box-shadow: 0 0 35px rgba(249, 115, 22, 0.2); border-color: rgba(249, 115, 22, 0.3); }
+}
+
+@keyframes holographicPulse {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes floatZen {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(0.5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-breath-glow {
+  animation: breathGlow 6s ease-in-out infinite;
+}
+
+.animate-float-zen {
+  animation: floatZen 6s ease-in-out infinite;
+}
+
+.scroller-none::-webkit-scrollbar {
+  display: none;
+}
+.scroller-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Futuristic phone wrapper style - Warm Sunrise 3D Sand & Clay Pool */
+.mobile-device-wrapper {
+  max-width: 440px;
+  width: 100%;
+  margin: 0 auto;
+  /* Sunset depth simulation gradient with ambient solar refraction shimmers */
+  background: radial-gradient(circle at 50% 0%, #ffe9d6 0%, #fdb574 35%, #f97316 70%, #9a3412 100%);
+  border-radius: 40px;
+  border: 12px solid #ca4a0b;
+  box-shadow: 
+    0 30px 80px -15px rgba(12, 28, 58, 0.35), 
+    0 10px 30px rgba(234, 88, 12, 0.2),
+    inset 0 0 40px rgba(255, 255, 255, 0.75);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Glassmorphic Cards - Serene Frost Warm Ivory with Amber light Refraction */
+.glass-panel {
+  background: rgba(255, 252, 248, 0.76);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 
+    0 10px 30px -4px rgba(120, 53, 4, 0.05),
+    inset 0 1px 4px rgba(255, 255, 255, 0.6);
+}
+
+.glass-panel-active {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 2px solid #ea580c;
+  box-shadow: 
+    0 15px 35px -5px rgba(234, 88, 12, 0.18),
+    inset 0 1px 6px rgba(255, 255, 255, 0.9);
+}
+
+.futuristic-btn {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%);
+  background-size: 200% 200%;
+  animation: holographicPulse 6s ease infinite;
+  box-shadow: 
+    0 8px 25px -5px rgba(234, 88, 12, 0.35), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.futuristic-btn:hover:not(:disabled) {
+  box-shadow: 
+    0 12px 30px -4px rgba(234, 88, 12, 0.45), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1.5px) scale(1.02);
+}
+
+/* 3D Liquid Sunset Orb & Wave Animations */
+@keyframes liquidWobble {
+  0% { border-radius: 44% 56% 50% 50% / 46% 46% 54% 54%; transform: rotate(0deg); }
+  25% { border-radius: 50% 50% 45% 55% / 48% 52% 48% 52%; }
+  50% { border-radius: 54% 46% 52% 48% / 54% 44% 56% 44%; transform: rotate(4deg); }
+  75% { border-radius: 46% 54% 48% 52% / 46% 54% 46% 54%; }
+  100% { border-radius: 44% 56% 50% 50% / 46% 46% 54% 54%; transform: rotate(0deg); }
+}
+
+@keyframes waterGlow3D {
+  0% { 
+    box-shadow: 
+      0 10px 30px rgba(234, 88, 12, 0.15),
+      inset 0 4px 12px rgba(255, 255, 255, 0.9),
+      inset 0 -8px 20px rgba(234, 88, 12, 0.25),
+      inset -4px -4px 10px rgba(251, 146, 60, 0.15);
+  }
+  50% { 
+    box-shadow: 
+      0 20px 50px rgba(234, 88, 12, 0.35),
+      0 0 35px rgba(251, 146, 60, 0.25),
+      inset 0 6px 18px rgba(255, 255, 255, 0.95),
+      inset 0 -15px 35px rgba(234, 88, 12, 0.4),
+      inset -8px -8px 15px rgba(254, 215, 170, 0.3);
+  }
+  100% { 
+    box-shadow: 
+      0 10px 30px rgba(234, 88, 12, 0.15),
+      inset 0 4px 12px rgba(255, 255, 255, 0.9),
+      inset 0 -8px 20px rgba(234, 88, 12, 0.25),
+      inset -4px -4px 10px rgba(251, 146, 60, 0.15);
+  }
+}
+
+@keyframes ripplesOut {
+  0% { transform: scale(0.9); opacity: 0.9; border-width: 2px; }
+  100% { transform: scale(1.6); opacity: 0; border-width: 0.5px; }
+}
+
+@keyframes causticsLight {
+  0% { opacity: 0.35; transform: scale(1) rotate(0deg); }
+  50% { opacity: 0.65; transform: scale(1.18) rotate(180deg); }
+  100% { opacity: 0.35; transform: scale(1) rotate(360deg); }
+}
+
+.water-droplet-3d {
+  background: radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.96) 0%, rgba(fffdfa, 0.85) 15%, rgba(fdba74, 0.4) 55%, rgba(ea580c, 0.6) 100%);
+  animation: liquidWobble 7s ease-in-out infinite, waterGlow3D 7s ease-in-out infinite;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  position: relative;
+  transition: transform 1000ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Water glass reflection highlight */
+.water-droplet-3d::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 18%;
+  width: 38%;
+  height: 20%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 100%);
+  border-radius: 50% 50% 40% 40% / 60% 60% 45% 45%;
+  transform: rotate(-15deg);
+  pointer-events: none;
+}
+
+/* Interactive water ripple effects mapping isPlaying states */
+.water-ripple-ring {
+  border: 1.5px solid rgba(249, 115, 22, 0.4);
+  background: transparent;
+  border-radius: 50%;
+  animation: ripplesOut 4s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+  pointer-events: none;
+}
+
+.water-ripple-ring-alt {
+  border: 1px solid rgba(234, 88, 12, 0.25);
+  background: transparent;
+  border-radius: 50%;
+  animation: ripplesOut 4s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+  animation-delay: 2s;
+  pointer-events: none;
+}
+
+.caustics-backdrop {
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  right: -20%;
+  bottom: -20%;
+  background-image: 
+    radial-gradient(ellipse at 50% 50%, rgba(254, 215, 170, 0.45) 0%, transparent 60%),
+    radial-gradient(ellipse at 30% 20%, rgba(253, 186, 116, 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(255, 255, 255, 0.5) 0%, transparent 50%);
+  filter: blur(25px);
+  animation: causticsLight 15s ease-in-out infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .mobile-device-wrapper {
+    border: none;
+    border-radius: 0;
+    max-width: 100%;
+    box-shadow: none;
+    min-height: 100vh;
+  }
+}
+
+/* Custom Dark Blue Typography Rules */
+.mobile-device-wrapper,
+.mobile-device-wrapper h1,
+.mobile-device-wrapper h2,
+.mobile-device-wrapper h3,
+.mobile-device-wrapper h4,
+.mobile-device-wrapper h5,
+.mobile-device-wrapper h6,
+.mobile-device-wrapper p,
+.mobile-device-wrapper label,
+.mobile-device-wrapper textarea,
+.mobile-device-wrapper select,
+.mobile-device-wrapper li,
+.mobile-device-wrapper input {
+  color: #0b1a3d !important;
+}
+
+/* Permit secondary elements to use opaque dark blue */
+.mobile-device-wrapper .text-stone-500,
+.mobile-device-wrapper .text-slate-400,
+.mobile-device-wrapper .text-slate-500,
+.mobile-device-wrapper .text-stone-400,
+.mobile-device-wrapper .text-slate-405,
+.mobile-device-wrapper .text-[10px] {
+  color: rgba(11, 26, 61, 0.76) !important;
+}
+
+/* Prevent gradient texts from being broken */
+.mobile-device-wrapper .italic.font-bold.bg-gradient-to-r,
+.mobile-device-wrapper .bg-clip-text {
+  color: transparent !important;
+}
+
+/* Maintain light highlights inside buttons and items that explicitly need white */
+.mobile-device-wrapper .text-white,
+.mobile-device-wrapper .text-white span,
+.mobile-device-wrapper .bg-orange-600,
+.mobile-device-wrapper .bg-orange-600 span,
+.mobile-device-wrapper .futuristic-btn,
+.mobile-device-wrapper .futuristic-btn span {
+  color: #ffffff !important;
+}
+
+/* Ensure selected tags or active status icons stand out */
+.mobile-device-wrapper .text-orange-600,
+.mobile-device-wrapper .text-orange-700 {
+  color: #ea580c !important;
+}
+
+/* Custom Sapphire/Royal Blue utility class that overrides any other device-wrapper rules */
+.text-custom-blue,
+.mobile-device-wrapper .text-custom-blue,
+.mobile-device-wrapper span.text-custom-blue,
+.mobile-device-wrapper p.text-custom-blue,
+.mobile-device-wrapper em.text-custom-blue {
+  color: #081a4d !important; /* Very dark blue for maximum legibility */
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: initial !important;
+  background-image: none !important;
+}
+
+/* Breathing and pulsing meditation emoji animation - extremely slow, calm, and subtle */
+@keyframes emojiBreath {
+  0% { transform: scale(1); filter: drop-shadow(0 0 1px rgba(8, 26, 77, 0.05)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 8px rgba(8, 26, 77, 0.3)); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 1px rgba(8, 26, 77, 0.05)); }
+}
+
+.animate-emoji-breath {
+  display: inline-block;
+  animation: emojiBreath 6s ease-in-out infinite;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.animate-emoji-breath:hover {
+  animation-play-state: paused;
+  transform: scale(1.15) rotate(6deg) !important;
+  filter: drop-shadow(0 0 12px rgba(8, 26, 77, 0.45)) !important;
+}
+
+.animate-emoji-breath:active {
+  transform: scale(0.92) !important;
+}
+
+
+
