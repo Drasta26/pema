@@ -23,7 +23,7 @@ Verified 30 Oct: tsc passes, production build passes, the API endpoints return s
 ## Known gaps before any deployment (owner says a lot of work is needed)
 1. Done 30 Oct: git set up; tags `v2-claude-2026-10-30` (baseline) and `v2.1-private-2026-10-30` (no sign-in).
 2. Done 30 Oct: local sign-in and Firebase removed (owner approved "private by design": no accounts, data on the device). Optional sync/accounts only later if users ask.
-3. Safety: users type free-text feelings. Add crisis-language detection with UK signposting (e.g. NHS 111, Samaritans 116 123, 999 in an emergency), and never let the model give medical advice. Keep the "not medical advice" disclaimer.
+3. Done 30 Oct: crisis safety net. `src/safety.ts` (rule-based, shared by app and server, `npm test`), `CrisisSupport` screen with UK numbers, crisis text never sent to Claude, safety rules in both prompts. Owner to re-verify helpline numbers before each release; a clinical safety reviewer should check wording and phrase list.
 4. Data protection: mood, journal and sleep notes per user = wellbeing data under UK GDPR. Needs a privacy notice, lawful basis/consent, retention, export/delete, and a DPIA. Owner sign-off required.
 5. Done 30 Oct: Firebase files and package deleted with three owner confirmations.
 6. Google/Microsoft sign-in: dropped for now under the private-by-design direction.

@@ -5,6 +5,7 @@ import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { generateInitialSession, generateAdaptiveFeedback } from "./server/claudeService";
+import { detectCrisis } from "./src/safety";
 
 async function startServer() {
   const app = express();
@@ -16,6 +17,10 @@ async function startServer() {
   app.post("/api/meditation/start", async (req, res) => {
     try {
       const { description, explicitState } = req.body;
+      // Backstop for the on-device check: crisis text is never sent to Claude
+      if (detectCrisis(description)) {
+        return res.status(422).json({ crisis: true, error: "Please see the support options." });
+      }
       const session = await generateInitialSession({ description, explicitState });
       res.json(session);
     } catch (error: any) {
@@ -28,6 +33,9 @@ async function startServer() {
   app.post("/api/meditation/feedback", async (req, res) => {
     try {
       const { currentSession, feedbackType, userText } = req.body;
+      if (detectCrisis(userText)) {
+        return res.status(422).json({ crisis: true, error: "Please see the support options." });
+      }
       if (!currentSession) {
         return res.status(400).json({ error: "currentSession is required for feedback correction" });
       }

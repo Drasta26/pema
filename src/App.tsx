@@ -3,6 +3,8 @@ import { EmotionalState, MeditationSession, FeedbackType } from './types';
 import CheckIn from './components/CheckIn';
 import SessionPlayer from './components/SessionPlayer';
 import SessionExit from './components/SessionExit';
+import CrisisSupport from './components/CrisisSupport';
+import { detectCrisis } from './safety';
 import { Calendar, RotateCcw, Award, Info, Lock } from 'lucide-react';
 
 interface LocalSessionLog {
@@ -16,7 +18,9 @@ interface LocalSessionLog {
 }
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<'checkin' | 'player' | 'exit'>('checkin');
+  const [currentScreen, setCurrentScreen] = useState<'checkin' | 'player' | 'exit' | 'crisis'>('checkin');
+  // Screen to return to if the user says they are safe and continues
+  const [crisisFrom, setCrisisFrom] = useState<'checkin' | 'player' | 'exit'>('checkin');
   const [session, setSession] = useState<MeditationSession | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingFeedback, setIsLoadingFeedback] = useState(false);
@@ -97,7 +101,18 @@ export default function App() {
     setStreak(currentStreak);
   };
 
+  const showCrisisSupport = (from: 'checkin' | 'player' | 'exit') => {
+    setCrisisFrom(from);
+    setErrorMessage(null);
+    setCurrentScreen('crisis');
+  };
+
   const handleStartSession = async (data: { description: string; explicitState?: EmotionalState }) => {
+    // Checked on the device, so crisis text is never sent to the AI
+    if (detectCrisis(data.description)) {
+      showCrisisSupport('checkin');
+      return;
+    }
     setIsLoading(true);
     setErrorMessage(null);
     try {
@@ -134,6 +149,10 @@ export default function App() {
 
   const handleAdaptiveFeedback = async (feedbackType: FeedbackType, userText?: string) => {
     if (!session) return;
+    if (detectCrisis(userText)) {
+      showCrisisSupport('player');
+      return;
+    }
     setIsLoadingFeedback(true);
     setErrorMessage(null);
     try {
@@ -188,6 +207,9 @@ export default function App() {
     localStorage.setItem('ai_meditation_logs', JSON.stringify(updatedHistory));
     calculateStreak(updatedHistory);
 
+    if (detectCrisis(feedback.notes)) {
+      showCrisisSupport('exit');
+    }
   };
 
   const handleClearHistory = () => {
@@ -269,6 +291,24 @@ export default function App() {
           {/* Core App Screens */}
           {currentScreen === 'checkin' && (
             <CheckIn onSubmit={handleStartSession} isLoading={isLoading} />
+          )}
+
+          {currentScreen === 'crisis' && (
+            <CrisisSupport
+              onBack={() => {
+                setSession(null);
+                setCurrentScreen('checkin');
+              }}
+              onContinue={() => {
+                if (crisisFrom === 'player' && session) {
+                  setCurrentScreen('player');
+                } else {
+                  // Start a simple breathing session without the typed text
+                  setSession(null);
+                  handleStartSession({ description: '', explicitState: 'Breath Meditation' });
+                }
+              }}
+            />
           )}
 
           {currentScreen === 'player' && session && (
