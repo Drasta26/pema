@@ -166,8 +166,8 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
 
           {/* Emotional Anchors Custom Dropdown Selector */}
           <div className="space-y-1 relative">
-            <label className="block text-[9px] font-mono tracking-wider font-bold text-amber-900 uppercase text-center">
-              Select an Emotion
+            <label className="block text-xs font-sans text-amber-900 text-center">
+              Choose a feeling
             </label>
             
             <div className="relative">
@@ -186,7 +186,7 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
                         <div className="p-0.5 px-1 rounded bg-orange-50 text-orange-600 shrink-0">
                           <Icon className="w-3 h-3" />
                         </div>
-                        <span className="font-display font-semibold text-xs text-stone-800">
+                        <span className="font-sans font-normal text-sm text-stone-800">
                           {matched.label}
                         </span>
                       </div>
@@ -220,7 +220,7 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
                             <div className="p-1 rounded bg-orange-50 text-orange-600 shrink-0">
                               <Icon className="w-3 h-3" />
                             </div>
-                            <span className="block text-xs font-semibold truncate">{card.label}</span>
+                            <span className="block text-sm font-normal truncate">{card.label}</span>
                           </div>
                           {isSelected && <Check className="w-3 h-3 text-orange-600 shrink-0 mr-1" />}
                         </button>
