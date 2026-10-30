@@ -1,16 +1,45 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
+
+  /* Premium calm palette: the app's orange/amber utilities map to clay and sand */
+  --color-orange-50: #faf6f1;
+  --color-orange-100: #f1e8dd;
+  --color-orange-200: #e3d2bf;
+  --color-orange-300: #d0b597;
+  --color-orange-400: #b99472;
+  --color-orange-500: #a07955;
+  --color-orange-600: #8a6446;
+  --color-orange-700: #6f4f38;
+  --color-orange-800: #553d2c;
+  --color-orange-900: #3b2b20;
+  --color-amber-50: #fbf8f0;
+  --color-amber-100: #f3ead6;
+  --color-amber-200: #e6d4ae;
+  --color-amber-300: #d5bb83;
+  --color-amber-400: #c2a061;
+  --color-amber-500: #a8874a;
+  --color-amber-600: #876b3a;
+  --color-amber-700: #6a542e;
+  --color-amber-800: #4f3f24;
+  --color-amber-900: #382d1a;
+  --color-blue-50: #f5f3f8;
+  --color-blue-100: #e8e4ef;
+  --color-blue-200: #d4cde0;
+  --color-blue-400: #8b82a3;
+  --color-blue-500: #6e6688;
+  --color-blue-600: #564f6e;
   --font-serif: "Playfair Display", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
 body {
-  background: radial-gradient(circle at top, #fdba74 0%, #f97316 40%, #ea580c 75%, #c2410c 100%);
-  color: #0b1a3d;
+  background: radial-gradient(ellipse at 50% 0%, #6b5a5e 0%, #3a3443 45%, #1f1c27 100%);
+  background-attachment: fixed;
+  color: #26221f;
   font-family: var(--font-sans);
   min-height: 100vh;
 }
@@ -27,9 +56,9 @@ body {
 }
 
 @keyframes breathGlow {
-  0% { transform: scale(0.96); box-shadow: 0 0 35px rgba(249, 115, 22, 0.2); border-color: rgba(249, 115, 22, 0.3); }
-  50% { transform: scale(1.06); box-shadow: 0 0 55px rgba(245, 158, 11, 0.45), 0 0 80px rgba(254, 215, 170, 0.4); border-color: rgba(254, 215, 170, 0.6); }
-  100% { transform: scale(0.96); box-shadow: 0 0 35px rgba(249, 115, 22, 0.2); border-color: rgba(249, 115, 22, 0.3); }
+  0% { transform: scale(0.96); box-shadow: 0 0 35px rgba(185, 148, 114, 0.2); border-color: rgba(185, 148, 114, 0.3); }
+  50% { transform: scale(1.06); box-shadow: 0 0 55px rgba(194, 160, 97, 0.45), 0 0 80px rgba(241, 232, 221, 0.4); border-color: rgba(241, 232, 221, 0.6); }
+  100% { transform: scale(0.96); box-shadow: 0 0 35px rgba(185, 148, 114, 0.2); border-color: rgba(185, 148, 114, 0.3); }
 }
 
 @keyframes holographicPulse {
@@ -74,25 +103,25 @@ body {
   width: 100%;
   margin: 0 auto;
   /* Sunset depth simulation gradient with ambient solar refraction shimmers */
-  background: radial-gradient(circle at 50% 0%, #ffe9d6 0%, #fdb574 35%, #f97316 70%, #9a3412 100%);
-  border-radius: 40px;
-  border: 12px solid #ca4a0b;
-  box-shadow: 
-    0 30px 80px -15px rgba(12, 28, 58, 0.35), 
-    0 10px 30px rgba(234, 88, 12, 0.2),
-    inset 0 0 40px rgba(255, 255, 255, 0.75);
+  background: linear-gradient(180deg, #fbf8f4 0%, #f4ece2 100%);
+  border-radius: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    0 40px 100px -20px rgba(0, 0, 0, 0.55),
+    0 0 0 8px rgba(255, 255, 255, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   overflow: hidden;
   position: relative;
 }
 
 /* Glassmorphic Cards - Serene Frost Warm Ivory with Amber light Refraction */
 .glass-panel {
-  background: rgba(255, 252, 248, 0.76);
+  background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(160, 121, 85, 0.14);
   box-shadow: 
-    0 10px 30px -4px rgba(120, 53, 4, 0.05),
+    0 10px 30px -4px rgba(59, 43, 32, 0.06),
     inset 0 1px 4px rgba(255, 255, 255, 0.6);
 }
 
@@ -100,18 +129,16 @@ body {
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 2px solid #ea580c;
+  border: 1.5px solid #a07955;
   box-shadow: 
-    0 15px 35px -5px rgba(234, 88, 12, 0.18),
+    0 15px 35px -5px rgba(59, 43, 32, 0.12),
     inset 0 1px 6px rgba(255, 255, 255, 0.9);
 }
 
 .futuristic-btn {
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%);
-  background-size: 200% 200%;
-  animation: holographicPulse 6s ease infinite;
+  background: linear-gradient(135deg, #2f2b3d 0%, #3f3950 100%);
   box-shadow: 
-    0 8px 25px -5px rgba(234, 88, 12, 0.35), 
+    0 8px 25px -5px rgba(31, 28, 39, 0.35), 
     inset 0 1px 0 rgba(255, 255, 255, 0.4),
     inset 0 -2px 6px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -120,7 +147,7 @@ body {
 
 .futuristic-btn:hover:not(:disabled) {
   box-shadow: 
-    0 12px 30px -4px rgba(234, 88, 12, 0.45), 
+    0 12px 30px -4px rgba(31, 28, 39, 0.45), 
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
     inset 0 -1px 3px rgba(0, 0, 0, 0.15);
   transform: translateY(-1.5px) scale(1.02);
@@ -138,25 +165,25 @@ body {
 @keyframes waterGlow3D {
   0% { 
     box-shadow: 
-      0 10px 30px rgba(234, 88, 12, 0.15),
+      0 10px 30px rgba(160, 121, 85, 0.15),
       inset 0 4px 12px rgba(255, 255, 255, 0.9),
-      inset 0 -8px 20px rgba(234, 88, 12, 0.25),
-      inset -4px -4px 10px rgba(251, 146, 60, 0.15);
+      inset 0 -8px 20px rgba(160, 121, 85, 0.25),
+      inset -4px -4px 10px rgba(208, 181, 151, 0.15);
   }
   50% { 
     box-shadow: 
-      0 20px 50px rgba(234, 88, 12, 0.35),
-      0 0 35px rgba(251, 146, 60, 0.25),
+      0 20px 50px rgba(31, 28, 39, 0.35),
+      0 0 35px rgba(208, 181, 151, 0.25),
       inset 0 6px 18px rgba(255, 255, 255, 0.95),
-      inset 0 -15px 35px rgba(234, 88, 12, 0.4),
-      inset -8px -8px 15px rgba(254, 215, 170, 0.3);
+      inset 0 -15px 35px rgba(160, 121, 85, 0.4),
+      inset -8px -8px 15px rgba(241, 232, 221, 0.3);
   }
   100% { 
     box-shadow: 
-      0 10px 30px rgba(234, 88, 12, 0.15),
+      0 10px 30px rgba(160, 121, 85, 0.15),
       inset 0 4px 12px rgba(255, 255, 255, 0.9),
-      inset 0 -8px 20px rgba(234, 88, 12, 0.25),
-      inset -4px -4px 10px rgba(251, 146, 60, 0.15);
+      inset 0 -8px 20px rgba(160, 121, 85, 0.25),
+      inset -4px -4px 10px rgba(208, 181, 151, 0.15);
   }
 }
 
@@ -172,7 +199,7 @@ body {
 }
 
 .water-droplet-3d {
-  background: radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.96) 0%, rgba(fffdfa, 0.85) 15%, rgba(fdba74, 0.4) 55%, rgba(ea580c, 0.6) 100%);
+  background: radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.96) 0%, rgba(250, 246, 241, 0.85) 15%, rgba(208, 181, 151, 0.45) 55%, rgba(160, 121, 85, 0.6) 100%);
   animation: liquidWobble 7s ease-in-out infinite, waterGlow3D 7s ease-in-out infinite;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -196,7 +223,7 @@ body {
 
 /* Interactive water ripple effects mapping isPlaying states */
 .water-ripple-ring {
-  border: 1.5px solid rgba(249, 115, 22, 0.4);
+  border: 1.5px solid rgba(185, 148, 114, 0.4);
   background: transparent;
   border-radius: 50%;
   animation: ripplesOut 4s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
@@ -204,7 +231,7 @@ body {
 }
 
 .water-ripple-ring-alt {
-  border: 1px solid rgba(234, 88, 12, 0.25);
+  border: 1px solid rgba(160, 121, 85, 0.25);
   background: transparent;
   border-radius: 50%;
   animation: ripplesOut 4s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
@@ -219,8 +246,8 @@ body {
   right: -20%;
   bottom: -20%;
   background-image: 
-    radial-gradient(ellipse at 50% 50%, rgba(254, 215, 170, 0.45) 0%, transparent 60%),
-    radial-gradient(ellipse at 30% 20%, rgba(253, 186, 116, 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(241, 232, 221, 0.45) 0%, transparent 60%),
+    radial-gradient(ellipse at 30% 20%, rgba(227, 210, 191, 0.35) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 70%, rgba(255, 255, 255, 0.5) 0%, transparent 50%);
   filter: blur(25px);
   animation: causticsLight 15s ease-in-out infinite;
@@ -252,7 +279,7 @@ body {
 .mobile-device-wrapper select,
 .mobile-device-wrapper li,
 .mobile-device-wrapper input {
-  color: #0b1a3d !important;
+  color: #26221f !important;
 }
 
 /* Permit secondary elements to use opaque dark blue */
@@ -262,7 +289,7 @@ body {
 .mobile-device-wrapper .text-stone-400,
 .mobile-device-wrapper .text-slate-405,
 .mobile-device-wrapper .text-[10px] {
-  color: rgba(11, 26, 61, 0.76) !important;
+  color: rgba(38, 34, 31, 0.62) !important;
 }
 
 /* Prevent gradient texts from being broken */
@@ -284,7 +311,7 @@ body {
 /* Ensure selected tags or active status icons stand out */
 .mobile-device-wrapper .text-orange-600,
 .mobile-device-wrapper .text-orange-700 {
-  color: #ea580c !important;
+  color: #8a6446 !important;
 }
 
 /* Custom Sapphire/Royal Blue utility class that overrides any other device-wrapper rules */
@@ -293,7 +320,7 @@ body {
 .mobile-device-wrapper span.text-custom-blue,
 .mobile-device-wrapper p.text-custom-blue,
 .mobile-device-wrapper em.text-custom-blue {
-  color: #081a4d !important; /* Very dark blue for maximum legibility */
+  color: #2f2b3d !important; /* Deep ink brand colour */
   background: none !important;
   -webkit-background-clip: unset !important;
   background-clip: unset !important;
@@ -303,9 +330,9 @@ body {
 
 /* Breathing and pulsing meditation emoji animation - extremely slow, calm, and subtle */
 @keyframes emojiBreath {
-  0% { transform: scale(1); filter: drop-shadow(0 0 1px rgba(8, 26, 77, 0.05)); }
-  50% { transform: scale(1.08); filter: drop-shadow(0 0 8px rgba(8, 26, 77, 0.3)); }
-  100% { transform: scale(1); filter: drop-shadow(0 0 1px rgba(8, 26, 77, 0.05)); }
+  0% { transform: scale(1); filter: drop-shadow(0 0 1px rgba(47, 43, 61, 0.05)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 8px rgba(47, 43, 61, 0.3)); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 1px rgba(47, 43, 61, 0.05)); }
 }
 
 .animate-emoji-breath {
@@ -318,7 +345,7 @@ body {
 .animate-emoji-breath:hover {
   animation-play-state: paused;
   transform: scale(1.15) rotate(6deg) !important;
-  filter: drop-shadow(0 0 12px rgba(8, 26, 77, 0.45)) !important;
+  filter: drop-shadow(0 0 12px rgba(47, 43, 61, 0.45)) !important;
 }
 
 .animate-emoji-breath:active {

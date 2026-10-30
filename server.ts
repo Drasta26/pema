@@ -7,6 +7,16 @@ import { createServer as createViteServer } from "vite";
 import { generateInitialSession, generateAdaptiveFeedback } from "./server/claudeService";
 import { detectCrisis } from "./src/safety";
 
+// The model writes [pause 2s] cues for spoken pacing; they are not shown on screen
+function stripPauseMarkers<T>(value: T): T {
+  if (typeof value === "string") return value.replace(/\s*\[pause[^\]]*\]\s*/gi, " ").replace(/\s+/g, " ").trim() as T;
+  if (Array.isArray(value)) return value.map(stripPauseMarkers) as T;
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, stripPauseMarkers(v)])) as T;
+  }
+  return value;
+}
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -22,7 +32,7 @@ async function startServer() {
         return res.status(422).json({ crisis: true, error: "Please see the support options." });
       }
       const session = await generateInitialSession({ description, explicitState });
-      res.json(session);
+      res.json(stripPauseMarkers(session));
     } catch (error: any) {
       console.error("Error initiating session:", error);
       res.status(500).json({ error: error?.message || "Failed to generate meditation session" });
@@ -40,7 +50,7 @@ async function startServer() {
         return res.status(400).json({ error: "currentSession is required for feedback correction" });
       }
       const updatedSession = await generateAdaptiveFeedback(currentSession, feedbackType, userText);
-      res.json(updatedSession);
+      res.json(stripPauseMarkers(updatedSession));
     } catch (error: any) {
       console.error("Error processing adaptive feedback:", error);
       res.status(500).json({ error: error?.message || "Failed to dynamically adjust meditation session" });
