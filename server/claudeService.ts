@@ -14,8 +14,9 @@ async function callClaude(system: string, userQuery: string): Promise<any> {
     max_tokens: 2048,
     system,
     tools: [{ name: "meditation_session", description: "Return the meditation session.", input_schema: MEDITATION_SCHEMA as any }],
-    tool_choice: { type: "tool", name: "meditation_session" },
-    messages: [{ role: "user", content: userQuery }],
+    // Newer models reject forced tool_choice; "auto" plus the instruction below still returns the tool call
+    tool_choice: { type: "auto" },
+    messages: [{ role: "user", content: `${userQuery}\n\nRespond only by calling the meditation_session tool.` }],
   });
   const block = msg.content.find((b: any) => b.type === "tool_use") as any;
   return block?.input ?? {};

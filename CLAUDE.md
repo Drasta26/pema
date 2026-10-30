@@ -18,7 +18,7 @@ Owner: Dr Asta Ratna Prajapati (CEO, NutriBlend Health / Tara International Ltd)
 ## Stack
 React 19 + Vite 6 + Tailwind 4 (src/), Express server (server.ts) serving Vite in dev, Claude via `@anthropic-ai/sdk` in `server/claudeService.ts` (structured output through forced tool use; model from CLAUDE_MODEL, default claude-sonnet-5-5). No accounts: session history is kept in the browser's localStorage on the user's device. Offline rule-based sessions are used when no API key is set.
 Run: `npm run dev` (port 3000) or double-click `Start PeMA.command`. The owner views it in the Claude app browser pane.
-30 Oct (afternoon): Claude API returns authentication_error 'Invalid bearer token' for the key in .env.local, so sessions fall back to offline templates. Owner to replace the key; do not open the file.
+30 Oct: Claude sessions verified live (key fixed; tool_choice switched to auto because claude-sonnet-5-5 rejects forced tool choice).
 
 ## Known gaps before any deployment (owner says a lot of work is needed)
 1. Done 30 Oct: git set up; tags `v2-claude-2026-10-30` (baseline) and `v2.1-private-2026-10-30` (no sign-in).
