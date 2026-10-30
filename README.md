@@ -3,7 +3,7 @@
 PeMA is a web app for short, guided mindfulness and breathing sessions. You check in with how you feel, and PeMA builds a session to match, with a breathing guide, a timer and an optional journal note afterwards.
 
 ## Who it's for
-Adults who want a quick, private mindfulness break. PeMA is a wellness tool: it is not therapy or a medical device, and it does not diagnose or treat anything.
+Anyone who wants a quick, private mindfulness break: a few minutes of guided breathing or meditation between meetings, before sleep or whenever they need to pause.
 
 ## Built with
 - React, TypeScript, Vite and Tailwind CSS (front end)
@@ -25,18 +25,18 @@ On a Mac you can also double-click `Start PeMA.command`. Without an API key, PeM
 ## Tests
 
 ```
-npm test        # unit tests for the safety checks
+npm test        # unit tests
 npm run lint    # TypeScript type check
 ```
 
-## Privacy and safety
+## Privacy
 - Private by design: no accounts or cloud storage. Session history stays in your browser on your device.
 - Your API key stays in `.env.local` on the server side and is never committed (see `.gitignore`).
-- Crisis safety net: if a check-in contains crisis language, PeMA stops the session, shows UK support contacts, and does not send that text to the AI.
+- Support messages: if a check-in suggests someone may need urgent help, PeMA pauses the session, shows UK contact details for people who can help, and does not send that text to the AI.
 - The repository contains no real user data.
 
 ## History
-First built in Google AI Studio with Gemini. In October 2026 it moved to the Claude API, sign-in and Firebase were removed, and the crisis safety net was added.
+First built in Google AI Studio with Gemini. In October 2026 it moved to the Claude API, sign-in and Firebase were removed, and support messages were added.
 
 ## Roadmap
 See [ROADMAP.md](ROADMAP.md).
