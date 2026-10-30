@@ -248,8 +248,8 @@ export default function App() {
                 <span className="font-display font-medium text-base text-stone-900 tracking-tight block">
                   <em className="italic font-bold text-custom-blue">PeMA</em>
                 </span>
-                <span className="block text-[8px] font-mono tracking-wider uppercase font-bold text-custom-blue">
-                  Personalized Mindfulness Assistant
+                <span className="block text-[10px] font-sans tracking-normal text-custom-blue/80">
+                  Personalised Mindfulness Assistant
                 </span>
               </div>
             </div>
