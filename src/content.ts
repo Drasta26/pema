@@ -1,6 +1,6 @@
 // Dr Asta's own content from The Mental SPA (youtube.com/@BeWithBreath).
 // Step names come from the "5 Steps of Mental SPA" video description; the
-// guidance lines are PeMA's wording and need the owner's review.
+// guidance lines are PeMA's wording, approved by the owner on 30 Oct 2026.
 
 export interface SpaStep {
   title: string;
