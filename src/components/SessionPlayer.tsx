@@ -248,7 +248,7 @@ export default function SessionPlayer({
       
       {/* Session Header State Reflection */}
       <div className="glass-panel rounded-2xl p-4 border border-orange-100/50 shadow-sm space-y-2">
-        <div className="inline-flex items-center gap-1.5 bg-orange-50 border border-orange-100 px-2.5 py-0.5 rounded-full text-[9px] font-mono tracking-wider text-orange-600 uppercase font-bold">
+        <div className="inline-flex items-center gap-1.5 bg-orange-50 border border-orange-100 px-2.5 py-0.5 rounded-full text-[9px] font-mono tracking-wider text-orange-600 font-bold">
           CORE TECHNIQUE: {session.techniqueName}
         </div>
         <p className="text-stone-900 font-serif text-sm italic leading-relaxed">
@@ -277,7 +277,7 @@ export default function SessionPlayer({
               <button
                 id="toggle-audio-btn"
                 onClick={toggleAudioEngine}
-                className={`flex items-center gap-1 p-1 px-1.5 sm:px-2 rounded-lg border text-[9px] font-mono font-bold uppercase transition-all duration-300 cursor-pointer ${
+                className={`flex items-center gap-1 p-1 px-1.5 sm:px-2 rounded-lg border text-[9px] font-mono font-bold transition-all duration-300 cursor-pointer ${
                   audioEnabled
                     ? 'bg-orange-50 text-orange-600 border-orange-200 shadow-[0_0_12px_rgba(249,115,22,0.12)]'
                     : 'bg-transparent text-stone-500 border-black/10 hover:bg-orange-50'
@@ -337,7 +337,7 @@ export default function SessionPlayer({
                   <span id="pacer-countdown-sec" className="text-xl font-display font-medium text-orange-700 tabular-nums drop-shadow-[0_0_8px_rgba(249,115,22,0.15)]">
                     {secondsRemaining}s
                   </span>
-                  <span id="pacer-phase-label" className="text-[8px] font-mono font-bold tracking-wider text-amber-900 uppercase mt-0.5 text-center px-1 leading-tight">
+                  <span id="pacer-phase-label" className="text-[8px] font-mono font-bold tracking-wider text-amber-900 mt-0.5 text-center px-1 leading-tight">
                     {getPhaseText()}
                   </span>
                 </>
@@ -346,7 +346,7 @@ export default function SessionPlayer({
                   <span id="pacer-done-emoji" className="text-xl animate-bounce">
                     🧘
                   </span>
-                  <span id="pacer-done-text" className="text-[9px] font-mono font-bold tracking-wider text-orange-700 uppercase mt-0.5 text-center leading-tight">
+                  <span id="pacer-done-text" className="text-[9px] font-mono font-bold tracking-wider text-orange-700 mt-0.5 text-center leading-tight">
                     Done
                   </span>
                 </>
@@ -393,11 +393,11 @@ export default function SessionPlayer({
         <div className="glass-panel rounded-2xl p-4 border border-orange-100/50 shadow-xs flex flex-col justify-between min-h-[170px]">
           <div className="space-y-2">
             <div className="flex justify-between items-center border-b border-orange-100/40 pb-1.5">
-              <span className="text-[9px] font-mono tracking-widest font-bold text-orange-600 uppercase">
+              <span className="text-[9px] font-mono tracking-widest font-bold text-orange-600">
                 Step {currentStepIndex + 1} of {session.steps.length}
               </span>
               <span className="text-[9px] text-orange-700 font-sans italic">
-                Mindfulness Cue
+                Mindfulness cue
               </span>
             </div>
 
@@ -444,9 +444,9 @@ export default function SessionPlayer({
             ) : (
               <button
                 onClick={onExitSession}
-                className="px-3.5 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-[9px] font-display font-semibold uppercase tracking-wider rounded-lg transition-all duration-300 cursor-pointer shadow-sm"
+                className="px-3.5 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-[9px] font-display font-semibold tracking-wider rounded-lg transition-all duration-300 cursor-pointer shadow-sm"
               >
-                End Practice
+                End practice
               </button>
             )}
           </div>
@@ -454,8 +454,8 @@ export default function SessionPlayer({
 
         {/* Real-time calibration tools */}
         <div className="glass-panel rounded-2xl p-4 border border-orange-100/50 shadow-xs space-y-3">
-          <h3 className="text-[9px] font-mono tracking-widest font-bold text-orange-600 uppercase">
-            Adjust Session
+          <h3 className="text-[9px] font-mono tracking-widest font-bold text-orange-600">
+            Adjust session
           </h3>
           
           <p className="text-[9px] text-amber-900 font-sans leading-relaxed">
@@ -522,7 +522,7 @@ export default function SessionPlayer({
                     disabled={!customFeedbackText.trim() || isLoadingFeedback}
                     className="px-3.5 py-1 text-[9px] bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-display font-medium transition-all cursor-pointer disabled:opacity-50"
                   >
-                    Adapt Now
+                    Adapt now
                   </button>
                 </div>
               </div>

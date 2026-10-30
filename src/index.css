@@ -112,7 +112,8 @@ body {
     0 40px 100px -20px rgba(0, 0, 0, 0.55),
     0 0 0 8px rgba(255, 255, 255, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  overflow: hidden;
+  /* clip, not hidden: the oversized caustics layer must never make the frame scroll sideways */
+  overflow: clip;
   position: relative;
 }
 

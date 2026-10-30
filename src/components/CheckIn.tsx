@@ -155,7 +155,7 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
       {/* Zen Futuristic Slogan */}
       <div className="text-center mt-1">
         <h1 className="text-xl md:text-2xl font-serif italic font-medium text-amber-950 tracking-tight animate-float-zen drop-shadow-[0_2px_15px_rgba(249,115,22,0.1)]">
-          Mind Check-In
+          Mind check-in
         </h1>
       </div>
 
@@ -236,7 +236,7 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
           <div className="relative flex py-0.5 items-center">
             <div className="flex-grow border-t border-orange-100/50"></div>
             <span className="flex-shrink mx-3 text-[11px] font-mono font-black text-custom-blue bg-blue-50 border border-blue-100 px-3 py-1 rounded-full shadow-xs tracking-wider">
-              OR
+              or
             </span>
             <div className="flex-grow border-t border-orange-100/50"></div>
           </div>
@@ -289,9 +289,9 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
       {/* Moving Screen: Mindfulness Inspiring Quotes Carousel */}
       <div className="pt-2 border-t border-orange-100/30 space-y-2">
         <div className="text-center">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-mono tracking-widest text-custom-blue bg-blue-50 border border-blue-100 uppercase font-black">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-mono tracking-widest text-custom-blue bg-blue-50 border border-blue-100 font-black">
             <Sparkles className="w-2.5 h-2.5 text-blue-500 animate-spin" />
-            <span>Daily Reminder</span>
+            <span>Daily reminder</span>
           </span>
         </div>
 
@@ -313,7 +313,7 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
               "{INSPIRING_QUOTES[currentQuoteIndex].text}"
             </p>
             <p
-              className={`text-[9px] font-mono tracking-wider text-custom-blue text-center mt-1 font-black uppercase transition-all duration-300 ${
+              className={`text-[9px] font-mono tracking-wider text-custom-blue text-center mt-1 font-black transition-all duration-300 ${
                 fadeTrigger ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-1'
               }`}
             >

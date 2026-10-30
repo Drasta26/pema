@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Play, Sparkles, ChevronRight } from 'lucide-react';
+import { Play, Sparkles, ChevronRight, Wind } from 'lucide-react';
 import { GUIDED_VIDEOS } from '../content';
 
 const TILE_GRADIENTS = [
@@ -11,15 +11,31 @@ const TILE_GRADIENTS = [
 
 interface GuidedLibraryProps {
   onStartSpa: () => void;
+  onStartReset: () => void;
 }
 
 // Videos load only when tapped, from youtube-nocookie.com, so nothing is
 // shared with YouTube until the user chooses to watch.
-export default function GuidedLibrary({ onStartSpa }: GuidedLibraryProps) {
+export default function GuidedLibrary({ onStartSpa, onStartReset }: GuidedLibraryProps) {
   const [playingId, setPlayingId] = useState<string | null>(null);
 
   return (
     <div className="px-4 pt-5 space-y-4">
+      <button
+        type="button"
+        onClick={onStartReset}
+        className="w-full flex items-center gap-3 rounded-2xl p-3.5 glass-panel cursor-pointer transition-transform duration-300 hover:-translate-y-0.5 active:scale-[0.99] text-left"
+      >
+        <span className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #ffb547, #ff6b4a)' }}>
+          <Wind className="w-5 h-5 text-white" />
+        </span>
+        <span className="flex-1">
+          <span className="block font-display text-base text-stone-900">60-second reset</span>
+          <span className="block text-xs text-stone-500">One tap, six slow breaths, no typing</span>
+        </span>
+        <ChevronRight className="w-5 h-5 text-orange-500" />
+      </button>
+
       <button
         type="button"
         onClick={onStartSpa}
