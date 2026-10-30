@@ -76,7 +76,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
         <div className="border-b border-black/5 pb-3">
           <h2 className="text-sm font-display font-medium text-stone-800 flex items-center gap-2">
             <Star className="w-4 h-4 text-orange-600 animate-spin" />
-            <span>Session Feedback</span>
+            <span>Session feedback</span>
           </h2>
           <p className="text-[10px] text-amber-900 mt-0.5 font-sans leading-normal font-bold">
             Take a moment to check in and save your local notes.
@@ -87,7 +87,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
           <form onSubmit={handleSave} className="space-y-4">
             {/* Rating Buttons */}
             <div className="space-y-2">
-              <label className="block text-[9px] font-mono tracking-wider font-bold text-orange-600 uppercase">
+              <label className="block text-[9px] font-mono tracking-wider font-bold text-orange-600">
                 How do you feel?
               </label>
               
@@ -115,7 +115,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
                   }`}
                 >
                   <ThumbsDown className={`w-3.5 h-3.5 ${rating === 'down' ? 'scale-115 text-orange-600' : ''}`} />
-                  <span>No Change</span>
+                  <span>No change</span>
                 </button>
               </div>
             </div>
@@ -123,7 +123,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
             {/* Retrospective Emotion Tracker */}
             <div className="space-y-2 relative">
               <div className="flex justify-between items-center">
-                <label className="block text-[9px] font-mono tracking-wider font-bold text-orange-600 uppercase">
+                <label className="block text-[9px] font-mono tracking-wider font-bold text-orange-600">
                   Ending Emotion (Retrospective)
                 </label>
                 <span className="text-[10px] font-mono text-stone-500">
@@ -195,7 +195,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
 
             {/* Custom Notes */}
             <div className="space-y-1.5">
-              <label className="block text-[9px] font-mono tracking-wider font-bold text-orange-600 uppercase">
+              <label className="block text-[9px] font-mono tracking-wider font-bold text-orange-600">
                 Journal Notes (Optional)
               </label>
               <textarea
@@ -210,7 +210,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
               <button
                 type="submit"
                 disabled={rating === null && !notes.trim() && endState === null}
-                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-[10px] font-display font-bold uppercase tracking-wider rounded-lg transition-all shadow-sm cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-[10px] font-display font-bold tracking-wider rounded-lg transition-all shadow-sm cursor-pointer disabled:opacity-50"
               >
                 Save
               </button>
@@ -226,7 +226,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
       {/* Habits & Growth Checklist */}
       <div className="glass-panel rounded-2xl p-4 border border-orange-100/50 shadow-sm space-y-4">
         <div>
-          <h2 className="text-xs font-display font-bold text-stone-800 uppercase tracking-wider">
+          <h2 className="text-xs font-display font-bold text-stone-800 tracking-wider">
             Recommendations
           </h2>
           <p className="text-[10px] text-amber-900 mt-0.5 font-sans leading-normal font-bold">
@@ -238,7 +238,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
         <div className="flex border-b border-black/5 gap-1 overflow-x-auto scroller-none pb-0.5">
           <button
             onClick={() => setActiveTab('journal')}
-            className={`flex items-center gap-1.5 px-3 py-2 text-[9px] font-mono font-bold tracking-wide uppercase border-b-2 transition-all cursor-pointer shrink-0 ${
+            className={`flex items-center gap-1.5 px-3 py-2 text-[9px] font-mono font-bold tracking-wide border-b-2 transition-all cursor-pointer shrink-0 ${
               activeTab === 'journal'
                 ? 'border-orange-600 text-orange-600'
                 : 'border-transparent text-stone-600 hover:text-orange-700'
@@ -250,38 +250,38 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
           
           <button
             onClick={() => setActiveTab('habits')}
-            className={`flex items-center gap-1.5 px-3 py-2 text-[9px] font-mono font-bold tracking-wide uppercase border-b-2 transition-all cursor-pointer shrink-0 ${
+            className={`flex items-center gap-1.5 px-3 py-2 text-[9px] font-mono font-bold tracking-wide border-b-2 transition-all cursor-pointer shrink-0 ${
               activeTab === 'habits'
                 ? 'border-orange-600 text-orange-600'
                 : 'border-transparent text-stone-600 hover:text-orange-700'
             }`}
           >
             <SunDim className="w-3 h-3" />
-            <span>Daily Routines</span>
+            <span>Daily routines</span>
           </button>
 
           <button
             onClick={() => setActiveTab('sleep')}
-            className={`flex items-center gap-1.5 px-3 py-2 text-[9px] font-mono font-bold tracking-wide uppercase border-b-2 transition-all cursor-pointer shrink-0 ${
+            className={`flex items-center gap-1.5 px-3 py-2 text-[9px] font-mono font-bold tracking-wide border-b-2 transition-all cursor-pointer shrink-0 ${
               activeTab === 'sleep'
                 ? 'border-orange-600 text-orange-600'
                 : 'border-transparent text-stone-600 hover:text-orange-700'
             }`}
           >
             <Clock className="w-3 h-3" />
-            <span>Sleep Support</span>
+            <span>Sleep support</span>
           </button>
 
           <button
             onClick={() => setActiveTab('breath')}
-            className={`flex items-center gap-1.5 px-3 py-2 text-[9px] font-mono font-bold tracking-wide uppercase border-b-2 transition-all cursor-pointer shrink-0 ${
+            className={`flex items-center gap-1.5 px-3 py-2 text-[9px] font-mono font-bold tracking-wide border-b-2 transition-all cursor-pointer shrink-0 ${
               activeTab === 'breath'
                 ? 'border-orange-600 text-orange-600'
                 : 'border-transparent text-stone-600 hover:text-orange-700'
             }`}
           >
             <BookOpen className="w-3 h-3" />
-            <span>Breath Progression</span>
+            <span>Breath progression</span>
           </button>
         </div>
 
@@ -331,7 +331,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
       <div className="flex justify-center pt-2">
         <button
           onClick={onReturnToStart}
-          className="w-full py-3.5 futuristic-btn text-white text-xs font-display font-medium uppercase tracking-wider rounded-xl shadow-md transition-all duration-300 cursor-pointer text-center"
+          className="w-full py-3.5 futuristic-btn text-white text-xs font-display font-medium tracking-wider rounded-xl shadow-md transition-all duration-300 cursor-pointer text-center"
         >
           Back to Dashboard
         </button>

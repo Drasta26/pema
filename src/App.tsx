@@ -6,13 +6,14 @@ import SessionExit from './components/SessionExit';
 import CrisisSupport from './components/CrisisSupport';
 import GuidedLibrary from './components/GuidedLibrary';
 import MentalSpa from './components/MentalSpa';
+import QuickReset from './components/QuickReset';
 import { detectCrisis } from './safety';
 import { Calendar, RotateCcw, Award, Info, Lock } from 'lucide-react';
 
 interface LocalSessionLog {
   id: string;
   date: string;
-  state: EmotionalState;
+  state?: EmotionalState; // absent for practices without a check-in, e.g. the Mental SPA
   technique: string;
   rating: 'up' | 'down' | null;
   notes: string;
@@ -20,7 +21,7 @@ interface LocalSessionLog {
 }
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<'checkin' | 'player' | 'exit' | 'crisis' | 'spa'>('checkin');
+  const [currentScreen, setCurrentScreen] = useState<'checkin' | 'player' | 'exit' | 'crisis' | 'spa' | 'reset'>('checkin');
   // Screen to return to if the user says they are safe and continues
   const [crisisFrom, setCrisisFrom] = useState<'checkin' | 'player' | 'exit'>('checkin');
   const [session, setSession] = useState<MeditationSession | null>(null);
@@ -214,6 +215,21 @@ export default function App() {
     }
   };
 
+  // Practices without an AI session (e.g. the Mental SPA) still count towards the streak
+  const recordPractice = (technique: string) => {
+    const newLog: LocalSessionLog = {
+      id: `practice_${Date.now()}`,
+      date: new Date().toISOString(),
+      technique,
+      rating: null,
+      notes: ''
+    };
+    const updatedHistory = [newLog, ...history];
+    setHistory(updatedHistory);
+    localStorage.setItem('ai_meditation_logs', JSON.stringify(updatedHistory));
+    calculateStreak(updatedHistory);
+  };
+
   const handleClearHistory = () => {
     if (!isConfirmingClear) {
       setIsConfirmingClear(true);
@@ -283,7 +299,7 @@ export default function App() {
               <div className="bg-red-50 border border-red-200 text-red-900 rounded-xl p-3.5 text-xs flex items-start gap-2.5">
                 <Info className="w-4 h-4 shrink-0 text-red-600 mt-0.5" />
                 <div>
-                  <span className="font-bold block text-sm">System Warning</span>
+                  <span className="font-bold block text-sm">Something went wrong</span>
                   <span>{errorMessage}</span>
                 </div>
               </div>
@@ -294,14 +310,27 @@ export default function App() {
           {currentScreen === 'checkin' && (
             <>
               <CheckIn onSubmit={handleStartSession} isLoading={isLoading} />
-              <GuidedLibrary onStartSpa={() => setCurrentScreen('spa')} />
+              <GuidedLibrary onStartSpa={() => setCurrentScreen('spa')} onStartReset={() => setCurrentScreen('reset')} />
             </>
+          )}
+
+          {currentScreen === 'reset' && (
+            <QuickReset
+              onExit={() => setCurrentScreen('checkin')}
+              onComplete={() => {
+                recordPractice('60-second reset');
+                setCurrentScreen('checkin');
+              }}
+            />
           )}
 
           {currentScreen === 'spa' && (
             <MentalSpa
               onExit={() => setCurrentScreen('checkin')}
-              onComplete={() => setCurrentScreen('checkin')}
+              onComplete={() => {
+                recordPractice('The Mental SPA');
+                setCurrentScreen('checkin');
+              }}
             />
           )}
 
@@ -351,8 +380,8 @@ export default function App() {
                 <div className="flex justify-between items-center pb-1">
                   <div className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4 text-orange-600" />
-                    <h3 className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-900">
-                      Reflection History
+                    <h3 className="text-[10px] font-mono font-bold tracking-wider text-amber-900">
+                      Your history
                     </h3>
                   </div>
                   <button
@@ -384,7 +413,7 @@ export default function App() {
                             hour: 'numeric',
                             minute: '2-digit'
                           })}</span>
-                          <span className="font-mono font-bold uppercase text-orange-700 bg-orange-50/80 border border-orange-100 px-2 py-0.5 rounded-md">
+                          <span className="font-mono font-bold text-orange-700 bg-orange-50/80 border border-orange-100 px-2 py-0.5 rounded-md">
                             {log.rating === 'up' ? '👍 Calm' : log.rating === 'down' ? '👎 Tough' : 'Done'}
                           </span>
                         </div>
@@ -402,8 +431,12 @@ export default function App() {
                       
                       <div className="pt-2 mt-2 border-t border-orange-100/50 text-[9px] font-mono text-stone-500">
                         <div className="flex flex-wrap items-center gap-1">
-                          <span>Starting:</span>
-                          <strong className="text-orange-600">{log.state}</strong>
+                          {log.state && (
+                            <>
+                              <span>Starting:</span>
+                              <strong className="text-orange-600">{log.state}</strong>
+                            </>
+                          )}
                           {log.endState && (
                             <div className="flex items-center gap-1 font-mono">
                               <span className="text-slate-400 px-0.5">&rarr;</span>
