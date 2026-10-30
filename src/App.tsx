@@ -4,6 +4,8 @@ import CheckIn from './components/CheckIn';
 import SessionPlayer from './components/SessionPlayer';
 import SessionExit from './components/SessionExit';
 import CrisisSupport from './components/CrisisSupport';
+import GuidedLibrary from './components/GuidedLibrary';
+import MentalSpa from './components/MentalSpa';
 import { detectCrisis } from './safety';
 import { Calendar, RotateCcw, Award, Info, Lock } from 'lucide-react';
 
@@ -18,7 +20,7 @@ interface LocalSessionLog {
 }
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<'checkin' | 'player' | 'exit' | 'crisis'>('checkin');
+  const [currentScreen, setCurrentScreen] = useState<'checkin' | 'player' | 'exit' | 'crisis' | 'spa'>('checkin');
   // Screen to return to if the user says they are safe and continues
   const [crisisFrom, setCrisisFrom] = useState<'checkin' | 'player' | 'exit'>('checkin');
   const [session, setSession] = useState<MeditationSession | null>(null);
@@ -290,7 +292,17 @@ export default function App() {
 
           {/* Core App Screens */}
           {currentScreen === 'checkin' && (
-            <CheckIn onSubmit={handleStartSession} isLoading={isLoading} />
+            <>
+              <CheckIn onSubmit={handleStartSession} isLoading={isLoading} />
+              <GuidedLibrary onStartSpa={() => setCurrentScreen('spa')} />
+            </>
+          )}
+
+          {currentScreen === 'spa' && (
+            <MentalSpa
+              onExit={() => setCurrentScreen('checkin')}
+              onComplete={() => setCurrentScreen('checkin')}
+            />
           )}
 
           {currentScreen === 'crisis' && (
@@ -418,6 +430,9 @@ export default function App() {
           <div className="text-center space-y-1.5">
             <p className="text-[9px] font-mono text-amber-900 leading-relaxed">
               &copy; 2026 <em className="italic font-bold">PeMA</em>. All personal logs stored locally.
+            </p>
+            <p className="text-[11px] font-sans text-amber-900" style={{ fontFamily: '"Inter", "Noto Sans Devanagari", sans-serif' }}>
+              Built by द्रष्टा (DrAsta)
             </p>
             <p className="text-[8px] font-sans text-stone-400 leading-normal px-2">
               Disclaimer: For relaxation and wellness. This tool does not provide medical services.
