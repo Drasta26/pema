@@ -90,8 +90,8 @@ const STATE_MAPPINGS: Record<string, { technique: string; focus: string; pacing:
   }
 };
 
-// Global Cloudflare CDN style cache database mapping to hold techniques and prevent API cost accumulation
-const cloudflareCdnCache = new Map<string, any>();
+// In-memory cache of generated sessions, to avoid paying twice for the same check-in
+const sessionCache = new Map<string, any>();
 
 function getLocalEnhancements(state: EmotionalState) {
   return {
@@ -440,6 +440,7 @@ const MEDITATION_SCHEMA = {
 
 export async function generateInitialSession(input: { description?: string; explicitState?: string }): Promise<MeditationSession> {
   let targetState: EmotionalState = 'Neutral / Balanced';
+  let matchedKeyword = false;
   let contextPrompt = '';
 
   if (input.explicitState && STATE_MAPPINGS[input.explicitState]) {
@@ -450,15 +451,16 @@ export async function generateInitialSession(input: { description?: string; expl
     
     // Quick keyword classification logic in case of local offline fallback choice
     const descLower = input.description.toLowerCase();
+    matchedKeyword = true;
     if (descLower.includes('anxi') || descLower.includes('worry') || descLower.includes('panic') || descLower.includes('thinking') || descLower.includes('nervous')) {
       targetState = 'Anxious / Overthinking';
-    } else if (descLower.includes('stress') || descLower.includes('overwhelm') || descLower.includes('pressur') || descLower.includes('busy')) {
+    } else if (descLower.includes('stress') || descLower.includes('tense') || descLower.includes('tension') || descLower.includes('long day') || descLower.includes('wound up') || descLower.includes('overwhelm') || descLower.includes('pressur') || descLower.includes('busy')) {
       targetState = 'Stressed / Overwhelmed';
     } else if (descLower.includes('sad') || descLower.includes('depress') || descLower.includes('blue') || descLower.includes('grief') || descLower.includes('cry')) {
       targetState = 'Sad / Low mood';
     } else if (descLower.includes('angr') || descLower.includes('mad') || descLower.includes('irritat') || descLower.includes('frustrat') || descLower.includes('annoy')) {
       targetState = 'Angry / Irritated';
-    } else if (descLower.includes('distract') || descLower.includes('fidget') || descLower.includes('focus') || descLower.includes('wander')) {
+    } else if (descLower.includes('distract') || descLower.includes('restless') || descLower.includes('fidget') || descLower.includes('focus') || descLower.includes('wander')) {
       targetState = 'Restless / Distracted';
     } else if (descLower.includes('exhaust') || descLower.includes('tire') || descLower.includes('burnout') || descLower.includes('sleepy') || descLower.includes('fatigu')) {
       targetState = 'Tired / Burnout';
@@ -474,17 +476,19 @@ export async function generateInitialSession(input: { description?: string; expl
       targetState = 'Breath Scanning Meditation';
     } else if (descLower.includes('breath') || descLower.includes('breathing')) {
       targetState = 'Breath Meditation';
+    } else {
+      matchedKeyword = false;
     }
   }
 
-  // Create a Cloudflare Edge-style Cache Key normalization
+  // Cache key from the normalised check-in
   const stateKey = input.explicitState ? `state:${input.explicitState}` : "";
   const descKey = input.description ? `desc:${input.description.trim().toLowerCase().replace(/\s+/g, " ")}` : "";
   const cacheKey = [stateKey, descKey].filter(Boolean).sort().join("__");
 
-  if (cacheKey && cloudflareCdnCache.has(cacheKey)) {
-    console.log(`[Cloudflare CDN Cache Hit] Serving buffered technique directly to reduce API costs. CacheKey: "${cacheKey}"`);
-    const cached = cloudflareCdnCache.get(cacheKey);
+  if (cacheKey && sessionCache.has(cacheKey)) {
+    console.log(`[Session cache hit] Serving cached session. Key: "${cacheKey}"`);
+    const cached = sessionCache.get(cacheKey);
     return {
       ...cached,
       id: `sess_${Date.now()}` // Refresh dynamic session identifier
@@ -498,7 +502,7 @@ export async function generateInitialSession(input: { description?: string; expl
     console.warn(`[Claude API] ANTHROPIC_API_KEY is not configured. Activating ultra-reliable high-fidelity local session factory.`);
     const fallbackSess = generateRuleBasedSession(targetState);
     if (cacheKey) {
-      cloudflareCdnCache.set(cacheKey, fallbackSess);
+      sessionCache.set(cacheKey, fallbackSess);
     }
     return fallbackSess;
   }
@@ -558,10 +562,10 @@ Classify their sentiment into one of the known states. Determine the most constr
 Generate an incredible, step-by-step meditation session that follows this structure.
 If the description matches a state other than the explicit selection, you can adjust the detected state to whatever is most emotionally fitting (Anxious, Stressed, Low mood, Sad, Breath Meditation, etc.).
 
-Technique default profile suggestion to incorporate:
+${input.explicitState || matchedKeyword ? `Technique default profile suggestion to incorporate:
 Technique: ${defaultMeta.technique}
 Focus: ${defaultMeta.focus}
-Pacing: ${JSON.stringify(defaultMeta.pacing)}
+Pacing: ${JSON.stringify(defaultMeta.pacing)}` : `No default technique: classify from the description alone and pick the technique from the rule mappings for that state.`}
 `;
 
   try {
@@ -587,10 +591,10 @@ Pacing: ${JSON.stringify(defaultMeta.pacing)}
       enhancements: data.enhancements
     };
 
-    // Cache in our Cloudflare CDN emulator
+    // Cache for identical future check-ins
     if (cacheKey) {
-      cloudflareCdnCache.set(cacheKey, finalResult);
-      console.log(`[Cloudflare CDN Cache Miss] Saved new technique to Cloudflare KV Edge: "${cacheKey}"`);
+      sessionCache.set(cacheKey, finalResult);
+      console.log(`[Session cache] Saved session. Key: "${cacheKey}"`);
     }
 
     return finalResult;
@@ -598,7 +602,7 @@ Pacing: ${JSON.stringify(defaultMeta.pacing)}
     console.error(`[Claude API Exception] Live invocation failed. Reverting immediately to local static generation framework:`, err);
     const fallbackSess = generateRuleBasedSession(targetState);
     if (cacheKey) {
-      cloudflareCdnCache.set(cacheKey, fallbackSess);
+      sessionCache.set(cacheKey, fallbackSess);
     }
     return fallbackSess;
   }

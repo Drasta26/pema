@@ -18,7 +18,7 @@ Owner: Dr Asta Ratna Prajapati (CEO, NutriBlend Health / Tara International Ltd)
 ## Stack
 React 19 + Vite 6 + Tailwind 4 (src/), Express server (server.ts) serving Vite in dev, Claude via `@anthropic-ai/sdk` in `server/claudeService.ts` (structured output through forced tool use; model from CLAUDE_MODEL, default claude-sonnet-5-5). No accounts: session history is kept in the browser's localStorage on the user's device. Offline rule-based sessions are used when no API key is set.
 Run: `npm run dev` (port 3000) or double-click `Start PeMA.command`. The owner views it in the Claude app browser pane.
-Verified 30 Oct: tsc passes, production build passes, the API endpoints return sessions, and the app runs on the owner's Mac with a key.
+30 Oct (afternoon): Claude API returns authentication_error 'Invalid bearer token' for the key in .env.local, so sessions fall back to offline templates. Owner to replace the key; do not open the file.
 
 ## Known gaps before any deployment (owner says a lot of work is needed)
 1. Done 30 Oct: git set up; tags `v2-claude-2026-10-30` (baseline) and `v2.1-private-2026-10-30` (no sign-in).
@@ -27,6 +27,7 @@ Verified 30 Oct: tsc passes, production build passes, the API endpoints return s
 4. Data protection: mood, journal and sleep notes per user = wellbeing data under UK GDPR. Needs a privacy notice, lawful basis/consent, retention, export/delete, and a DPIA. Owner sign-off required.
 5. Done 30 Oct: Firebase files and package deleted with three owner confirmations.
 6. Google/Microsoft sign-in: dropped for now under the private-by-design direction.
-7. Code quality: rename the misleading "Cloudflare CDN cache" (it is an in-memory Map), add tests, code-split the large JS bundle, clean up AI Studio leftovers (package name "react-example", DISABLE_HMR comments).
+7. Code quality: partly done 30 Oct (cache renamed to sessionCache, tests added for safety). Still: code-split the bundle, package name "react-example", DISABLE_HMR comments.
+10. Done 30 Oct: design pass v2.4 (calm clay/sand/ink palette via Tailwind theme overrides in src/index.css, Fraunces display font, Enter submits check-in, [pause] cues stripped server-side, unmatched descriptions no longer default to Insight Meditation).
 8. Hosting not chosen; API key must stay server-side; add rate limiting and API cost limits.
 9. Wellness claims: keep wording non-clinical; get a regulatory check that PeMA stays a wellness product and not a medical device before marketing.

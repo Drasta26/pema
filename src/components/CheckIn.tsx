@@ -246,6 +246,13 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
               id="mood-description-input"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+                  e.preventDefault();
+                  e.currentTarget.form?.requestSubmit();
+                }
+              }}
+              enterKeyHint="go"
               placeholder="How do you feel right now?"
               className="w-full h-18 px-4 py-2 border border-orange-100/50 rounded-xl bg-white/90 text-stone-800 placeholder-slate-400 font-sans text-xs sm:text-xs transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 resize-none leading-relaxed shadow-inner"
             />
