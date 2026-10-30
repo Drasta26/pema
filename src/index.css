@@ -105,7 +105,7 @@ body {
   width: 100%;
   margin: 0 auto;
   /* Sunset depth simulation gradient with ambient solar refraction shimmers */
-  background: linear-gradient(170deg, #fff6e9 0%, #ffe4d8 45%, #ffd6e6 100%);
+  background: linear-gradient(165deg, #ffe3c2 0%, #ffc9b5 40%, #ffb8d2 100%);
   border-radius: 36px;
   border: 1px solid rgba(255, 255, 255, 0.35);
   box-shadow:
@@ -118,7 +118,7 @@ body {
 
 /* Glassmorphic Cards - Serene Frost Warm Ivory with Amber light Refraction */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.78);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 107, 74, 0.12);
@@ -201,7 +201,7 @@ body {
 }
 
 .water-droplet-3d {
-  background: radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.96) 0%, rgba(255, 243, 238, 0.85) 15%, rgba(255, 194, 173, 0.5) 55%, rgba(232, 69, 139, 0.55) 100%);
+  background: radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.95) 0%, #ffcd66 18%, #ff6b4a 55%, #e8458b 100%);
   animation: liquidWobble 7s ease-in-out infinite, waterGlow3D 7s ease-in-out infinite;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -356,3 +356,25 @@ body {
 
 
 
+
+/* Sunrise header and footer: colour inside the app, white text on top */
+.app-header {
+  background: linear-gradient(110deg, #ff6b4a 0%, #f2577a 55%, #e8458b 100%);
+  box-shadow: 0 6px 20px -8px rgba(232, 69, 139, 0.6);
+}
+.app-footer {
+  background: linear-gradient(110deg, rgba(255, 107, 74, 0.16), rgba(232, 69, 139, 0.2));
+}
+.mobile-device-wrapper .app-header,
+.mobile-device-wrapper .app-header *,
+.mobile-device-wrapper .app-header .text-custom-blue {
+  color: #ffffff !important;
+}
+.mobile-device-wrapper .app-header .rounded-full {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+}
+.mobile-device-wrapper .app-header .rounded-xl {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}

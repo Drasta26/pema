@@ -235,7 +235,7 @@ export default function App() {
         <div className="caustics-backdrop" />
         
         {/* Futuristic Glassmorphic Status Bar Header */}
-        <header className="w-full bg-white/90 backdrop-blur-md border-b border-orange-100/40 py-4 px-5 z-10">
+        <header className="app-header w-full py-4 px-5 z-10">
           <div className="flex justify-between items-center">
             
             {/* Logo, Status, & Custom PeMA Identity */}
@@ -426,7 +426,7 @@ export default function App() {
         </div>
 
         {/* Clean, Non-Diagnostic Disclaimer Footer for legal mitigation */}
-        <footer className="w-full bg-orange-50/30 border-t border-orange-100/30 py-4 px-5 z-10">
+        <footer className="app-footer w-full py-4 px-5 z-10">
           <div className="text-center space-y-1.5">
             <p className="text-[9px] font-mono text-amber-900 leading-relaxed">
               &copy; 2026 <em className="italic font-bold">PeMA</em>. All personal logs stored locally.
