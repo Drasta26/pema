@@ -28,6 +28,6 @@ Run: `npm run dev` (port 3000) or double-click `Start PeMA.command`. The owner v
 5. Done 30 Oct: Firebase files and package deleted with three owner confirmations.
 6. Google/Microsoft sign-in: dropped for now under the private-by-design direction.
 7. Code quality: partly done 30 Oct (cache renamed to sessionCache, tests added for safety). Still: code-split the bundle, package name "react-example", DISABLE_HMR comments.
-10. Done 30 Oct: design pass v2.4 (palette via Tailwind theme overrides in src/index.css; v2.5 switched to a brighter iris/gold/coral "dawn" palette at owner request, Fraunces display font, Enter submits check-in, [pause] cues stripped server-side, unmatched descriptions no longer default to Insight Meditation).
+10. Done 30 Oct: design pass v2.4 (palette via Tailwind theme overrides in src/index.css; v2.7 "Sunrise energy" palette chosen by owner: coral #ff6b4a, magenta #e8458b, gold #ffb547, plum text #2a1036, Fraunces display font, Enter submits check-in, [pause] cues stripped server-side, unmatched descriptions no longer default to Insight Meditation).
 8. Hosting not chosen; API key must stay server-side; add rate limiting and API cost limits.
 9. Wellness claims: keep wording non-clinical; get a regulatory check that PeMA stays a wellness product and not a medical device before marketing.
