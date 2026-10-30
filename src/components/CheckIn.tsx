@@ -267,7 +267,7 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
             disabled={isLoading || (!description.trim() && !selectedState)}
             className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-display font-semibold text-sm tracking-wide transition-all duration-300 cursor-pointer ${
               isLoading || (!description.trim() && !selectedState)
-                ? 'bg-orange-100/40 text-orange-300 border border-orange-100/30 cursor-not-allowed opacity-75'
+                ? 'futuristic-btn text-white cursor-not-allowed opacity-60'
                 : 'futuristic-btn text-white'
             }`}
           >
