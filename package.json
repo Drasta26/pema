@@ -1,5 +1,5 @@
 {
-  "name": "react-example",
+  "name": "pema",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -32,5 +32,7 @@
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.3"
-  }
+  },
+  "license": "MIT",
+  "description": "Personalised Mindfulness Assistant: short guided sessions that adapt to how you feel."
 }
