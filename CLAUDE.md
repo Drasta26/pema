@@ -33,3 +33,13 @@ Run: `npm run dev` (port 3000) or double-click `Start PeMA.command`. The owner v
 9. Wellness claims: keep wording non-clinical; get a regulatory check that PeMA stays a wellness product and not a medical device before marketing.
 11. Done 30 Oct (v2.8): Mental SPA signature practice (src/components/MentalSpa.tsx; step names from the "5 Steps of Mental SPA" video description, guidance wording approved by owner 30 Oct) and "Guided by Dr Asta" library (src/content.ts, src/components/GuidedLibrary.tsx) using click-to-load youtube-nocookie embeds and local colour tiles, so nothing loads from YouTube until play. Footer credit: Built by द्रष्टा (DrAsta).
 12. Done 30 Oct (v2.10): 60-second reset (src/components/QuickReset.tsx, on-device, 4s in / 6s out x6); Mental SPA and reset count towards the streak via recordPractice (log.state optional); all forced capitals removed and labels in sentence case; wrapper uses overflow: clip to stop sideways scroll.
+
+## Foundation (applies to all of Asta's apps; adopted 1 Nov 2026)
+Tagline: "Your app. Your data. Your choice."
+
+The 3 USPs, which are non-negotiable:
+1. **We never see your data.** Everything stays on the user's device. Users bring their own AI key. No accounts, no tracking, no tracking ads, nothing to breach.
+2. **You own everything.** Your app, your data, your key. Export, delete or take it anywhere. Open-source code anyone can check.
+3. **Fair by design.** Free core. Pay what you want or one-off upgrades. No subscription traps. Open costs page.
+
+Build rules: local-first storage; no analytics, trackers, ad networks or data-leaking third-party scripts; never log prompts or user content; always offer export and delete-all; never commit secrets (scan history before any push); made-up sample data only; MIT licence unless Asta says otherwise; truthful privacy claims ("we never see or store your data" if text goes to an AI provider). No adverts. A later support button uses "Support", not "Donate", with the copy "Built by one. Funded by many." UK English. If a request conflicts with this foundation, say so and suggest a compliant alternative.
