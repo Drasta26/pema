@@ -51,7 +51,15 @@ Planned work, in priority order. Hours are rough estimates (about 60-80 hours in
 - [ ] Review support messages and contact details before each release.
 - [ ] Keep all wording focused on mindfulness practice.
 
-## 9. Accessibility and hosting (6-8 h)
+## 9. Installable app (done 5 Nov 2026)
+- [x] Web app manifest, icons and splash screen; opens full screen.
+- [x] Service worker: works offline, never caches `/api/`.
+- [x] Install button (Android/desktop) and Share hint (iPhone), hidden once installed.
+- [x] "New version available, tap to update" message.
+- [ ] Lighthouse audit (PWA, performance, accessibility) and fixes.
+- [ ] Self-host fonts so no request goes to Google.
+
+## 10. Accessibility and hosting (6-8 h)
 - [ ] Keyboard use, screen-reader labels, reduced-motion support for the breathing animation, colour contrast.
 - [ ] Choose hosting; keep the API key server-side; rate limiting and a monthly API cost cap.
 - [ ] Tag v1.0 and write a short user guide.
