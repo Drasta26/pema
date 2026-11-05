@@ -7,8 +7,10 @@ import CrisisSupport from './components/CrisisSupport';
 import GuidedLibrary from './components/GuidedLibrary';
 import MentalSpa from './components/MentalSpa';
 import QuickReset from './components/QuickReset';
+import InstallHelp from './components/InstallHelp';
+import { registerServiceWorker } from './pwa';
 import { detectCrisis } from './safety';
-import { Calendar, RotateCcw, Award, Info, Lock } from 'lucide-react';
+import { Calendar, RotateCcw, Award, Info, Lock, RefreshCw } from 'lucide-react';
 
 interface LocalSessionLog {
   id: string;
@@ -33,6 +35,12 @@ export default function App() {
   const [history, setHistory] = useState<LocalSessionLog[]>([]);
   const [streak, setStreak] = useState(0);
   const [isConfirmingClear, setIsConfirmingClear] = useState(false);
+  // Set when a new version of the app has been downloaded and is ready
+  const [applyUpdate, setApplyUpdate] = useState<(() => void) | null>(null);
+
+  useEffect(() => {
+    registerServiceWorker(apply => setApplyUpdate(() => apply));
+  }, []);
 
   // Load on-device history on initial load
   useEffect(() => {
@@ -143,7 +151,9 @@ export default function App() {
       setSession(sessionObj);
       setCurrentScreen('player');
     } catch (err: any) {
-      setErrorMessage(err.message || "An unexpected error occurred. Please try launching again.");
+      setErrorMessage(navigator.onLine
+        ? (err.message || "An unexpected error occurred. Please try launching again.")
+        : "You're offline, so personalised sessions aren't available. The 60-second reset and the Mental SPA work without internet.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -305,6 +315,20 @@ export default function App() {
               </div>
             </div>
           )}
+
+          {applyUpdate && (
+            <div className="px-4 pt-3 animate-slide-in">
+              <button
+                type="button"
+                onClick={() => applyUpdate()}
+                className="w-full futuristic-btn flex items-center justify-center gap-2 py-2 rounded-xl text-xs text-white cursor-pointer"
+              >
+                <RefreshCw className="w-3.5 h-3.5" /> New version available, tap to update
+              </button>
+            </div>
+          )}
+
+          {currentScreen === 'checkin' && <InstallHelp />}
 
           {/* Core App Screens */}
           {currentScreen === 'checkin' && (
