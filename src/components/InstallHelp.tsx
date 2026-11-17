@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowDown, Check, Download, Ellipsis, Share, SquarePlus, X } from 'lucide-react';
+import { ArrowDown, Check, Ellipsis, Share, SquarePlus, X } from 'lucide-react';
 import { currentlyInstalled, currentlyIos } from '../pwa';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -47,29 +47,16 @@ export default function InstallHelp() {
     <div className="install-tip">
       <div className="glass-panel rounded-2xl p-3 flex items-center gap-3">
         <img src="/icons/icon-192.png" alt="" className="w-9 h-9 rounded-xl shrink-0" />
-        {installEvent ? (
-          <>
-            <span className="flex-1 text-[13px] text-stone-700">Add PeMA to your home screen. It works offline too.</span>
-            <button
-              type="button"
-              onClick={install}
-              className="futuristic-btn flex items-center gap-1 px-3 py-1.5 rounded-full text-xs text-white cursor-pointer shrink-0"
-            >
-              <Download className="w-3.5 h-3.5" /> Install app
-            </button>
-          </>
-        ) : (
-          <>
-            <span className="flex-1 text-[13px] text-stone-700">Add PeMA to your home screen.</span>
-            <button
-              type="button"
-              onClick={() => setGuide(true)}
-              className="futuristic-btn flex items-center gap-1 px-3 py-1.5 rounded-full text-xs text-white cursor-pointer shrink-0"
-            >
-              <Download className="w-3.5 h-3.5" /> Install
-            </button>
-          </>
-        )}
+        {/* Reads "[Add] PeMA to your home screen", where "Add" is the button. */}
+        <button
+          type="button"
+          onClick={installEvent ? install : () => setGuide(true)}
+          aria-label="Add PeMA to your home screen"
+          className="futuristic-btn px-4 py-2 rounded-full text-sm font-semibold text-white cursor-pointer shrink-0"
+        >
+          Add
+        </button>
+        <span className="flex-1 text-[13px] text-stone-700">PeMA to your home screen</span>
         <button
           type="button"
           onClick={() => setHidden(true)}
