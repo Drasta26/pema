@@ -275,7 +275,7 @@ export default function App() {
         </header>
 
         {/* Primary Interactive Viewport */}
-        <div className={`flex-1 relative px-1 py-1 z-10 ${currentScreen === 'checkin' ? 'overflow-hidden pb-9' : 'overflow-y-auto scroller-none'}`}>
+        <div className={`flex-1 relative px-1 py-1 z-10 ${currentScreen === 'checkin' ? 'overflow-hidden pb-9' : 'overflow-hidden'}`}>
           
           {/* Internal Error System */}
           {errorMessage && (
@@ -504,7 +504,7 @@ export default function App() {
 
         {/* Bottom menu, only on the home pages; sessions use the full screen */}
         {currentScreen === 'checkin' && (
-          <nav className="app-footer w-full z-10 grid grid-cols-5 pb-[env(safe-area-inset-bottom)]" aria-label="Pages">
+          <nav className="app-menu w-full z-10 grid grid-cols-5 pb-[env(safe-area-inset-bottom)]" aria-label="Pages">
             {([
               ['checkin', 'Check-in', Home],
               ['practise', 'Practise', Sparkles],
@@ -517,9 +517,9 @@ export default function App() {
                 type="button"
                 onClick={() => { setTab(key); setShowKeyPanel(false); setShowDataPanel(false); }}
                 aria-current={tab === key ? 'page' : undefined}
-                className={`flex flex-col items-center gap-0.5 pt-2 pb-1 text-[13px] cursor-pointer transition-colors ${tab === key ? 'text-orange-700 font-semibold' : 'text-stone-500'}`}
+                className={`flex flex-col items-center gap-0.5 pt-2 pb-1 text-[13px] cursor-pointer transition-colors ${tab === key ? 'font-bold' : 'opacity-70'}`}
               >
-                <Icon className={`w-5 h-5 ${tab === key ? 'text-orange-600' : 'text-stone-400'}`} />
+                <Icon className={`w-5 h-5 ${tab === key ? 'stroke-[2.5]' : ''}`} />
                 {label}
               </button>
             ))}
