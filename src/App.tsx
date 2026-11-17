@@ -4,7 +4,7 @@ import CheckIn from './components/CheckIn';
 import SessionPlayer from './components/SessionPlayer';
 import SessionExit from './components/SessionExit';
 import CrisisSupport from './components/CrisisSupport';
-import GuidedLibrary from './components/GuidedLibrary';
+import GuidedLibrary, { PracticeCards } from './components/GuidedLibrary';
 import MentalSpa from './components/MentalSpa';
 import QuickReset from './components/QuickReset';
 import InstallHelp from './components/InstallHelp';
@@ -17,7 +17,7 @@ import { getApiKey, removeApiKey } from './apiKey';
 const loadClaude = () => import('./claudeService');
 import { registerServiceWorker } from './pwa';
 import { detectCrisis } from './safety';
-import { Calendar, ShieldCheck, Award, Info, Lock, RefreshCw, KeyRound } from 'lucide-react';
+import { Calendar, ShieldCheck, Award, Info, Lock, RefreshCw, KeyRound, Home, Sparkles, PlayCircle } from 'lucide-react';
 
 interface LocalSessionLog {
   id: string;
@@ -42,6 +42,8 @@ export default function App() {
   const [history, setHistory] = useState<LocalSessionLog[]>([]);
   const [streak, setStreak] = useState(0);
   const [showDataPanel, setShowDataPanel] = useState(false);
+  // Pages on the home screen, chosen from the bottom menu; each fits without scrolling
+  const [tab, setTab] = useState<'checkin' | 'practise' | 'guided' | 'history'>('checkin');
   // Set when a new version of the app has been downloaded and is ready
   const [showKeyPanel, setShowKeyPanel] = useState(false);
   const [keyRejected, setKeyRejected] = useState(false);
@@ -239,7 +241,7 @@ export default function App() {
         <div className="caustics-backdrop" />
         
         {/* Futuristic Glassmorphic Status Bar Header */}
-        <header className="app-header w-full py-4 px-5 z-10">
+        <header className="app-header w-full py-3 px-5 z-10">
           <div className="flex justify-between items-center">
             
             {/* Logo, Status, & Custom PeMA Identity */}
@@ -290,7 +292,7 @@ export default function App() {
         </header>
 
         {/* Primary Interactive Viewport */}
-        <div className="flex-1 overflow-y-auto px-1 py-1 max-h-[640px] scroller-none z-10">
+        <div className={`flex-1 relative px-1 py-1 z-10 ${currentScreen === 'checkin' ? 'overflow-hidden' : 'overflow-y-auto scroller-none'}`}>
           
           {/* Internal Error System */}
           {errorMessage && (
@@ -317,14 +319,17 @@ export default function App() {
             </div>
           )}
 
-          {currentScreen === 'checkin' && showKeyPanel && (
+          {/* Settings panels open over the page, so the page never grows or scrolls */}
+          {currentScreen === 'checkin' && (showKeyPanel || showDataPanel) && (
+            <div className="absolute inset-0 z-20 pt-1 bg-[#ffe3c2]/70 backdrop-blur-sm" onClick={e => { if (e.target === e.currentTarget) { setShowKeyPanel(false); setShowDataPanel(false); } }}>
+          {showKeyPanel && (
             <AiKeyPanel
               rejected={keyRejected}
               onClose={() => { setShowKeyPanel(false); setKeyRejected(false); }}
               onChange={() => { setHasKey(!!getApiKey()); setKeyRejected(false); }}
             />
           )}
-          {currentScreen === 'checkin' && showDataPanel && (
+          {showDataPanel && (
             <YourDataPanel
               historyCount={history.length}
               onExport={handleExportHistory}
@@ -332,15 +337,15 @@ export default function App() {
               onClose={() => setShowDataPanel(false)}
             />
           )}
-          {currentScreen === 'checkin' && <InstallHelp />}
-
-          {/* Core App Screens */}
-          {currentScreen === 'checkin' && (
-            <>
-              <CheckIn onSubmit={handleStartSession} isLoading={isLoading} />
-              <GuidedLibrary onStartSpa={() => setCurrentScreen('spa')} onStartReset={() => setCurrentScreen('reset')} />
-            </>
+            </div>
           )}
+
+          {/* Home pages, one at a time */}
+          {currentScreen === 'checkin' && tab === 'checkin' && <CheckIn onSubmit={handleStartSession} isLoading={isLoading} />}
+          {currentScreen === 'checkin' && tab === 'practise' && (
+            <PracticeCards onStartSpa={() => setCurrentScreen('spa')} onStartReset={() => setCurrentScreen('reset')} />
+          )}
+          {currentScreen === 'checkin' && tab === 'guided' && <GuidedLibrary />}
 
           {currentScreen === 'reset' && (
             <QuickReset
@@ -401,8 +406,14 @@ export default function App() {
           )}
 
           {/* Local Session Logs inside mobile feed on dashboard screen */}
-          {currentScreen === 'checkin' && history.length > 0 && (
-            <div className="px-4 py-6 mt-4 border-t border-orange-100/50">
+          {currentScreen === 'checkin' && tab === 'history' && history.length === 0 && (
+            <div className="px-6 pt-16 text-center space-y-2 animate-fade-in">
+              <h1 className="text-xl font-serif italic font-medium text-amber-950">Your history</h1>
+              <p className="text-xs text-stone-500">Finish a session and it will appear here. It stays on this device.</p>
+            </div>
+          )}
+          {currentScreen === 'checkin' && tab === 'history' && history.length > 0 && (
+            <div className="px-4 pt-3 animate-fade-in">
               <div className="space-y-4">
                 
                 <div className="flex justify-between items-center pb-1">
@@ -480,21 +491,38 @@ export default function App() {
             </div>
           )}
 
+          {/* Install tip floats at the bottom of the page instead of pushing it down */}
+          {currentScreen === 'checkin' && (
+            <div className="absolute inset-x-0 bottom-1 z-10"><InstallHelp /></div>
+          )}
         </div>
 
-        {/* Clean, Non-Diagnostic Disclaimer Footer for legal mitigation */}
-        <footer className="app-footer w-full py-4 px-5 z-10">
-          <div className="text-center space-y-1.5">
-            <p className="text-[9px] font-mono text-amber-900 leading-relaxed">
-              &copy; 2026 <em className="italic font-bold">PeMA</em>. Your app. Your data. Your choice.
-            </p>
-            <p className="text-[11px] font-sans text-amber-900">
-              Built by द्रष्टा (Drasta)
-            </p>
-            <p className="text-[10px] font-sans text-stone-500 leading-normal px-2">
-              For relaxation and wellness. PeMA does not provide medical services.
-            </p>
-          </div>
+        {/* Bottom menu, only on the home pages; sessions use the full screen */}
+        {currentScreen === 'checkin' && (
+          <nav className="app-footer w-full z-10 grid grid-cols-4" aria-label="Pages">
+            {([
+              ['checkin', 'Check-in', Home],
+              ['practise', 'Practise', Sparkles],
+              ['guided', 'Guided', PlayCircle],
+              ['history', 'History', Calendar],
+            ] as const).map(([key, label, Icon]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => { setTab(key); setShowKeyPanel(false); setShowDataPanel(false); }}
+                aria-current={tab === key ? 'page' : undefined}
+                className={`flex flex-col items-center gap-0.5 pt-2 pb-1 text-[11px] cursor-pointer transition-colors ${tab === key ? 'text-orange-700 font-semibold' : 'text-stone-500'}`}
+              >
+                <Icon className={`w-5 h-5 ${tab === key ? 'text-orange-600' : 'text-stone-400'}`} />
+                {label}
+              </button>
+            ))}
+          </nav>
+        )}
+
+        <footer className="app-footer w-full pb-2 pt-1 px-5 z-10 text-center">
+          <p className="text-[10px] text-amber-900 leading-snug">Your app. Your data. Your choice.</p>
+          <p className="text-[10px] text-amber-900 leading-snug">&copy; 2026 <em className="italic font-bold">PeMA</em> · Built by द्रष्टा (Drasta)</p>
         </footer>
 
       </div>

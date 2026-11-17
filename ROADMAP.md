@@ -71,6 +71,7 @@ Planned work, in priority order. Hours are rough estimates (about 60-80 hours in
 - [x] Tagline in the footer; truthful privacy wording.
 - [x] Name shown as द्रष्टा (Drasta) everywhere; Devanagari font bundled.
 - [x] Claude code loads only when a session starts (first screen faster) and is still cached for offline use.
+- [x] One page at a time, no scrolling (17 Nov): bottom menu (Check-in, Practise, Guided, History); session player, end-of-session (two pages) and support screens fit on one screen; settings open over the page; two-line footer.
 - [ ] Remove AI Studio leftovers `security_spec.md` (Firebase) and `metadata.json` (Gemini), with owner approval.
 
 ## 10. Accessibility and hosting (6-8 h)

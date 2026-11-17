@@ -9,18 +9,16 @@ const TILE_GRADIENTS = [
   'linear-gradient(135deg, #ffcd66, #f2577a)',
 ];
 
-interface GuidedLibraryProps {
+interface PracticeCardsProps {
   onStartSpa: () => void;
   onStartReset: () => void;
 }
 
-// Videos load only when tapped, from youtube-nocookie.com, so nothing is
-// shared with YouTube until the user chooses to watch.
-export default function GuidedLibrary({ onStartSpa, onStartReset }: GuidedLibraryProps) {
-  const [playingId, setPlayingId] = useState<string | null>(null);
-
+// The on-device practices: the 60-second reset and the Mental SPA
+export function PracticeCards({ onStartSpa, onStartReset }: PracticeCardsProps) {
   return (
-    <div className="px-4 pt-5 space-y-4">
+    <div className="px-4 pt-3 space-y-4 animate-fade-in">
+      <h1 className="text-xl font-serif italic font-medium text-amber-950 text-center">Practise</h1>
       <button
         type="button"
         onClick={onStartReset}
@@ -53,9 +51,21 @@ export default function GuidedLibrary({ onStartSpa, onStartReset }: GuidedLibrar
           <ChevronRight className="w-5 h-5 text-white shrink-0" />
         </div>
       </button>
+      <p className="text-xs text-stone-500 text-center">Both work offline, on your device.</p>
+    </div>
+  );
+}
 
+// Videos load only when tapped, from youtube-nocookie.com, so nothing is
+// shared with YouTube until the user chooses to watch.
+export default function GuidedLibrary() {
+  const [playingId, setPlayingId] = useState<string | null>(null);
+
+  return (
+    <div className="px-4 pt-3 space-y-4 animate-fade-in">
       <div className="space-y-2.5">
-        <h2 className="font-display text-base text-stone-900">Guided by द्रष्टा (Drasta)</h2>
+        <h1 className="text-xl font-serif italic font-medium text-amber-950 text-center">Guided by द्रष्टा (Drasta)</h1>
+        <p className="text-xs text-stone-500 text-center">Swipe sideways for more. Videos load only when you tap play.</p>
 
         {playingId && (
           <div className="rounded-2xl overflow-hidden aspect-video bg-black">

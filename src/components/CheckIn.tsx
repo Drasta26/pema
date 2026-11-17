@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { EmotionalState } from '../types';
-import { Sparkles, Compass, Smile, Eye, Coffee, HelpCircle, Activity, ChevronRight, ChevronLeft, Quote, Sun, Zap, Heart, ChevronDown, Check } from 'lucide-react';
+import { Sparkles, Compass, Smile, Eye, Coffee, HelpCircle, Activity, ChevronRight, ChevronLeft, Sun, Zap, Heart, ChevronDown, Check } from 'lucide-react';
 
 const INSPIRING_QUOTES = [
   {
@@ -150,10 +150,10 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
   };
 
   return (
-    <div className="w-full px-3 py-2 animate-fade-in space-y-4">
+    <div className="w-full px-3 py-1 animate-fade-in space-y-3">
       
       {/* Zen Futuristic Slogan */}
-      <div className="text-center mt-1">
+      <div className="text-center">
         <h1 className="text-xl md:text-2xl font-serif italic font-medium text-amber-950 tracking-tight animate-float-zen drop-shadow-[0_2px_15px_rgba(249,115,22,0.1)]">
           Mind check-in
         </h1>
@@ -162,7 +162,7 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
       <form onSubmit={handleSubmit} className="space-y-3">
         
         {/* Unified Prompt Hub - Futuristic Zen Input */}
-        <div className="glass-panel rounded-2xl p-4 border border-orange-100/50 shadow-md space-y-3">
+        <div className="glass-panel rounded-2xl p-3 border border-orange-100/50 shadow-md space-y-2">
 
           {/* Emotional Anchors Custom Dropdown Selector */}
           <div className="space-y-1 relative">
@@ -254,7 +254,7 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
               }}
               enterKeyHint="go"
               placeholder="How do you feel right now?"
-              className="w-full h-18 px-4 py-2 border border-orange-100/50 rounded-xl bg-white/90 text-stone-800 placeholder-slate-400 font-sans text-xs sm:text-xs transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 resize-none leading-relaxed shadow-inner"
+              className="w-full h-14 px-4 py-2 border border-orange-100/50 rounded-xl bg-white/90 text-stone-800 placeholder-slate-400 font-sans text-xs sm:text-xs transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 resize-none leading-relaxed shadow-inner"
             />
           </div>
 
@@ -284,10 +284,11 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
             )}
           </button>
         </div>
+        <p className="text-[10px] text-stone-500 text-center">For relaxation and wellness. PeMA does not provide medical services.</p>
       </form>
 
       {/* Moving Screen: Mindfulness Inspiring Quotes Carousel */}
-      <div className="pt-2 border-t border-orange-100/30 space-y-2">
+      <div className="space-y-1.5">
         <div className="text-center">
           <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-mono tracking-widest text-custom-blue bg-blue-50 border border-blue-100 font-black">
             <Sparkles className="w-2.5 h-2.5 text-blue-500 animate-spin" />
@@ -296,13 +297,8 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
         </div>
 
         {/* Quotes Carousel Glass Card */}
-        <div className="glass-panel rounded-2xl p-3 border border-orange-100/50 shadow-sm relative min-h-[85px] flex flex-col justify-between overflow-hidden transition-all duration-500 hover:shadow-md">
+        <div className="glass-panel rounded-2xl py-3 px-6 border border-orange-100/50 shadow-sm relative min-h-[72px] flex flex-col justify-between overflow-hidden transition-all duration-500 hover:shadow-md">
           
-          {/* Subtle Watermark Quotes icon */}
-          <div className="absolute right-3.5 top-2.5 opacity-10 pointer-events-none text-orange-500">
-            <Quote className="w-5 h-5 transform scale-x-[-1]" />
-          </div>
-
           {/* Core Animating Quote Text */}
           <div className="flex-1 flex flex-col justify-center py-0.5 select-none">
             <p 

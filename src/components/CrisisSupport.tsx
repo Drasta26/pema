@@ -10,27 +10,27 @@ interface CrisisSupportProps {
 // sent to the AI from this screen.
 export default function CrisisSupport({ onContinue, onBack }: CrisisSupportProps) {
   return (
-    <div className="px-4 py-6 space-y-5 animate-slide-in" role="alertdialog" aria-labelledby="crisis-title">
-      <div className="text-center space-y-2">
-        <div className="mx-auto w-11 h-11 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center">
+    <div className="px-4 py-2 space-y-3 animate-slide-in" role="alertdialog" aria-labelledby="crisis-title">
+      <div className="text-center space-y-1.5">
+        <div className="mx-auto w-9 h-9 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center">
           <Heart className="w-5 h-5 text-rose-500" />
         </div>
         <h2 id="crisis-title" className="font-display text-xl font-semibold text-stone-900">
           You don't have to face this alone
         </h2>
-        <p className="text-sm text-stone-600 leading-relaxed">
+        <p className="text-[13px] text-stone-600 leading-snug">
           It sounds like things are really hard right now. Talking to someone can help. These services are free and confidential.
         </p>
       </div>
 
-      <div className="space-y-2.5">
+      <div className="space-y-2">
         {UK_SUPPORT.map(s => (
           <a
             key={s.name}
             href={s.href}
-            className="glass-panel rounded-2xl p-3.5 flex items-center gap-3 hover:border-rose-200 transition-colors"
+            className="glass-panel rounded-2xl px-3.5 py-2.5 flex items-center gap-3 hover:border-rose-200 transition-colors"
           >
-            <span className="w-9 h-9 shrink-0 rounded-full bg-white border border-rose-100 flex items-center justify-center">
+            <span className="w-8 h-8 shrink-0 rounded-full bg-white border border-rose-100 flex items-center justify-center">
               {s.href.startsWith('sms') ? <MessageCircle className="w-4 h-4 text-rose-500" /> : <Phone className="w-4 h-4 text-rose-500" />}
             </span>
             <span className="flex-1 min-w-0">
@@ -45,7 +45,7 @@ export default function CrisisSupport({ onContinue, onBack }: CrisisSupportProps
         PeMA is a relaxation tool and can't provide crisis support.
       </p>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
         <button
           type="button"
           onClick={onBack}

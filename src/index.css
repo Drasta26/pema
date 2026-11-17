@@ -8,6 +8,7 @@
 
 @theme {
   --font-sans: "Inter Variable", "Inter", "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, "Noto Sans Devanagari", serif;
   --font-display: "Fraunces Variable", "Fraunces", "Noto Sans Devanagari", Georgia, serif;
 
   /* Sunrise energy palette: orange utilities map to coral, amber to gold, blue to magenta */

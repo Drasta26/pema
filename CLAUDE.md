@@ -34,6 +34,11 @@ Run: `npm run dev` (port 3000) or double-click `Start PeMA.command`. The owner v
 11. Done 30 Oct (v2.8): Mental SPA signature practice (src/components/MentalSpa.tsx; step names from the "5 Steps of Mental SPA" video description, guidance wording approved by owner 30 Oct) and "Guided by द्रष्टा (Drasta)" library (src/content.ts, src/components/GuidedLibrary.tsx) using click-to-load youtube-nocookie embeds and local colour tiles, so nothing loads from YouTube until play. Footer credit: Built by द्रष्टा (Drasta). Name in the app is always द्रष्टा (Drasta), never Dr Asta.
 12. Done 30 Oct (v2.10): 60-second reset (src/components/QuickReset.tsx, on-device, 4s in / 6s out x6); Mental SPA and reset count towards the streak via recordPractice (log.state optional); all forced capitals removed and labels in sentence case; wrapper uses overflow: clip to stop sideways scroll.
 
+## Design rules from the owner (17 Nov 2026)
+- No vertical scrolling: one page at a time. More content goes on another page via the bottom menu or a Next step, never below the fold. Sideways swipe rows are fine.
+- Keep the Sunrise colours. Sentence case, no forced capitals. Name: द्रष्टा (Drasta).
+- Footer is two lines: tagline, then "© 2026 PeMA · Built by द्रष्टा (Drasta)".
+
 ## Foundation (applies to all of Asta's apps; adopted 1 Nov 2026)
 Tagline: "Your app. Your data. Your choice."
 

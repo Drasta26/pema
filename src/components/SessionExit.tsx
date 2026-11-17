@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MeditationSession, EmotionalState } from '../types';
-import { ThumbsUp, ThumbsDown, Notebook, Clock, SunDim, BookOpen, Star, Sparkles, Compass, Smile, Eye, Coffee, HelpCircle, Activity, Sun, Zap, Heart, ChevronDown, Check } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Notebook, Clock, SunDim, BookOpen, Sparkles, Compass, Smile, Eye, Coffee, HelpCircle, Activity, Sun, Zap, Heart, ChevronDown, Check } from 'lucide-react';
 
 interface SessionExitProps {
   session: MeditationSession;
@@ -58,36 +58,26 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
     ]
   };
 
+  // Two short pages instead of one long one: reflect and save, then ideas for later
   return (
-    <div className="w-full px-3 py-4 space-y-5 animate-fade-in text-stone-800">
-      
-      {/* Title greeting */}
-      <div className="text-center space-y-2 mt-2">
-        <h1 className="text-2xl md:text-3xl font-serif italic font-medium text-amber-950 tracking-tight animate-float-zen drop-shadow-[0_2px_15px_rgba(249,115,22,0.1)]">
-          Welcome back
+    <div className="w-full h-full px-3 py-2 flex flex-col gap-3 animate-fade-in text-stone-800">
+      <div className="text-center space-y-1">
+        <h1 className="text-2xl font-serif italic font-medium text-amber-950 tracking-tight">
+          {isSaved ? 'For later' : 'Welcome back'}
         </h1>
-        <p className="text-stone-500 text-xs font-sans max-w-sm mx-auto leading-relaxed">
-          {session.exitInstructions || "Slowly bring your physical awareness back, smooth and complete."}
+        <p className="text-stone-500 text-xs font-sans leading-relaxed line-clamp-2">
+          {isSaved
+            ? 'Saved on this device. A few ideas to take with you.'
+            : session.exitInstructions || 'Slowly bring your awareness back.'}
         </p>
       </div>
 
-      {/* Integration Review Card */}
-      <div className="glass-panel rounded-2xl p-4 sm:p-5 border border-orange-100/50 shadow-lg space-y-4">
-        <div className="border-b border-black/5 pb-3">
-          <h2 className="text-sm font-display font-medium text-stone-800 flex items-center gap-2">
-            <Star className="w-4 h-4 text-orange-600 animate-spin" />
-            <span>Session feedback</span>
-          </h2>
-          <p className="text-[10px] text-amber-900 mt-0.5 font-sans leading-normal font-bold">
-            Take a moment to check in and save your local notes.
-          </p>
-        </div>
-
-        {!isSaved ? (
-          <form onSubmit={handleSave} className="space-y-4">
+      {!isSaved ? (
+        <div className="glass-panel rounded-2xl p-4 border border-orange-100/50 shadow-lg">
+          <form onSubmit={handleSave} className="space-y-3">
             {/* Rating Buttons */}
             <div className="space-y-2">
-              <label className="block text-[9px] font-mono tracking-wider font-bold text-orange-600">
+              <label className="block text-[11px] font-semibold text-orange-700">
                 How do you feel?
               </label>
               
@@ -95,7 +85,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
                 <button
                   type="button"
                   onClick={() => setRating('up')}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border text-xs font-display font-medium transition-all duration-300 cursor-pointer ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border text-xs font-display font-medium transition-all duration-300 cursor-pointer ${
                     rating === 'up'
                       ? 'bg-orange-50 border-orange-600 text-stone-900 font-bold shadow-xs'
                       : 'bg-white border-orange-100/30 hover:border-orange-200/50 hover:bg-orange-50 text-orange-800'
@@ -108,7 +98,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
                 <button
                   type="button"
                   onClick={() => setRating('down')}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border text-xs font-display font-medium transition-all duration-300 cursor-pointer ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border text-xs font-display font-medium transition-all duration-300 cursor-pointer ${
                     rating === 'down'
                       ? 'bg-orange-50 border-orange-600 text-stone-900 font-bold shadow-xs'
                       : 'bg-white border-orange-100/30 hover:border-orange-200/50 hover:bg-orange-50 text-orange-850'
@@ -123,8 +113,8 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
             {/* Retrospective Emotion Tracker */}
             <div className="space-y-2 relative">
               <div className="flex justify-between items-center">
-                <label className="block text-[9px] font-mono tracking-wider font-bold text-orange-600">
-                  Ending Emotion (Retrospective)
+                <label className="block text-[11px] font-semibold text-orange-700">
+                  How you feel now
                 </label>
                 <span className="text-[10px] font-mono text-stone-500">
                   Started: <strong className="text-orange-600">{session.state}</strong>
@@ -195,50 +185,39 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
 
             {/* Custom Notes */}
             <div className="space-y-1.5">
-              <label className="block text-[9px] font-mono tracking-wider font-bold text-orange-600">
-                Journal Notes (Optional)
+              <label className="block text-[11px] font-semibold text-orange-700">
+                Notes (optional)
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Write down any insights or thoughts during practice..."
-                className="w-full text-xs p-3 border border-orange-100/50 rounded-lg bg-white text-stone-800 placeholder-slate-400 resize-none h-20 focus:outline-none focus:ring-1 focus:ring-orange-500 font-sans"
+                placeholder="Anything you noticed?"
+                className="w-full text-xs p-3 border border-orange-100/50 rounded-lg bg-white text-stone-800 placeholder-slate-400 resize-none h-14 focus:outline-none focus:ring-1 focus:ring-orange-500 font-sans"
               />
             </div>
 
-            <div className="flex justify-end pt-1">
+            <div className="flex justify-between items-center pt-1">
+              <button type="button" onClick={() => setIsSaved(true)} className="text-[11px] text-stone-500 underline cursor-pointer">
+                Skip
+              </button>
               <button
                 type="submit"
                 disabled={rating === null && !notes.trim() && endState === null}
-                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-[10px] font-display font-bold tracking-wider rounded-lg transition-all shadow-sm cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-display font-bold rounded-lg transition-all shadow-sm cursor-pointer disabled:opacity-50"
               >
                 Save
               </button>
             </div>
           </form>
-        ) : (
-          <div className="bg-orange-50 border border-orange-100 rounded-xl p-4.5 text-center text-xs animate-fade-in shadow-inner text-orange-700">
-            🧘 Thank you. Your session reflection has been saved in your local log notes.
-          </div>
-        )}
-      </div>
-
-      {/* Habits & Growth Checklist */}
-      <div className="glass-panel rounded-2xl p-4 border border-orange-100/50 shadow-sm space-y-4">
-        <div>
-          <h2 className="text-xs font-display font-bold text-stone-800 tracking-wider">
-            Recommendations
-          </h2>
-          <p className="text-[10px] text-amber-900 mt-0.5 font-sans leading-normal font-bold">
-            Personalized routines based on your session.
-          </p>
         </div>
-
+      ) : (
+        <>
+          <div className="glass-panel rounded-2xl p-4 border border-orange-100/50 shadow-sm space-y-3 flex-1 min-h-0">
         {/* Tab Controls */}
         <div className="flex border-b border-black/5 gap-1 overflow-x-auto scroller-none pb-0.5">
           <button
             onClick={() => setActiveTab('journal')}
-            className={`flex items-center gap-1.5 px-3 py-2 text-[9px] font-mono font-bold tracking-wide border-b-2 transition-all cursor-pointer shrink-0 ${
+            className={`flex items-center gap-1.5 px-3 py-2 text-[11px] font-semibold border-b-2 transition-all cursor-pointer shrink-0 ${
               activeTab === 'journal'
                 ? 'border-orange-600 text-orange-600'
                 : 'border-transparent text-stone-600 hover:text-orange-700'
@@ -250,7 +229,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
           
           <button
             onClick={() => setActiveTab('habits')}
-            className={`flex items-center gap-1.5 px-3 py-2 text-[9px] font-mono font-bold tracking-wide border-b-2 transition-all cursor-pointer shrink-0 ${
+            className={`flex items-center gap-1.5 px-3 py-2 text-[11px] font-semibold border-b-2 transition-all cursor-pointer shrink-0 ${
               activeTab === 'habits'
                 ? 'border-orange-600 text-orange-600'
                 : 'border-transparent text-stone-600 hover:text-orange-700'
@@ -262,7 +241,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
 
           <button
             onClick={() => setActiveTab('sleep')}
-            className={`flex items-center gap-1.5 px-3 py-2 text-[9px] font-mono font-bold tracking-wide border-b-2 transition-all cursor-pointer shrink-0 ${
+            className={`flex items-center gap-1.5 px-3 py-2 text-[11px] font-semibold border-b-2 transition-all cursor-pointer shrink-0 ${
               activeTab === 'sleep'
                 ? 'border-orange-600 text-orange-600'
                 : 'border-transparent text-stone-600 hover:text-orange-700'
@@ -274,7 +253,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
 
           <button
             onClick={() => setActiveTab('breath')}
-            className={`flex items-center gap-1.5 px-3 py-2 text-[9px] font-mono font-bold tracking-wide border-b-2 transition-all cursor-pointer shrink-0 ${
+            className={`flex items-center gap-1.5 px-3 py-2 text-[11px] font-semibold border-b-2 transition-all cursor-pointer shrink-0 ${
               activeTab === 'breath'
                 ? 'border-orange-600 text-orange-600'
                 : 'border-transparent text-stone-600 hover:text-orange-700'
@@ -287,7 +266,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
 
         {/* Tab View */}
         <div className="bg-white/40 rounded-xl p-4 border border-orange-100/40 min-h-[120px] flex flex-col justify-center">
-          <ul className="space-y-3 font-sans text-xs text-stone-800">
+          <ul className="space-y-2.5 font-sans text-xs text-stone-800">
             {activeTab === 'journal' && enhancements.journalingPrompts.map((line, i) => (
               <li key={i} className="flex gap-2.5 leading-relaxed items-start">
                 <span className="font-mono text-[9px] font-black text-white bg-orange-600 h-4.5 w-4.5 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
@@ -325,18 +304,15 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
             ))}
           </ul>
         </div>
-      </div>
-
-      {/* Return to Start Dashboard CTA */}
-      <div className="flex justify-center pt-2">
-        <button
-          onClick={onReturnToStart}
-          className="w-full py-3.5 futuristic-btn text-white text-xs font-display font-medium tracking-wider rounded-xl shadow-md transition-all duration-300 cursor-pointer text-center"
-        >
-          Back to Dashboard
-        </button>
-      </div>
-
+          </div>
+          <button
+            onClick={onReturnToStart}
+            className="w-full py-3 futuristic-btn text-white text-sm font-display font-medium rounded-xl shadow-md transition-all duration-300 cursor-pointer"
+          >
+            Back to home
+          </button>
+        </>
+      )}
     </div>
   );
 }
