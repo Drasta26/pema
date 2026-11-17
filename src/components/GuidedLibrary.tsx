@@ -70,18 +70,18 @@ export default function GuidedLibrary() {
         <p className="text-[11px] text-stone-500">Videos load only when you tap play.</p>
       </div>
 
-      <div className="flex-1 min-h-0 grid grid-cols-3 grid-rows-3 gap-2">
+      <div className="flex-1 min-h-0 flex items-center"><div className="w-full grid grid-cols-3 gap-2">
         {GUIDED_VIDEOS.map((v, i) => (
           <button
             key={v.id}
             type="button"
             onClick={() => setPlayingId(v.id)}
-            className="min-h-0 flex flex-col text-left glass-panel rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-0.5"
+            className="flex flex-col text-left glass-panel rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-0.5"
           >
             {/* Local colour tiles, not YouTube thumbnails, so nothing loads from Google until play */}
-            <div className="relative flex-1 min-h-0" style={{ background: TILE_GRADIENTS[i % TILE_GRADIENTS.length] }}>
+            <div className="relative h-12" style={{ background: TILE_GRADIENTS[i % TILE_GRADIENTS.length] }}>
               <span className="absolute inset-0 flex items-center justify-center">
-                <span className="w-7 h-7 rounded-full bg-white/90 flex items-center justify-center shadow">
+                <span className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center shadow">
                   <Play className="w-3 h-3 text-orange-600 ml-0.5" />
                 </span>
               </span>
@@ -93,7 +93,7 @@ export default function GuidedLibrary() {
             </div>
           </button>
         ))}
-      </div>
+      </div></div>
 
       {playing && (
         <div className="absolute inset-0 z-20 flex flex-col justify-center gap-2 px-3 bg-[#2a1036]/80 backdrop-blur-sm animate-fade-in">

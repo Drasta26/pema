@@ -305,14 +305,14 @@ export default function CheckIn({ onSubmit, isLoading, installTip }: CheckInProp
           {/* Core Animating Quote Text */}
           <div className="flex-1 flex flex-col justify-center py-0.5 select-none">
             <p 
-              className={`text-[14.5px] font-serif italic text-blue-950 text-center leading-relaxed transition-all duration-300 ${
+              className={`text-[12px] font-serif italic text-blue-950 text-center leading-relaxed transition-all duration-300 ${
                 fadeTrigger ? 'opacity-100 transform translate-y-0 scale-100' : 'opacity-0 transform -translate-y-1 scale-98'
               }`}
             >
               "{INSPIRING_QUOTES[currentQuoteIndex].text}"
             </p>
             <p
-              className={`text-[11px] font-mono tracking-wider text-custom-blue text-center mt-1 font-black transition-all duration-300 ${
+              className={`text-[12px] font-mono tracking-wider text-custom-blue text-center mt-1 font-black transition-all duration-300 ${
                 fadeTrigger ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-1'
               }`}
             >
