@@ -14,7 +14,9 @@ const claude = () => {
 };
 
 // Thrown when Anthropic rejects the key, so the app can tell the user instead of silently going offline
-export class KeyRejectedError extends Error {}
+export class KeyRejectedError extends Error {
+  name = 'KeyRejectedError';
+}
 const isKeyRejected = (err: any) => err?.status === 401 || err?.status === 403;
 
 // Ask Claude for a session object; tool use forces output to match MEDITATION_SCHEMA.

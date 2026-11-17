@@ -9,12 +9,15 @@ import MentalSpa from './components/MentalSpa';
 import QuickReset from './components/QuickReset';
 import InstallHelp from './components/InstallHelp';
 import AiKeyPanel from './components/AiKeyPanel';
-import { generateInitialSession, generateAdaptiveFeedback, KeyRejectedError } from './claudeService';
+import YourDataPanel from './components/YourDataPanel';
 import { stripPauseMarkers } from './sessionText';
-import { getApiKey } from './apiKey';
+import { getApiKey, removeApiKey } from './apiKey';
+
+// Claude's code loads only when a session starts, keeping the first screen fast
+const loadClaude = () => import('./claudeService');
 import { registerServiceWorker } from './pwa';
 import { detectCrisis } from './safety';
-import { Calendar, RotateCcw, Award, Info, Lock, RefreshCw, KeyRound } from 'lucide-react';
+import { Calendar, ShieldCheck, Award, Info, Lock, RefreshCw, KeyRound } from 'lucide-react';
 
 interface LocalSessionLog {
   id: string;
@@ -38,7 +41,7 @@ export default function App() {
   // Local state persistence logs
   const [history, setHistory] = useState<LocalSessionLog[]>([]);
   const [streak, setStreak] = useState(0);
-  const [isConfirmingClear, setIsConfirmingClear] = useState(false);
+  const [showDataPanel, setShowDataPanel] = useState(false);
   // Set when a new version of the app has been downloaded and is ready
   const [showKeyPanel, setShowKeyPanel] = useState(false);
   const [keyRejected, setKeyRejected] = useState(false);
@@ -64,16 +67,6 @@ export default function App() {
       console.error("Local storage lookup failed", e);
     }
   }, []);
-
-  // Auto-reset clear history confirmation flag after 4 seconds
-  useEffect(() => {
-    if (isConfirmingClear) {
-      const timer = setTimeout(() => {
-        setIsConfirmingClear(false);
-      }, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [isConfirmingClear]);
 
   const calculateStreak = (logs: LocalSessionLog[]) => {
     if (logs.length === 0) {
@@ -134,6 +127,7 @@ export default function App() {
     setIsLoading(true);
     setErrorMessage(null);
     try {
+      const { generateInitialSession } = await loadClaude();
       const sessionObj = stripPauseMarkers(await generateInitialSession({
         description: data.description,
         explicitState: data.explicitState
@@ -141,7 +135,7 @@ export default function App() {
       setSession(sessionObj);
       setCurrentScreen('player');
     } catch (err: any) {
-      if (err instanceof KeyRejectedError) {
+      if (err?.name === 'KeyRejectedError') {
         setKeyRejected(true);
         setShowKeyPanel(true);
       } else {
@@ -162,12 +156,13 @@ export default function App() {
     setIsLoadingFeedback(true);
     setErrorMessage(null);
     try {
+      const { generateAdaptiveFeedback } = await loadClaude();
       const updatedSession = stripPauseMarkers(await generateAdaptiveFeedback(session, feedbackType, userText));
       // Maintain session ID for history consistency
       updatedSession.id = session.id;
       setSession(updatedSession);
     } catch (err: any) {
-      setErrorMessage(err instanceof KeyRejectedError
+      setErrorMessage(err?.name === 'KeyRejectedError'
         ? "Anthropic didn't accept your AI key. Finish this session, then check the key on the home screen."
         : err.message || "Could not adapt session dynamically.");
       console.error(err);
@@ -214,15 +209,24 @@ export default function App() {
     calculateStreak(updatedHistory);
   };
 
-  const handleClearHistory = () => {
-    if (!isConfirmingClear) {
-      setIsConfirmingClear(true);
-    } else {
-      localStorage.removeItem('ai_meditation_logs');
-      setHistory([]);
-      setStreak(0);
-      setIsConfirmingClear(false);
-    }
+  // Downloads the history as a JSON file the user keeps. The AI key is never included.
+  const handleExportHistory = () => {
+    const file = new Blob([JSON.stringify({ app: 'PeMA', exported: new Date().toISOString(), history }, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(file);
+    link.download = `pema-history-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+
+  // Removes everything PeMA keeps on this device
+  const handleDeleteAll = () => {
+    localStorage.removeItem('ai_meditation_logs');
+    removeApiKey();
+    setHistory([]);
+    setStreak(0);
+    setHasKey(false);
+    setShowDataPanel(false);
   };
 
   return (
@@ -264,20 +268,22 @@ export default function App() {
               </div>
               <button
                 type="button"
-                onClick={() => { setCurrentScreen('checkin'); setShowKeyPanel(v => !v); }}
+                onClick={() => { setCurrentScreen('checkin'); setShowDataPanel(false); setShowKeyPanel(v => !v); }}
                 aria-label="Your AI key"
                 title={hasKey ? 'Claude is on, with your own key' : 'Add your own AI key for personalised sessions'}
                 className="flex items-center justify-center w-6 h-6 bg-blue-50/40 border border-blue-100/30 rounded-full text-custom-blue cursor-pointer"
               >
                 <KeyRound className={`w-3 h-3 ${hasKey ? '' : 'opacity-60'}`} />
               </button>
-              <div
-                className="flex items-center gap-1 bg-blue-50/40 border border-blue-100/30 px-2 py-0.5 rounded-full text-[8px] font-mono font-bold text-custom-blue"
-                title="Your history stays on this device"
+              <button
+                type="button"
+                onClick={() => { setCurrentScreen('checkin'); setShowKeyPanel(false); setShowDataPanel(v => !v); }}
+                className="flex items-center gap-1 bg-blue-50/40 border border-blue-100/30 px-2 py-0.5 rounded-full text-[9px] font-mono font-bold text-custom-blue cursor-pointer"
+                title="Your data stays on this device"
               >
                 <Lock className="w-2.5 h-2.5" />
                 <span>Private</span>
-              </div>
+              </button>
             </div>
 
           </div>
@@ -316,6 +322,14 @@ export default function App() {
               rejected={keyRejected}
               onClose={() => { setShowKeyPanel(false); setKeyRejected(false); }}
               onChange={() => { setHasKey(!!getApiKey()); setKeyRejected(false); }}
+            />
+          )}
+          {currentScreen === 'checkin' && showDataPanel && (
+            <YourDataPanel
+              historyCount={history.length}
+              onExport={handleExportHistory}
+              onDeleteAll={handleDeleteAll}
+              onClose={() => setShowDataPanel(false)}
             />
           )}
           {currentScreen === 'checkin' && <InstallHelp />}
@@ -400,15 +414,11 @@ export default function App() {
                   </div>
                   <button
                     type="button"
-                    onClick={handleClearHistory}
-                    className={`text-[9px] font-mono font-bold flex items-center gap-1 cursor-pointer transition-all duration-300 py-1 px-2 rounded-md ${
-                      isConfirmingClear 
-                        ? 'bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 shadow-sm animate-pulse' 
-                        : 'text-orange-600 hover:text-red-650 hover:bg-orange-50'
-                    }`}
+                    onClick={() => { setShowDataPanel(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                    className="text-[10px] font-mono font-bold flex items-center gap-1 cursor-pointer py-1 px-2 rounded-md text-orange-600 hover:bg-orange-50"
                   >
-                    <RotateCcw className={`w-3 h-3 ${isConfirmingClear ? 'animate-spin' : ''}`} />
-                    <span>{isConfirmingClear ? 'Click again to confirm' : 'Clear Logs'}</span>
+                    <ShieldCheck className="w-3 h-3" />
+                    <span>Export or delete</span>
                   </button>
                 </div>
 
@@ -476,13 +486,13 @@ export default function App() {
         <footer className="app-footer w-full py-4 px-5 z-10">
           <div className="text-center space-y-1.5">
             <p className="text-[9px] font-mono text-amber-900 leading-relaxed">
-              &copy; 2026 <em className="italic font-bold">PeMA</em>. All personal logs stored locally.
+              &copy; 2026 <em className="italic font-bold">PeMA</em>. Your app. Your data. Your choice.
             </p>
-            <p className="text-[11px] font-sans text-amber-900" style={{ fontFamily: '"Inter Variable", sans-serif' }}>
-              Built by द्रष्टा (DrAsta)
+            <p className="text-[11px] font-sans text-amber-900">
+              Built by द्रष्टा (Drasta)
             </p>
-            <p className="text-[8px] font-sans text-stone-400 leading-normal px-2">
-              Disclaimer: For relaxation and wellness. This tool does not provide medical services.
+            <p className="text-[10px] font-sans text-stone-500 leading-normal px-2">
+              For relaxation and wellness. PeMA does not provide medical services.
             </p>
           </div>
         </footer>

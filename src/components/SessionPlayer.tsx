@@ -220,10 +220,10 @@ export default function SessionPlayer({
 
   const getPhaseText = () => {
     if (!isPlaying) return 'Paused';
-    if (breathPhase === 'inhale') return 'Breathe In';
-    if (breathPhase === 'hold1') return 'Hold Breath';
-    if (breathPhase === 'exhale') return 'Exhale Slowly';
-    if (breathPhase === 'hold2') return 'Rest and Hold';
+    if (breathPhase === 'inhale') return 'Breathe in';
+    if (breathPhase === 'hold1') return 'Hold your breath';
+    if (breathPhase === 'exhale') return 'Breathe out slowly';
+    if (breathPhase === 'hold2') return 'Rest and hold';
     return '';
   };
 
@@ -268,7 +268,7 @@ export default function SessionPlayer({
           <div className="w-full flex justify-between items-center mb-1 gap-2 flex-wrap sm:flex-nowrap">
             <div className="flex flex-col">
               <span id="session-time-remaining-label" className="text-[10px] font-mono font-bold mt-0.5 text-orange-700">
-                {sessionTimeRemaining > 0 ? `${formatTime(sessionTimeRemaining)} remaining` : 'Practice Complete'}
+                {sessionTimeRemaining > 0 ? `${formatTime(sessionTimeRemaining)} remaining` : 'Practice complete'}
               </span>
             </div>
             
@@ -368,7 +368,7 @@ export default function SessionPlayer({
                   }`}
                 >
                   {isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
-                  <span>{isPlaying ? 'Pause' : 'Resume Pacer'}</span>
+                  <span>{isPlaying ? 'Pause' : 'Resume'}</span>
                 </button>
               ) : (
                 <button

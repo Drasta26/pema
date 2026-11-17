@@ -7,7 +7,7 @@ interface MentalSpaProps {
   onComplete: () => void;
 }
 
-// Dr Asta's signature five-step practice, one minute per step.
+// द्रष्टा (Drasta)'s signature five-step practice, one minute per step.
 export default function MentalSpa({ onExit, onComplete }: MentalSpaProps) {
   const [index, setIndex] = useState(0);
   const [remaining, setRemaining] = useState(MENTAL_SPA_STEPS[0].seconds);

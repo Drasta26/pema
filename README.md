@@ -54,17 +54,18 @@ NODE_ENV=production npm start
 - Support messages: if a check-in suggests someone may need urgent help, PeMA pauses the session, shows UK contact details for people who can help, and does not send that text to the AI.
 - The offline cache stores only PeMA's own files, never check-in text or session content.
 - No analytics, trackers or third-party requests: the only other address PeMA contacts is api.anthropic.com, and only when you have added a key.
+- Export or delete: tap **Private** at the top to download your history as a file, or delete all your data (history, streak and AI key) from the device.
 - The repository contains no real user data.
 
 ## History
 First built in Google AI Studio with Gemini. In October 2026 it moved to the Claude API, sign-in and Firebase were removed, and support messages were added.
 
 ## Quality checks
-Lighthouse 12, 17 Nov 2026, production build on localhost:
+Lighthouse 12, 17 Nov 2026 (v2.13), production build on localhost:
 
 | | Performance | Accessibility | Best practices | SEO |
 |---|---|---|---|---|
-| Mobile | 87 | 100 | 100 | 100 |
+| Mobile | 85 | 100 | 100 | 100 |
 | Desktop | 100 | 100 | 100 | 100 |
 
 Lighthouse 12 no longer has a PWA score. Chrome reports no manifest or installability errors.

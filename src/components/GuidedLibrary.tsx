@@ -55,7 +55,7 @@ export default function GuidedLibrary({ onStartSpa, onStartReset }: GuidedLibrar
       </button>
 
       <div className="space-y-2.5">
-        <h2 className="font-display text-base text-stone-900">Guided by Dr Asta</h2>
+        <h2 className="font-display text-base text-stone-900">Guided by द्रष्टा (Drasta)</h2>
 
         {playingId && (
           <div className="rounded-2xl overflow-hidden aspect-video bg-black">

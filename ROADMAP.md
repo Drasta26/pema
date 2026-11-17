@@ -66,6 +66,13 @@ Planned work, in priority order. Hours are rough estimates (about 60-80 hours in
 - [x] Server no longer has an API or a key; it only serves the app.
 - [ ] Test a full Claude session with a real key on a phone.
 
+## 9c. Foundation check (done 17 Nov 2026)
+- [x] "Your data" panel: export history, delete all data (history, streak, key).
+- [x] Tagline in the footer; truthful privacy wording.
+- [x] Name shown as द्रष्टा (Drasta) everywhere; Devanagari font bundled.
+- [x] Claude code loads only when a session starts (first screen faster) and is still cached for offline use.
+- [ ] Remove AI Studio leftovers `security_spec.md` (Firebase) and `metadata.json` (Gemini), with owner approval.
+
 ## 10. Accessibility and hosting (6-8 h)
 - [ ] Keyboard use, screen-reader labels, reduced-motion support for the breathing animation, colour contrast.
 - [ ] Choose a static host (no server key, so no rate limiting or cost cap needed on our side).

@@ -10,8 +10,17 @@ async function precacheShell() {
   const res = await fetch('/', { cache: 'no-store' });
   const html = await res.clone().text();
   const assets = [...html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g)].map(m => m[1]);
+  // Code loaded later (such as the Claude session code) is named inside the main scripts
+  for (let i = 0; i < assets.length; i++) {
+    if (!assets[i].endsWith('.js')) continue;
+    const js = await (await fetch(assets[i])).text();
+    for (const m of js.matchAll(/["'`](?:\.\/|\/?assets\/)([\w.-]+\.js)["'`]/g)) {
+      const url = `/assets/${m[1]}`;
+      if (!assets.includes(url)) assets.push(url);
+    }
+  }
   await cache.put('/', res);
-  await cache.addAll([...SHELL.filter(u => u !== '/'), ...assets]);
+  await cache.addAll([...new Set([...SHELL.filter(u => u !== '/'), ...assets])]);
 }
 
 self.addEventListener('install', event => {
