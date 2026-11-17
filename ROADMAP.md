@@ -53,13 +53,20 @@ Planned work, in priority order. Hours are rough estimates (about 60-80 hours in
 
 ## 9. Installable app (done 5 Nov 2026)
 - [x] Web app manifest, icons and splash screen; opens full screen.
-- [x] Service worker: works offline, never caches `/api/`.
+- [x] Service worker: works offline, caches only PeMA's own files.
 - [x] Install button (Android/desktop) and Share hint (iPhone), hidden once installed.
 - [x] "New version available, tap to update" message.
-- [ ] Lighthouse audit (PWA, performance, accessibility) and fixes.
-- [ ] Self-host fonts so no request goes to Google.
+- [x] Lighthouse audit and fixes (17 Nov): mobile 87/100/100/100, desktop 100 in all four.
+- [x] Fonts self-hosted, so no request goes to Google (17 Nov).
+- [ ] Mobile performance: split the code so the first screen loads less JavaScript, and serve files compressed (most hosts do this).
+
+## 9b. Bring your own key (done 17 Nov 2026)
+- [x] Claude called from the app with the user's own key, stored only on their device.
+- [x] Key screen: add, see masked, remove; clear message when Anthropic rejects a key.
+- [x] Server no longer has an API or a key; it only serves the app.
+- [ ] Test a full Claude session with a real key on a phone.
 
 ## 10. Accessibility and hosting (6-8 h)
 - [ ] Keyboard use, screen-reader labels, reduced-motion support for the breathing animation, colour contrast.
-- [ ] Choose hosting; keep the API key server-side; rate limiting and a monthly API cost cap.
+- [ ] Choose a static host (no server key, so no rate limiting or cost cap needed on our side).
 - [ ] Tag v1.0 and write a short user guide.

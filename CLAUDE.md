@@ -5,7 +5,7 @@ Owner: Dr Asta Ratna Prajapati. UK English. Keep replies concise; put any owner 
 
 ## Non-negotiables
 - Truth first: never invent facts, figures, sources, approvals, completion or capabilities. Mark unverified things as unverified.
-- Never read, print, log or commit secrets. `.env.local` holds the owner's ANTHROPIC_API_KEY: do not open or echo it.
+- Never read, print, log or commit secrets. `.env.local` (no longer used since v2.12) holds the owner's old ANTHROPIC_API_KEY: do not open or echo it. Never type a real key into the app; only users do.
 - Never handle passwords or bank details.
 - Nothing is published, deployed, shared, purchased or deleted without the owner's explicit approval for that exact action.
 - AI review is not legal, clinical or regulatory clearance; flag those for a qualified professional.
@@ -16,7 +16,7 @@ Owner: Dr Asta Ratna Prajapati. UK English. Keep replies concise; put any owner 
 - Versioning: owner wants every iteration saved as a new dated version. Use git tags (e.g. `v2-claude-2026-10-30`) plus dated folders/ZIPs for major milestones.
 
 ## Stack
-React 19 + Vite 6 + Tailwind 4 (src/), Express server (server.ts) serving Vite in dev, Claude via `@anthropic-ai/sdk` in `server/claudeService.ts` (structured output through forced tool use; model from CLAUDE_MODEL, default claude-sonnet-5-5). No accounts: session history is kept in the browser's localStorage on the user's device. Offline rule-based sessions are used when no API key is set.
+React 19 + Vite 6 + Tailwind 4 (src/), Express server (server.ts) only serves the app. Bring your own key (v2.12, 17 Nov): Claude via `@anthropic-ai/sdk` in `src/claudeService.ts`, called from the browser with the user's key from `src/apiKey.ts` (localStorage `pema.anthropicKey`), model claude-sonnet-5-5, tool_choice auto. No accounts: session history is kept in the browser's localStorage on the user's device. Offline rule-based sessions are used when no API key is set.
 Run: `npm run dev` (port 3000) or double-click `Start PeMA.command`. The owner views it in the Claude app browser pane.
 30 Oct: Claude sessions verified live (key fixed; tool_choice switched to auto because claude-sonnet-5-5 rejects forced tool choice).
 
@@ -29,7 +29,7 @@ Run: `npm run dev` (port 3000) or double-click `Start PeMA.command`. The owner v
 6. Google/Microsoft sign-in: dropped for now under the private-by-design direction.
 7. Code quality: partly done 30 Oct (cache renamed to sessionCache, tests added for safety). Still: code-split the bundle, package name "react-example", DISABLE_HMR comments.
 10. Done 30 Oct: design pass v2.4 (palette via Tailwind theme overrides in src/index.css; v2.7 "Sunrise energy" palette chosen by owner: coral #ff6b4a, magenta #e8458b, gold #ffb547, plum text #2a1036, Fraunces display font, Enter submits check-in, [pause] cues stripped server-side, unmatched descriptions no longer default to Insight Meditation).
-8. Hosting not chosen; API key must stay server-side; add rate limiting and API cost limits.
+8. Hosting not chosen; any static host works now there is no server key.
 9. Wellness claims: keep wording non-clinical; get a regulatory check that PeMA stays a wellness product and not a medical device before marketing.
 11. Done 30 Oct (v2.8): Mental SPA signature practice (src/components/MentalSpa.tsx; step names from the "5 Steps of Mental SPA" video description, guidance wording approved by owner 30 Oct) and "Guided by Dr Asta" library (src/content.ts, src/components/GuidedLibrary.tsx) using click-to-load youtube-nocookie embeds and local colour tiles, so nothing loads from YouTube until play. Footer credit: Built by द्रष्टा (DrAsta).
 12. Done 30 Oct (v2.10): 60-second reset (src/components/QuickReset.tsx, on-device, 4s in / 6s out x6); Mental SPA and reset count towards the streak via recordPractice (log.state optional); all forced capitals removed and labels in sentence case; wrapper uses overflow: clip to stop sideways scroll.
