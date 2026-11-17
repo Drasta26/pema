@@ -241,7 +241,7 @@ export default function App() {
         <div className="caustics-backdrop" />
         
         {/* Futuristic Glassmorphic Status Bar Header */}
-        <header className="app-header w-full py-3 px-5 z-10">
+        <header className="app-header w-full py-3 px-3 sm:px-5 z-10">
           <div className="flex justify-between items-center">
             
             {/* Logo, Status, & Custom PeMA Identity */}
@@ -253,8 +253,9 @@ export default function App() {
                 <span>🧘</span>
               </span>
               <div>
-                <span className="font-display font-medium text-base text-stone-900 tracking-tight block">
+                <span className="font-display font-medium text-base text-stone-900 tracking-tight flex items-baseline gap-1.5">
                   <em className="italic font-bold text-custom-blue">PeMA</em>
+                  <span className="not-italic font-sans text-[10px] font-normal text-custom-blue/80 whitespace-nowrap">&copy; 2026 · Built by द्रष्टा (Drasta)</span>
                 </span>
                 <span className="block text-[10px] font-sans tracking-normal text-custom-blue/80">
                   Personalised Mindfulness Assistant
@@ -284,7 +285,8 @@ export default function App() {
                 title="Your data stays on this device"
               >
                 <Lock className="w-2.5 h-2.5" />
-                <span>Private</span>
+                {/* Icon only on narrow phones so the header stays on one line */}
+                <span className="sr-only min-[400px]:not-sr-only">Private</span>
               </button>
             </div>
 
@@ -520,9 +522,8 @@ export default function App() {
           </nav>
         )}
 
-        <footer className="app-footer w-full pb-2 pt-1 px-5 z-10 text-center">
+        <footer className="app-footer w-full pb-1.5 pt-0.5 px-5 z-10 text-center">
           <p className="text-[10px] text-amber-900 leading-snug">Your app. Your data. Your choice.</p>
-          <p className="text-[10px] text-amber-900 leading-snug">&copy; 2026 <em className="italic font-bold">PeMA</em> · Built by द्रष्टा (Drasta)</p>
         </footer>
 
       </div>

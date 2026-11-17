@@ -37,7 +37,7 @@ Run: `npm run dev` (port 3000) or double-click `Start PeMA.command`. The owner v
 ## Design rules from the owner (17 Nov 2026)
 - No vertical scrolling: one page at a time. More content goes on another page via the bottom menu or a Next step, never below the fold. Sideways swipe rows are fine.
 - Keep the Sunrise colours. Sentence case, no forced capitals. Name: द्रष्टा (Drasta).
-- Footer is two lines: tagline, then "© 2026 PeMA · Built by द्रष्टा (Drasta)".
+- Header: "PeMA © 2026 · Built by द्रष्टा (Drasta)" on one line (PeMA not repeated). Footer: tagline only.
 
 ## Foundation (applies to all of Asta's apps; adopted 1 Nov 2026)
 Tagline: "Your app. Your data. Your choice."
