@@ -1,10 +1,11 @@
 // PeMA session relay (Cloudflare Worker). Holds the owner's Anthropic API key as a secret so app
 // users need no key. It never logs or stores check-ins or sessions. It only accepts requests from
 // the PeMA app, runs only PeMA's own prompts, caps sizes, and rate-limits each visitor.
-import Anthropic from "@anthropic-ai/sdk";
+// Plain fetch (no SDK) keeps the file small enough to paste into the Cloudflare dashboard.
 import { MEDITATION_SCHEMA, START_SYSTEM, ADAPT_SYSTEM } from "../src/prompts";
 import { detectCrisis } from "../src/safety";
 
+const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-sonnet-5-5";
 const MAX_BODY_BYTES = 16 * 1024;
 // A start query is the check-in plus a short profile; an adapt query also carries the current session
@@ -70,26 +71,31 @@ export default {
     // Backstop for the app's own check: crisis text is never sent to the AI
     if (detectCrisis(input.query)) return reply(422, { crisis: true }, origin);
 
-    const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 1 });
-    try {
-      const msg = await client.beta.messages.create({
+    const upstream = await fetch(ANTHROPIC_URL, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": env.ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "anthropic-beta": "server-side-fallback-2026-07-01",
+      },
+      body: JSON.stringify({
         model: MODEL,
         max_tokens: 4096,
-        betas: ["server-side-fallback-2026-07-01"],
         fallbacks: "default",
         system: SYSTEMS[input.mode],
-        tools: [{ name: "meditation_session", description: "Return the meditation session.", input_schema: MEDITATION_SCHEMA as any }],
+        tools: [{ name: "meditation_session", description: "Return the meditation session.", input_schema: MEDITATION_SCHEMA }],
         // This model rejects forced tool_choice; "auto" plus the instruction below still returns the tool call
         tool_choice: { type: "auto" },
         messages: [{ role: "user", content: `${input.query}\n\nRespond only by calling the meditation_session tool.` }],
-      } as any);
-      if (msg.stop_reason === "refusal") return reply(502, { error: "declined" }, origin);
-      const block = msg.content.find((b: any) => b.type === "tool_use") as any;
-      if (!block) return reply(502, { error: "no session" }, origin);
-      return reply(200, { session: block.input }, origin);
-    } catch (err: any) {
-      // Status only; the check-in is never logged
-      return reply(err?.status === 429 ? 429 : 502, { error: "upstream" }, origin);
-    }
+      }),
+    });
+    // Status only; the check-in is never logged
+    if (!upstream.ok) return reply(upstream.status === 429 ? 429 : 502, { error: "upstream" }, origin);
+    const msg: any = await upstream.json();
+    if (msg.stop_reason === "refusal") return reply(502, { error: "declined" }, origin);
+    const block = (msg.content || []).find((b: any) => b.type === "tool_use");
+    if (!block) return reply(502, { error: "no session" }, origin);
+    return reply(200, { session: block.input }, origin);
   },
 };
