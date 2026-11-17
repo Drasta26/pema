@@ -1,5 +1,7 @@
 # PeMA session relay
 
+Live at https://pema-relay.rentuk.workers.dev/ (deployed 17 Nov 2026 through the Cloudflare dashboard with the CEO's approval; key added by the CEO as a secret; rate limit binding 10 per 60 s, namespace 1002; logs off). ALLOWED_ORIGINS currently also includes http://localhost:3000 and http://192.168.0.226:3000 for testing; remove them at launch.
+
 Lets PeMA personalise sessions with Claude without users ever entering a key. The owner's Anthropic key is stored as a Cloudflare secret and is never in the app, this repository or the browser. Same pattern as the RentUK chat relay.
 
 ## What it does

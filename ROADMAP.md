@@ -63,7 +63,8 @@ Planned work, in priority order. Hours are rough estimates (about 60-80 hours in
 ## 9b. No key for users (done 17 Nov 2026)
 - [x] Bring-your-own-key removed (owner rule: never ask users for an API key). Old keys are cleared from devices.
 - [x] PeMA relay (`relay/worker.ts`, Cloudflare Worker): owner's key as a secret, PeMA prompts only, origin check, rate limit, size caps, crisis backstop, no logging; 7 tests.
-- [ ] Owner deploys the relay in Cloudflare and sets a monthly spend limit on the key.
+- [x] Relay live at https://pema-relay.rentuk.workers.dev/ (17 Nov): owner's PeMA key as a secret, rate limit 10/min, logs off; real session verified (~6 s).
+- [ ] At launch, remove the test origins (localhost, 192.168.0.226) from ALLOWED_ORIGINS.
 - [ ] Host PeMA (GitHub Pages at drasta26.github.io/pema needs a `/pema/` base path) and add that site to the relay's allowed origins.
 - [ ] Test a full Claude session through the deployed relay on a phone.
 
