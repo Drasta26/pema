@@ -1,11 +1,21 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { EmotionalState, MeditationSession, BreathPacing, FeedbackType } from "../src/types";
+import { EmotionalState, MeditationSession, BreathPacing, FeedbackType } from "./types";
+import { getApiKey } from "./apiKey";
 
-// Claude client. Key presence is checked per request so startup never crashes.
-const CLAUDE_MODEL = process.env.CLAUDE_MODEL || "claude-sonnet-5-5";
-const hasClaudeKey = () => !!process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_API_KEY !== "YOUR_ANTHROPIC_API_KEY";
-let _client: Anthropic | null = null;
-const claude = () => (_client ??= new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }));
+// Claude runs from the user's own device with the user's own key (stored only on the device).
+// Requests go straight from the browser to Anthropic; PeMA has no server in between.
+const CLAUDE_MODEL = "claude-sonnet-5-5";
+const hasClaudeKey = () => !!getApiKey();
+let _client: { key: string; client: Anthropic } | null = null;
+const claude = () => {
+  const key = getApiKey()!;
+  if (_client?.key !== key) _client = { key, client: new Anthropic({ apiKey: key, dangerouslyAllowBrowser: true }) };
+  return _client.client;
+};
+
+// Thrown when Anthropic rejects the key, so the app can tell the user instead of silently going offline
+export class KeyRejectedError extends Error {}
+const isKeyRejected = (err: any) => err?.status === 401 || err?.status === 403;
 
 // Ask Claude for a session object; tool use forces output to match MEDITATION_SCHEMA.
 async function callClaude(system: string, userQuery: string): Promise<any> {
@@ -488,7 +498,6 @@ export async function generateInitialSession(input: { description?: string; expl
   const cacheKey = [stateKey, descKey].filter(Boolean).sort().join("__");
 
   if (cacheKey && sessionCache.has(cacheKey)) {
-    console.log(`[Session cache hit] Serving cached session. Key: "${cacheKey}"`);
     const cached = sessionCache.get(cacheKey);
     return {
       ...cached,
@@ -500,7 +509,6 @@ export async function generateInitialSession(input: { description?: string; expl
 
   // Check if Claude API key exists, otherwise switch to local high-fidelity generator directly
   if (!hasClaudeKey()) {
-    console.warn(`[Claude API] ANTHROPIC_API_KEY is not configured. Activating ultra-reliable high-fidelity local session factory.`);
     const fallbackSess = generateRuleBasedSession(targetState);
     if (cacheKey) {
       sessionCache.set(cacheKey, fallbackSess);
@@ -595,12 +603,13 @@ Pacing: ${JSON.stringify(defaultMeta.pacing)}` : `No default technique: classify
     // Cache for identical future check-ins
     if (cacheKey) {
       sessionCache.set(cacheKey, finalResult);
-      console.log(`[Session cache] Saved session. Key: "${cacheKey}"`);
     }
 
     return finalResult;
   } catch (err: any) {
-    console.error(`[Claude API Exception] Live invocation failed. Reverting immediately to local static generation framework:`, err);
+    if (isKeyRejected(err)) throw new KeyRejectedError();
+    // Log the error type only, never the check-in text
+    console.error("Claude request failed; using an on-device session", err?.status ?? err?.name);
     const fallbackSess = generateRuleBasedSession(targetState);
     if (cacheKey) {
       sessionCache.set(cacheKey, fallbackSess);
@@ -616,7 +625,6 @@ export async function generateAdaptiveFeedback(
 ): Promise<MeditationSession> {
   // Graceful redirection helper if key is absent
   if (!hasClaudeKey()) {
-    console.warn(`[Claude API Feedback] No key detected. Utilizing resilient rule-based adaptation.`);
     return adaptLocalSession(currentSession, feedbackType, userText);
   }
 
@@ -679,7 +687,8 @@ Return a full, revised session object, adjusting steps so the user can continue 
       enhancements: data.enhancements || currentSession.enhancements
     };
   } catch (err: any) {
-    console.error(`[Claude API Feedback Exception] Adapting session fallback locally:`, err);
+    if (isKeyRejected(err)) throw new KeyRejectedError();
+    console.error("Claude request failed; adapting on the device", err?.status ?? err?.name);
     return adaptLocalSession(currentSession, feedbackType, userText);
   }
 }

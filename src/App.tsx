@@ -8,9 +8,13 @@ import GuidedLibrary from './components/GuidedLibrary';
 import MentalSpa from './components/MentalSpa';
 import QuickReset from './components/QuickReset';
 import InstallHelp from './components/InstallHelp';
+import AiKeyPanel from './components/AiKeyPanel';
+import { generateInitialSession, generateAdaptiveFeedback, KeyRejectedError } from './claudeService';
+import { stripPauseMarkers } from './sessionText';
+import { getApiKey } from './apiKey';
 import { registerServiceWorker } from './pwa';
 import { detectCrisis } from './safety';
-import { Calendar, RotateCcw, Award, Info, Lock, RefreshCw } from 'lucide-react';
+import { Calendar, RotateCcw, Award, Info, Lock, RefreshCw, KeyRound } from 'lucide-react';
 
 interface LocalSessionLog {
   id: string;
@@ -36,6 +40,9 @@ export default function App() {
   const [streak, setStreak] = useState(0);
   const [isConfirmingClear, setIsConfirmingClear] = useState(false);
   // Set when a new version of the app has been downloaded and is ready
+  const [showKeyPanel, setShowKeyPanel] = useState(false);
+  const [keyRejected, setKeyRejected] = useState(false);
+  const [hasKey, setHasKey] = useState(() => !!getApiKey());
   const [applyUpdate, setApplyUpdate] = useState<(() => void) | null>(null);
 
   useEffect(() => {
@@ -127,33 +134,19 @@ export default function App() {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      const response = await fetch('/api/meditation/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          description: data.description,
-          explicitState: data.explicitState
-        })
-      });
-
-      if (!response.ok) {
-        let errText = 'Failed to reach AI Meditation Coach server. Please verify your connection.';
-        try {
-          const errJson = await response.json();
-          if (errJson && errJson.error) {
-            errText = `Coach Server Error: ${errJson.error}`;
-          }
-        } catch (_) {}
-        throw new Error(errText);
-      }
-
-      const sessionObj = await response.json();
+      const sessionObj = stripPauseMarkers(await generateInitialSession({
+        description: data.description,
+        explicitState: data.explicitState
+      }));
       setSession(sessionObj);
       setCurrentScreen('player');
     } catch (err: any) {
-      setErrorMessage(navigator.onLine
-        ? (err.message || "An unexpected error occurred. Please try launching again.")
-        : "You're offline, so personalised sessions aren't available. The 60-second reset and the Mental SPA work without internet.");
+      if (err instanceof KeyRejectedError) {
+        setKeyRejected(true);
+        setShowKeyPanel(true);
+      } else {
+        setErrorMessage(err.message || "An unexpected error occurred. Please try launching again.");
+      }
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -169,33 +162,14 @@ export default function App() {
     setIsLoadingFeedback(true);
     setErrorMessage(null);
     try {
-      const response = await fetch('/api/meditation/feedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          currentSession: session,
-          feedbackType,
-          userText
-        })
-      });
-
-      if (!response.ok) {
-        let errText = 'Could not synchronize adaptive adjustments with Coach server.';
-        try {
-          const errJson = await response.json();
-          if (errJson && errJson.error) {
-            errText = `Coach Feedback Error: ${errJson.error}`;
-          }
-        } catch (_) {}
-        throw new Error(errText);
-      }
-
-      const updatedSession = await response.json();
+      const updatedSession = stripPauseMarkers(await generateAdaptiveFeedback(session, feedbackType, userText));
       // Maintain session ID for history consistency
       updatedSession.id = session.id;
       setSession(updatedSession);
     } catch (err: any) {
-      setErrorMessage(err.message || "Could not adapt session dynamically.");
+      setErrorMessage(err instanceof KeyRejectedError
+        ? "Anthropic didn't accept your AI key. Finish this session, then check the key on the home screen."
+        : err.message || "Could not adapt session dynamically.");
       console.error(err);
     } finally {
       setIsLoadingFeedback(false);
@@ -288,6 +262,15 @@ export default function App() {
                 <Award className="w-3 h-3 text-blue-500" />
                 <span className="text-custom-blue">{streak}d</span>
               </div>
+              <button
+                type="button"
+                onClick={() => { setCurrentScreen('checkin'); setShowKeyPanel(v => !v); }}
+                aria-label="Your AI key"
+                title={hasKey ? 'Claude is on, with your own key' : 'Add your own AI key for personalised sessions'}
+                className="flex items-center justify-center w-6 h-6 bg-blue-50/40 border border-blue-100/30 rounded-full text-custom-blue cursor-pointer"
+              >
+                <KeyRound className={`w-3 h-3 ${hasKey ? '' : 'opacity-60'}`} />
+              </button>
               <div
                 className="flex items-center gap-1 bg-blue-50/40 border border-blue-100/30 px-2 py-0.5 rounded-full text-[8px] font-mono font-bold text-custom-blue"
                 title="Your history stays on this device"
@@ -328,6 +311,13 @@ export default function App() {
             </div>
           )}
 
+          {currentScreen === 'checkin' && showKeyPanel && (
+            <AiKeyPanel
+              rejected={keyRejected}
+              onClose={() => { setShowKeyPanel(false); setKeyRejected(false); }}
+              onChange={() => { setHasKey(!!getApiKey()); setKeyRejected(false); }}
+            />
+          )}
           {currentScreen === 'checkin' && <InstallHelp />}
 
           {/* Core App Screens */}

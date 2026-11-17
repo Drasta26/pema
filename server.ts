@@ -1,63 +1,13 @@
-import dotenv from "dotenv";
-dotenv.config({ path: ".env.local" });
-dotenv.config();
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import { generateInitialSession, generateAdaptiveFeedback } from "./server/claudeService";
-import { detectCrisis } from "./src/safety";
 
-// The model writes [pause 2s] cues for spoken pacing; they are not shown on screen
-function stripPauseMarkers<T>(value: T): T {
-  if (typeof value === "string") return value.replace(/\s*\[pause[^\]]*\]\s*/gi, " ").replace(/\s+/g, " ").trim() as T;
-  if (Array.isArray(value)) return value.map(stripPauseMarkers) as T;
-  if (value && typeof value === "object") {
-    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, stripPauseMarkers(v)])) as T;
-  }
-  return value;
-}
-
+// PeMA has no API of its own: the app talks to Anthropic directly with the user's key.
+// This server only serves the app, so any static host works in production.
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json());
-
-  // API Route: Initiate a personalized meditation session
-  app.post("/api/meditation/start", async (req, res) => {
-    try {
-      const { description, explicitState } = req.body;
-      // Backstop for the on-device check: crisis text is never sent to Claude
-      if (detectCrisis(description)) {
-        return res.status(422).json({ crisis: true, error: "Please see the support options." });
-      }
-      const session = await generateInitialSession({ description, explicitState });
-      res.json(stripPauseMarkers(session));
-    } catch (error: any) {
-      console.error("Error initiating session:", error);
-      res.status(500).json({ error: error?.message || "Failed to generate meditation session" });
-    }
-  });
-
-  // API Route: Handle real-time user state adaptive adjustments
-  app.post("/api/meditation/feedback", async (req, res) => {
-    try {
-      const { currentSession, feedbackType, userText } = req.body;
-      if (detectCrisis(userText)) {
-        return res.status(422).json({ crisis: true, error: "Please see the support options." });
-      }
-      if (!currentSession) {
-        return res.status(400).json({ error: "currentSession is required for feedback correction" });
-      }
-      const updatedSession = await generateAdaptiveFeedback(currentSession, feedbackType, userText);
-      res.json(stripPauseMarkers(updatedSession));
-    } catch (error: any) {
-      console.error("Error processing adaptive feedback:", error);
-      res.status(500).json({ error: error?.message || "Failed to dynamically adjust meditation session" });
-    }
-  });
-
-  // Mount Vite developer rendering engine middleware depending on actual NODE_ENV context
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
