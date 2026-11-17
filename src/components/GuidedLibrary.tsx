@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Play, Sparkles, ChevronRight, Wind } from 'lucide-react';
+import { Play, Sparkles, ChevronRight, Wind, X } from 'lucide-react';
 import { GUIDED_VIDEOS } from '../content';
 
 const TILE_GRADIENTS = [
@@ -58,55 +58,64 @@ export function PracticeCards({ onStartSpa, onStartReset }: PracticeCardsProps) 
 
 // Videos load only when tapped, from youtube-nocookie.com, so nothing is
 // shared with YouTube until the user chooses to watch.
+// All videos sit in one grid so the page never scrolls; a video plays over the page.
 export default function GuidedLibrary() {
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const playing = GUIDED_VIDEOS.find(v => v.id === playingId);
 
   return (
-    <div className="px-4 pt-3 space-y-4 animate-fade-in">
-      <div className="space-y-2.5">
-        <h1 className="text-xl font-serif italic font-medium text-amber-950 text-center">Guided by द्रष्टा (Drasta)</h1>
-        <p className="text-xs text-stone-500 text-center">Swipe sideways for more. Videos load only when you tap play.</p>
+    <div className="h-full px-3 pt-2 pb-1 flex flex-col gap-2 animate-fade-in">
+      <div className="text-center">
+        <h1 className="text-xl font-serif italic font-medium text-amber-950">Guided by द्रष्टा (Drasta)</h1>
+        <p className="text-[11px] text-stone-500">Videos load only when you tap play.</p>
+      </div>
 
-        {playingId && (
+      <div className="flex-1 min-h-0 grid grid-cols-3 grid-rows-3 gap-2">
+        {GUIDED_VIDEOS.map((v, i) => (
+          <button
+            key={v.id}
+            type="button"
+            onClick={() => setPlayingId(v.id)}
+            className="min-h-0 flex flex-col text-left glass-panel rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-0.5"
+          >
+            {/* Local colour tiles, not YouTube thumbnails, so nothing loads from Google until play */}
+            <div className="relative flex-1 min-h-0" style={{ background: TILE_GRADIENTS[i % TILE_GRADIENTS.length] }}>
+              <span className="absolute inset-0 flex items-center justify-center">
+                <span className="w-7 h-7 rounded-full bg-white/90 flex items-center justify-center shadow">
+                  <Play className="w-3 h-3 text-orange-600 ml-0.5" />
+                </span>
+              </span>
+              <span className="absolute bottom-1 right-1 text-[9px] text-white bg-black/60 rounded px-1">{v.duration}</span>
+            </div>
+            <div className="px-1.5 py-1">
+              <span className="block text-[9px] text-blue-600 leading-tight">{v.tag}</span>
+              <span className="block text-[10px] text-stone-800 leading-tight line-clamp-2">{v.title}</span>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {playing && (
+        <div className="absolute inset-0 z-20 flex flex-col justify-center gap-2 px-3 bg-[#2a1036]/80 backdrop-blur-sm animate-fade-in">
           <div className="rounded-2xl overflow-hidden aspect-video bg-black">
             <iframe
               className="w-full h-full"
-              src={`https://www.youtube-nocookie.com/embed/${playingId}?autoplay=1&rel=0`}
-              title="Guided meditation"
+              src={`https://www.youtube-nocookie.com/embed/${playing.id}?autoplay=1&rel=0`}
+              title={playing.title}
               allow="autoplay; encrypted-media; picture-in-picture"
               allowFullScreen
             />
           </div>
-        )}
-
-        <div className="flex gap-2.5 overflow-x-auto scroller-none pb-1 -mx-4 px-4">
-          {GUIDED_VIDEOS.map((v, i) => (
-            <button
-              key={v.id}
-              type="button"
-              onClick={() => setPlayingId(v.id)}
-              className={`shrink-0 w-36 text-left glass-panel rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-0.5 ${playingId === v.id ? 'ring-2 ring-orange-500' : ''}`}
-            >
-              {/* Local colour tiles, not YouTube thumbnails, so nothing loads from Google until play */}
-              <div
-                className="relative aspect-video"
-                style={{ background: TILE_GRADIENTS[i % TILE_GRADIENTS.length] }}
-              >
-                <span className="absolute inset-0 flex items-center justify-center">
-                  <span className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center shadow">
-                    <Play className="w-3.5 h-3.5 text-orange-600 ml-0.5" />
-                  </span>
-                </span>
-                <span className="absolute bottom-1 right-1 text-[10px] text-white bg-black/60 rounded px-1">{v.duration}</span>
-              </div>
-              <div className="p-2">
-                <span className="block text-[10px] text-blue-600">{v.tag}</span>
-                <span className="block text-xs text-stone-800 leading-snug line-clamp-2">{v.title}</span>
-              </div>
-            </button>
-          ))}
+          <span className="block text-sm text-white text-center">{playing.title}</span>
+          <button
+            type="button"
+            onClick={() => setPlayingId(null)}
+            className="mx-auto flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/90 text-sm text-stone-900 cursor-pointer"
+          >
+            <X className="w-4 h-4" /> Close
+          </button>
         </div>
-      </div>
+      )}
     </div>
   );
 }
