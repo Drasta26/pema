@@ -8,7 +8,7 @@ Anyone who wants a quick, private mindfulness break: a few minutes of guided bre
 ## Built with
 - React, TypeScript, Vite and Tailwind CSS (front end)
 - Express (small local server that only serves the app; any static host works)
-- Claude API via the Anthropic SDK, called straight from the app with the user's own key
+- Claude API through the PeMA relay (`relay/`, a Cloudflare Worker that holds the owner's key), so users need no key or setup
 - Fonts (Inter and Fraunces) bundled with the app
 - Built-in on-device sessions when no key is added
 
@@ -22,8 +22,8 @@ npm run dev                  # opens on http://localhost:3000
 
 On a Mac you can also double-click `Start PeMA.command`. Without a key, PeMA builds sessions on your device.
 
-## Your AI key
-Personalised sessions use Claude with your own Anthropic key. Tap the key button at the top of PeMA, paste your key and tap **Save**. Get a key at console.anthropic.com and set a spending limit there; Anthropic bills your account directly. You can remove the key at any time from the same place.
+## Personalised sessions
+Personalised sessions use Claude through the PeMA relay. Users need no key or setup. If the relay is unavailable or you are offline, PeMA builds the session on your device. See [relay/README.md](relay/README.md) to deploy the relay.
 
 ## Tests
 
@@ -50,11 +50,11 @@ NODE_ENV=production npm start
 
 ## Privacy
 - Private by design: no accounts or cloud storage. Session history stays in your browser on your device.
-- We never see your data. Your AI key is stored only in your browser on your device, and your check-in goes straight from your device to Anthropic. PeMA has no server of its own in between, and nothing is logged.
+- We never store or log your data. Your history stays on your device. To personalise a session, your check-in passes through the PeMA relay to Anthropic; the relay never logs or stores it.
 - Support messages: if a check-in suggests someone may need urgent help, PeMA pauses the session, shows UK contact details for people who can help, and does not send that text to the AI.
 - The offline cache stores only PeMA's own files, never check-in text or session content.
 - No analytics, trackers or third-party requests: the only other address PeMA contacts is api.anthropic.com, and only when you have added a key.
-- Export or delete: tap **Private** at the top to download your history as a file, or delete all your data (history, streak and AI key) from the device.
+- Export or delete: open **More**, then **Your data**, to download your history as a file or delete all your data (history and streak) from the device.
 - The repository contains no real user data.
 
 ## History

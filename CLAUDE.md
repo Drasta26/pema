@@ -16,7 +16,7 @@ Owner: Dr Asta Ratna Prajapati. UK English. Keep replies concise; put any owner 
 - Versioning: owner wants every iteration saved as a new dated version. Use git tags (e.g. `v2-claude-2026-10-30`) plus dated folders/ZIPs for major milestones.
 
 ## Stack
-React 19 + Vite 6 + Tailwind 4 (src/), Express server (server.ts) only serves the app. Bring your own key (v2.12, 17 Nov): Claude via `@anthropic-ai/sdk` in `src/claudeService.ts`, called from the browser with the user's key from `src/apiKey.ts` (localStorage `pema.anthropicKey`), model claude-sonnet-5-5, tool_choice auto. No accounts: session history is kept in the browser's localStorage on the user's device. Offline rule-based sessions are used when no API key is set.
+React 19 + Vite 6 + Tailwind 4 (src/), Express server (server.ts) only serves the app. Personalised sessions (v2.16, 17 Nov): the app posts {mode, query} to the PeMA relay (`relay/worker.ts`, Cloudflare Worker, `SESSION_RELAY` in `src/claudeService.ts`), which holds the owner's key as a secret and runs only the prompts in `src/prompts.ts`; model claude-sonnet-5-5, tool_choice auto, fallbacks default. Users never enter a key. Single-file build for the Cloudflare dashboard: `npm run relay:build` -> `relay/dist/worker.js`. No accounts: session history is kept in the browser's localStorage on the user's device. On-device rule-based sessions are used when the relay is unreachable.
 Run: `npm run dev` (port 3000) or double-click `Start PeMA.command`. The owner views it in the Claude app browser pane.
 30 Oct: Claude sessions verified live (key fixed; tool_choice switched to auto because claude-sonnet-5-5 rejects forced tool choice).
 

@@ -60,11 +60,12 @@ Planned work, in priority order. Hours are rough estimates (about 60-80 hours in
 - [x] Fonts self-hosted, so no request goes to Google (17 Nov).
 - [ ] Mobile performance: split the code so the first screen loads less JavaScript, and serve files compressed (most hosts do this).
 
-## 9b. Bring your own key (done 17 Nov 2026)
-- [x] Claude called from the app with the user's own key, stored only on their device.
-- [x] Key screen: add, see masked, remove; clear message when Anthropic rejects a key.
-- [x] Server no longer has an API or a key; it only serves the app.
-- [ ] Test a full Claude session with a real key on a phone.
+## 9b. No key for users (done 17 Nov 2026)
+- [x] Bring-your-own-key removed (owner rule: never ask users for an API key). Old keys are cleared from devices.
+- [x] PeMA relay (`relay/worker.ts`, Cloudflare Worker): owner's key as a secret, PeMA prompts only, origin check, rate limit, size caps, crisis backstop, no logging; 7 tests.
+- [ ] Owner deploys the relay in Cloudflare and sets a monthly spend limit on the key.
+- [ ] Host PeMA (GitHub Pages at drasta26.github.io/pema needs a `/pema/` base path) and add that site to the relay's allowed origins.
+- [ ] Test a full Claude session through the deployed relay on a phone.
 
 ## 9c. Foundation check (done 17 Nov 2026)
 - [x] "Your data" panel: export history, delete all data (history, streak, key).

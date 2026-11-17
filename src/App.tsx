@@ -8,16 +8,16 @@ import GuidedLibrary, { PracticeCards } from './components/GuidedLibrary';
 import MentalSpa from './components/MentalSpa';
 import QuickReset from './components/QuickReset';
 import InstallHelp from './components/InstallHelp';
-import AiKeyPanel from './components/AiKeyPanel';
 import YourDataPanel from './components/YourDataPanel';
 import { stripPauseMarkers } from './sessionText';
-import { getApiKey, removeApiKey } from './apiKey';
+// Keys from the old bring-your-own-key version are removed from the device
+try { localStorage.removeItem('pema.anthropicKey'); } catch { /* storage unavailable */ }
 
 // Claude's code loads only when a session starts, keeping the first screen fast
 const loadClaude = () => import('./claudeService');
 import { registerServiceWorker } from './pwa';
 import { detectCrisis } from './safety';
-import { Calendar, ShieldCheck, Award, Info, Lock, RefreshCw, KeyRound, Home, Sparkles, PlayCircle, Menu, ChevronRight } from 'lucide-react';
+import { Calendar, ShieldCheck, Award, Info, Lock, RefreshCw, Home, Sparkles, PlayCircle, Menu, ChevronRight } from 'lucide-react';
 
 interface LocalSessionLog {
   id: string;
@@ -45,9 +45,6 @@ export default function App() {
   // Pages on the home screen, chosen from the bottom menu; each fits without scrolling
   const [tab, setTab] = useState<'checkin' | 'practise' | 'guided' | 'history' | 'more'>('checkin');
   // Set when a new version of the app has been downloaded and is ready
-  const [showKeyPanel, setShowKeyPanel] = useState(false);
-  const [keyRejected, setKeyRejected] = useState(false);
-  const [hasKey, setHasKey] = useState(() => !!getApiKey());
   const [applyUpdate, setApplyUpdate] = useState<(() => void) | null>(null);
 
   useEffect(() => {
@@ -137,12 +134,7 @@ export default function App() {
       setSession(sessionObj);
       setCurrentScreen('player');
     } catch (err: any) {
-      if (err?.name === 'KeyRejectedError') {
-        setKeyRejected(true);
-        setShowKeyPanel(true);
-      } else {
-        setErrorMessage(err.message || "An unexpected error occurred. Please try launching again.");
-      }
+      setErrorMessage(err.message || "An unexpected error occurred. Please try launching again.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -164,9 +156,7 @@ export default function App() {
       updatedSession.id = session.id;
       setSession(updatedSession);
     } catch (err: any) {
-      setErrorMessage(err?.name === 'KeyRejectedError'
-        ? "Anthropic didn't accept your AI key. Finish this session, then check the key on the home screen."
-        : err.message || "Could not adapt session dynamically.");
+      setErrorMessage(err.message || "Could not adapt session dynamically.");
       console.error(err);
     } finally {
       setIsLoadingFeedback(false);
@@ -211,7 +201,7 @@ export default function App() {
     calculateStreak(updatedHistory);
   };
 
-  // Downloads the history as a JSON file the user keeps. The AI key is never included.
+  // Downloads the history as a JSON file the user keeps.
   const handleExportHistory = () => {
     const file = new Blob([JSON.stringify({ app: 'PeMA', exported: new Date().toISOString(), history }, null, 2)], { type: 'application/json' });
     const link = document.createElement('a');
@@ -224,10 +214,8 @@ export default function App() {
   // Removes everything PeMA keeps on this device
   const handleDeleteAll = () => {
     localStorage.removeItem('ai_meditation_logs');
-    removeApiKey();
     setHistory([]);
     setStreak(0);
-    setHasKey(false);
     setShowDataPanel(false);
   };
 
@@ -303,15 +291,8 @@ export default function App() {
           )}
 
           {/* Settings panels open over the page, so the page never grows or scrolls */}
-          {currentScreen === 'checkin' && (showKeyPanel || showDataPanel) && (
-            <div className="absolute inset-0 z-20 pt-1 bg-[#ffe3c2]/70 backdrop-blur-sm" onClick={e => { if (e.target === e.currentTarget) { setShowKeyPanel(false); setShowDataPanel(false); } }}>
-          {showKeyPanel && (
-            <AiKeyPanel
-              rejected={keyRejected}
-              onClose={() => { setShowKeyPanel(false); setKeyRejected(false); }}
-              onChange={() => { setHasKey(!!getApiKey()); setKeyRejected(false); }}
-            />
-          )}
+          {currentScreen === 'checkin' && showDataPanel && (
+            <div className="absolute inset-0 z-20 pt-1 bg-[#ffe3c2]/70 backdrop-blur-sm" onClick={e => { if (e.target === e.currentTarget) { setShowDataPanel(false); } }}>
           {showDataPanel && (
             <YourDataPanel
               historyCount={history.length}
@@ -333,7 +314,6 @@ export default function App() {
             <div className="px-4 pt-3 space-y-3 animate-fade-in">
               <h1 className="text-xl font-serif italic font-medium text-amber-950 text-center">More</h1>
               {([
-                [KeyRound, 'Your AI key', hasKey ? 'On: Claude uses your own key' : 'Add your key for personalised sessions', () => setShowKeyPanel(true)],
                 [Lock, 'Your data', 'Private on this device. Export or delete', () => setShowDataPanel(true)],
               ] as const).map(([Icon, title, detail, open]) => (
                 <button
@@ -504,7 +484,7 @@ export default function App() {
 
         {/* Bottom menu, only on the home pages; sessions use the full screen */}
         {currentScreen === 'checkin' && (
-          <nav className="app-menu w-full z-10 grid grid-cols-5 pb-[env(safe-area-inset-bottom)]" aria-label="Pages">
+          <nav className="app-footer w-full z-10 grid grid-cols-5 pb-[env(safe-area-inset-bottom)]" aria-label="Pages">
             {([
               ['checkin', 'Check-in', Home],
               ['practise', 'Practise', Sparkles],
@@ -515,11 +495,11 @@ export default function App() {
               <button
                 key={key}
                 type="button"
-                onClick={() => { setTab(key); setShowKeyPanel(false); setShowDataPanel(false); }}
+                onClick={() => { setTab(key); setShowDataPanel(false); }}
                 aria-current={tab === key ? 'page' : undefined}
-                className={`flex flex-col items-center gap-0.5 pt-2 pb-1 text-[13px] cursor-pointer transition-colors ${tab === key ? 'font-bold' : 'opacity-70'}`}
+                className={`flex flex-col items-center gap-0.5 pt-2 pb-1 text-[13px] cursor-pointer transition-colors ${tab === key ? 'text-orange-700 font-semibold' : 'text-stone-500'}`}
               >
-                <Icon className={`w-5 h-5 ${tab === key ? 'stroke-[2.5]' : ''}`} />
+                <Icon className={`w-5 h-5 ${tab === key ? 'text-orange-600' : 'text-stone-400'}`} />
                 {label}
               </button>
             ))}

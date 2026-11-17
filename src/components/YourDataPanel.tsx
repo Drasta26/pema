@@ -22,7 +22,7 @@ export default function YourDataPanel({ historyCount, onExport, onDeleteAll, onC
         </div>
 
         <p className="text-xs text-stone-700 leading-relaxed">
-          Your history and your AI key are stored only on this device. There are no accounts and no tracking. If you add a key, your check-in goes straight to Anthropic to build your session. We never see or store your data.
+          Your history is stored only on this device. There are no accounts and no tracking. To personalise a session, your check-in passes through PeMA's relay to Anthropic's AI. We never store or log it.
         </p>
 
         <div className="flex flex-wrap gap-2">
@@ -46,7 +46,7 @@ export default function YourDataPanel({ historyCount, onExport, onDeleteAll, onC
         </div>
         {confirming && (
           <p className="text-[11px] text-stone-600">
-            This removes your history, streak and AI key from this device. It can’t be undone.{' '}
+            This removes your history and streak from this device. It can’t be undone.{' '}
             <button type="button" onClick={() => setConfirming(false)} className="underline cursor-pointer">Cancel</button>
           </p>
         )}

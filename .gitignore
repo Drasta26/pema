@@ -8,3 +8,4 @@ coverage/
 !.env.example
 .env*.local
 server/users.json
+relay/dist/

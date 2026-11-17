@@ -1,0 +1,20 @@
+# PeMA session relay. Deploy only with the CEO's approval.
+name = "pema-relay"
+main = "worker.ts"
+compatibility_date = "2026-11-01"
+
+[vars]
+# Only these pages may use the relay (comma-separated, no trailing slash).
+ALLOWED_ORIGINS = "https://drasta26.github.io"
+
+# About 10 requests a minute per visitor (approximate, per Cloudflare location).
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1002"
+
+  [ratelimits.simple]
+  limit = 10
+  period = 60
+
+# The Anthropic key is NOT in this file. The owner adds it as a secret in the Cloudflare dashboard
+# (Settings > Variables and secrets > ANTHROPIC_API_KEY), or: npx wrangler secret put ANTHROPIC_API_KEY

@@ -7,8 +7,6 @@
 @import "tailwindcss";
 
 @theme {
-  /* Owner's band colour (17 Nov): warm orange glow for the top band, Begin and the menu */
-  --band-orange: radial-gradient(ellipse at 50% 50%, #ffa747 0%, #ff9a49 55%, #fd924c 100%);
   --font-sans: "Inter Variable", "Inter", "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, "Noto Sans Devanagari", serif;
   --font-display: "Fraunces Variable", "Fraunces", "Noto Sans Devanagari", Georgia, serif;
@@ -147,9 +145,9 @@ body {
 }
 
 .futuristic-btn {
-  background: var(--band-orange);
+  background: linear-gradient(120deg, #ff6b4a 0%, #f2577a 55%, #e8458b 100%);
   box-shadow: 
-    0 8px 25px -5px rgba(255, 140, 60, 0.45), 
+    0 8px 25px -5px rgba(232, 69, 139, 0.35), 
     inset 0 1px 0 rgba(255, 255, 255, 0.4),
     inset 0 -2px 6px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -324,7 +322,7 @@ body {
 .mobile-device-wrapper .bg-orange-600 span,
 .mobile-device-wrapper .futuristic-btn,
 .mobile-device-wrapper .futuristic-btn span {
-  color: #2a1036 !important;
+  color: #ffffff !important;
 }
 
 /* Ensure selected tags or active status icons stand out */
@@ -376,23 +374,16 @@ body {
 
 /* Sunrise header and footer: colour inside the app, white text on top */
 .app-header {
-  background: var(--band-orange);
-  box-shadow: 0 6px 20px -8px rgba(255, 140, 60, 0.6);
-}
-/* Bottom menu band */
-.app-menu {
-  background: var(--band-orange);
-  box-shadow: 0 -6px 20px -10px rgba(255, 140, 60, 0.6);
+  background: linear-gradient(110deg, #ff6b4a 0%, #f2577a 55%, #e8458b 100%);
+  box-shadow: 0 6px 20px -8px rgba(232, 69, 139, 0.6);
 }
 .app-footer {
   background: linear-gradient(110deg, rgba(255, 107, 74, 0.16), rgba(232, 69, 139, 0.2));
 }
 .mobile-device-wrapper .app-header,
 .mobile-device-wrapper .app-header *,
-.mobile-device-wrapper .app-header .text-custom-blue,
-.mobile-device-wrapper .app-menu,
-.mobile-device-wrapper .app-menu * {
-  color: #2a1036 !important;
+.mobile-device-wrapper .app-header .text-custom-blue {
+  color: #ffffff !important;
 }
 .mobile-device-wrapper .app-header .rounded-full {
   background: rgba(255, 255, 255, 0.2) !important;
