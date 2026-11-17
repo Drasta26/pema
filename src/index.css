@@ -414,3 +414,8 @@ body {
     height: 100dvh;
   }
 }
+
+/* Install guide arrow: points at Safari's toolbar on iPhone */
+.install-arrow { transform: translateX(-50%); animation: install-bounce 1.2s ease-in-out infinite; }
+@keyframes install-bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 10px); } }
+@media (prefers-reduced-motion: reduce) { .install-arrow { animation: none; } }

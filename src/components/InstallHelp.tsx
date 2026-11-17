@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Download, Share, X } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { ArrowDown, Check, Download, Ellipsis, Share, SquarePlus, X } from 'lucide-react';
 import { currentlyInstalled, currentlyIos } from '../pwa';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -12,6 +13,7 @@ export default function InstallHelp() {
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(() => currentlyInstalled());
   const [hidden, setHidden] = useState(false);
+  const [guide, setGuide] = useState(false);
   const isIos = currentlyIos();
 
   useEffect(() => {
@@ -57,9 +59,16 @@ export default function InstallHelp() {
             </button>
           </>
         ) : (
-          <span className="flex-1 text-[13px] text-stone-700">
-            Install PeMA: tap Share <Share className="inline w-3.5 h-3.5 -mt-0.5" aria-label="Share" />, then Add to Home Screen.
-          </span>
+          <>
+            <span className="flex-1 text-[13px] text-stone-700">Add PeMA to your home screen.</span>
+            <button
+              type="button"
+              onClick={() => setGuide(true)}
+              className="futuristic-btn flex items-center gap-1 px-3 py-1.5 rounded-full text-xs text-white cursor-pointer shrink-0"
+            >
+              <Download className="w-3.5 h-3.5" /> Install
+            </button>
+          </>
         )}
         <button
           type="button"
@@ -70,6 +79,56 @@ export default function InstallHelp() {
           <X className="w-4 h-4" />
         </button>
       </div>
+      {guide && createPortal(<IosGuide onClose={() => setGuide(false)} />, document.body)}
+    </div>
+  );
+}
+
+// iPhone and iPad do not let websites install themselves, so show a short picture guide
+// with an arrow pointing at Safari's toolbar.
+function IosGuide({ onClose }: { onClose: () => void }) {
+  const safari = !/CriOS|FxiOS|EdgiOS|OPiOS/i.test(navigator.userAgent);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+  const step = 'w-10 h-10 rounded-xl grid place-items-center shrink-0 bg-[#e8458b]/10 text-[#e8458b]';
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="install-guide-title"
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+      className="fixed inset-0 z-[1000] flex items-end justify-center bg-[#2a1036]/40 px-4 pt-4 pb-[calc(84px+env(safe-area-inset-bottom))]"
+    >
+      <div className="rounded-3xl p-5 w-full max-w-sm text-center text-[#2a1036] bg-white/95 shadow-2xl">
+        <img src="/icons/icon-192.png" alt="" className="w-14 h-14 rounded-2xl mx-auto" />
+        <h2 id="install-guide-title" className="font-display text-lg mt-2 mb-3">Add PeMA to your home screen</h2>
+        <ol className="grid gap-2.5 text-left text-sm mb-4">
+          <li className="flex items-center gap-3">
+            <span className={step}><Share className="w-5 h-5" /></span>
+            <span>
+              Tap <b>Share</b>{safari ? ' in the bar below.' : ' in your browser’s menu.'}
+              {safari && <small className="block text-xs text-stone-500">Can’t see it? Tap <Ellipsis className="inline w-3.5 h-3.5" aria-label="more" /> first.</small>}
+            </span>
+          </li>
+          <li className="flex items-center gap-3">
+            <span className={step}><SquarePlus className="w-5 h-5" /></span>
+            <span>Tap <b>Add to Home Screen</b>.<small className="block text-xs text-stone-500">Scroll down or tap “View more” if needed.</small></span>
+          </li>
+          <li className="flex items-center gap-3">
+            <span className={step}><Check className="w-5 h-5" /></span>
+            <span>Tap <b>Add</b>. PeMA appears on your home screen.</span>
+          </li>
+        </ol>
+        <button type="button" autoFocus onClick={onClose} className="futuristic-btn w-full py-3 rounded-full text-white cursor-pointer">Got it</button>
+      </div>
+      {safari && (
+        <div aria-hidden="true" className="install-arrow absolute left-1/2 bottom-[calc(16px+env(safe-area-inset-bottom))] w-13 h-13 rounded-full grid place-items-center text-white futuristic-btn">
+          <ArrowDown className="w-7 h-7" />
+        </div>
+      )}
     </div>
   );
 }
