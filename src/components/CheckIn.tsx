@@ -334,7 +334,7 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
             </button>
 
             {/* Stepper Dot Indicators */}
-            <div className="flex gap-1.5 justify-center items-center">
+            <div className="flex justify-center items-center">
               {INSPIRING_QUOTES.map((_, idx) => (
                 <button
                   type="button"
@@ -346,11 +346,14 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
                       setFadeTrigger(true);
                     }, 250);
                   }}
-                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                    idx === currentQuoteIndex ? 'w-3.5 bg-orange-600' : 'w-1.5 bg-orange-200/50 hover:bg-orange-300/50'
-                  }`}
+                  className="group -my-[9px] p-[9px] cursor-pointer"
                   aria-label={`Go to quote ${idx + 1}`}
-                />
+                >
+                  {/* Small dot inside a larger tap area */}
+                  <span className={`block h-1.5 rounded-full transition-all duration-300 ${
+                    idx === currentQuoteIndex ? 'w-3.5 bg-orange-600' : 'w-1.5 bg-orange-200/50 group-hover:bg-orange-300/50'
+                  }`} />
+                </button>
               ))}
             </div>
 

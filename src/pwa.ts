@@ -29,7 +29,12 @@ export function registerServiceWorker(onUpdate: (applyUpdate: () => void) => voi
     try {
       const registration = await navigator.serviceWorker.register('/sw.js');
 
-      const offerUpdate = (worker: ServiceWorker) => onUpdate(() => worker.postMessage('SKIP_WAITING'));
+      // Reload only after the user taps update, not when the first worker takes control
+      let updateRequested = false;
+      const offerUpdate = (worker: ServiceWorker) => onUpdate(() => {
+        updateRequested = true;
+        worker.postMessage('SKIP_WAITING');
+      });
 
       // An update already downloaded while the app was closed
       if (registration.waiting && navigator.serviceWorker.controller) offerUpdate(registration.waiting);
@@ -44,7 +49,7 @@ export function registerServiceWorker(onUpdate: (applyUpdate: () => void) => voi
 
       let reloading = false;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (reloading) return;
+        if (!updateRequested || reloading) return;
         reloading = true;
         window.location.reload();
       });
