@@ -488,7 +488,7 @@ export default function App() {
             <p className="text-[9px] font-mono text-amber-900 leading-relaxed">
               &copy; 2026 <em className="italic font-bold">PeMA</em>. All personal logs stored locally.
             </p>
-            <p className="text-[11px] font-sans text-amber-900" style={{ fontFamily: '"Inter", "Noto Sans Devanagari", sans-serif' }}>
+            <p className="text-[11px] font-sans text-amber-900" style={{ fontFamily: '"Inter Variable", sans-serif' }}>
               Built by द्रष्टा (DrAsta)
             </p>
             <p className="text-[8px] font-sans text-stone-400 leading-normal px-2">

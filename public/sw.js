@@ -52,12 +52,11 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Same-origin files and Google Fonts: cache first, then network (and keep a copy)
-  const cacheable = url.origin === self.location.origin || url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
-  if (!cacheable) return;
+  // Same-origin files: cache first, then network (and keep a copy)
+  if (url.origin !== self.location.origin) return;
   event.respondWith(
     caches.match(request).then(cached => cached || fetch(request).then(res => {
-      if (res.ok || res.type === 'opaque') {
+      if (res.ok) {
         const copy = res.clone();
         caches.open(CACHE_VERSION).then(cache => cache.put(request, copy));
       }
