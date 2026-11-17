@@ -270,8 +270,16 @@ body {
     border-radius: 0;
     max-width: 100%;
     box-shadow: none;
-    min-height: 100vh;
   }
+}
+
+/* Floating glass tagline */
+.tagline-pill {
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 6px 20px -8px rgba(232, 69, 139, 0.45);
 }
 
 /* Custom Dark Blue Typography Rules */
@@ -384,4 +392,11 @@ body {
 .mobile-device-wrapper .app-header .rounded-xl {
   background: rgba(255, 255, 255, 0.25) !important;
   border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Short phones: the install tip takes the daily reminder's place until installed or dismissed */
+@media (max-height: 760px) {
+  .checkin-page:has(.install-tip) .daily-reminder {
+    display: none;
+  }
 }

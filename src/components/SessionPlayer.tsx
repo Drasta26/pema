@@ -247,7 +247,7 @@ export default function SessionPlayer({
 
   // One page, no scrolling: header line, breathing orb, current step, quick adjustments
   return (
-    <div className="w-full h-full px-3 py-2 flex flex-col gap-2.5 animate-fade-in text-stone-800">
+    <div className="w-full h-full px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex flex-col gap-2 animate-fade-in text-stone-800">
 
       {/* Technique, reflection, time and sound */}
       <div className="glass-panel rounded-2xl px-4 py-2.5 border border-orange-100/50 shadow-sm space-y-1.5">
@@ -282,7 +282,7 @@ export default function SessionPlayer({
 
       {/* Breathing orb */}
       <div className="flex-1 min-h-0 flex flex-col items-center justify-center gap-2">
-        <div className="relative flex items-center justify-center h-36 w-36">
+        <div className="relative flex items-center justify-center h-28 w-28 [@media(min-height:700px)]:h-32 [@media(min-height:700px)]:w-32 [@media(min-height:740px)]:h-40 [@media(min-height:740px)]:w-40">
           {isPlaying && (
             <>
               <div className="absolute inset-0 water-ripple-ring" />

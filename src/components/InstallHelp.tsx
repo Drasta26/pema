@@ -42,12 +42,12 @@ export default function InstallHelp() {
   };
 
   return (
-    <div className="px-4 pt-3">
+    <div className="install-tip">
       <div className="glass-panel rounded-2xl p-3 flex items-center gap-3">
         <img src="/icons/icon-192.png" alt="" className="w-9 h-9 rounded-xl shrink-0" />
         {installEvent ? (
           <>
-            <span className="flex-1 text-xs text-stone-700">Add PeMA to your home screen. It works offline too.</span>
+            <span className="flex-1 text-[13px] text-stone-700">Add PeMA to your home screen. It works offline too.</span>
             <button
               type="button"
               onClick={install}
@@ -57,7 +57,7 @@ export default function InstallHelp() {
             </button>
           </>
         ) : (
-          <span className="flex-1 text-xs text-stone-700">
+          <span className="flex-1 text-[13px] text-stone-700">
             Install PeMA: tap Share <Share className="inline w-3.5 h-3.5 -mt-0.5" aria-label="Share" />, then Add to Home Screen.
           </span>
         )}

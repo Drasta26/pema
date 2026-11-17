@@ -30,6 +30,7 @@ const INSPIRING_QUOTES = [
 ];
 
 interface CheckInProps {
+  installTip?: React.ReactNode;
   onSubmit: (data: { description: string; explicitState?: EmotionalState }) => void;
   isLoading: boolean;
 }
@@ -99,7 +100,7 @@ const STATE_CARDS: { state: EmotionalState; label: string; icon: any; category: 
   }
 ];
 
-export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
+export default function CheckIn({ onSubmit, isLoading, installTip }: CheckInProps) {
   const [description, setDescription] = useState('');
   const [selectedState, setSelectedState] = useState<EmotionalState | undefined>(undefined);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -150,7 +151,7 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
   };
 
   return (
-    <div className="w-full px-3 py-1 animate-fade-in space-y-3">
+    <div className="checkin-page w-full h-full px-3 py-1 animate-fade-in flex flex-col justify-evenly gap-3">
       
       {/* Zen Futuristic Slogan */}
       <div className="text-center">
@@ -284,13 +285,15 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
             )}
           </button>
         </div>
-        <p className="text-[10px] text-stone-500 text-center">For relaxation and wellness. PeMA does not provide medical services.</p>
+        <p className="text-[12px] text-stone-500 text-center">For relaxation and wellness only. This is NOT a health service.</p>
       </form>
 
+      {installTip}
+
       {/* Moving Screen: Mindfulness Inspiring Quotes Carousel */}
-      <div className="space-y-1.5">
+      <div className="daily-reminder space-y-1.5">
         <div className="text-center">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-mono tracking-widest text-custom-blue bg-blue-50 border border-blue-100 font-black">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono tracking-widest text-custom-blue bg-blue-50 border border-blue-100 font-black">
             <Sparkles className="w-2.5 h-2.5 text-blue-500 animate-spin" />
             <span>Daily reminder</span>
           </span>
@@ -302,14 +305,14 @@ export default function CheckIn({ onSubmit, isLoading }: CheckInProps) {
           {/* Core Animating Quote Text */}
           <div className="flex-1 flex flex-col justify-center py-0.5 select-none">
             <p 
-              className={`text-xs font-serif italic text-blue-950 text-center leading-relaxed transition-all duration-300 ${
+              className={`text-[14.5px] font-serif italic text-blue-950 text-center leading-relaxed transition-all duration-300 ${
                 fadeTrigger ? 'opacity-100 transform translate-y-0 scale-100' : 'opacity-0 transform -translate-y-1 scale-98'
               }`}
             >
               "{INSPIRING_QUOTES[currentQuoteIndex].text}"
             </p>
             <p
-              className={`text-[9px] font-mono tracking-wider text-custom-blue text-center mt-1 font-black transition-all duration-300 ${
+              className={`text-[11px] font-mono tracking-wider text-custom-blue text-center mt-1 font-black transition-all duration-300 ${
                 fadeTrigger ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-1'
               }`}
             >

@@ -17,7 +17,7 @@ import { getApiKey, removeApiKey } from './apiKey';
 const loadClaude = () => import('./claudeService');
 import { registerServiceWorker } from './pwa';
 import { detectCrisis } from './safety';
-import { Calendar, ShieldCheck, Award, Info, Lock, RefreshCw, KeyRound, Home, Sparkles, PlayCircle } from 'lucide-react';
+import { Calendar, ShieldCheck, Award, Info, Lock, RefreshCw, KeyRound, Home, Sparkles, PlayCircle, Menu, ChevronRight } from 'lucide-react';
 
 interface LocalSessionLog {
   id: string;
@@ -43,7 +43,7 @@ export default function App() {
   const [streak, setStreak] = useState(0);
   const [showDataPanel, setShowDataPanel] = useState(false);
   // Pages on the home screen, chosen from the bottom menu; each fits without scrolling
-  const [tab, setTab] = useState<'checkin' | 'practise' | 'guided' | 'history'>('checkin');
+  const [tab, setTab] = useState<'checkin' | 'practise' | 'guided' | 'history' | 'more'>('checkin');
   // Set when a new version of the app has been downloaded and is ready
   const [showKeyPanel, setShowKeyPanel] = useState(false);
   const [keyRejected, setKeyRejected] = useState(false);
@@ -232,16 +232,16 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen py-4 sm:py-8 px-2 sm:px-4 flex flex-col justify-center items-center font-sans selection:bg-orange-100">
+    <div className="min-h-[100dvh] sm:py-8 sm:px-4 flex flex-col justify-center items-center font-sans selection:bg-orange-100">
       
       {/* Immersive Mobile Device Wrapper - Futuristic Zen Device */}
-      <div className="mobile-device-wrapper flex flex-col justify-between h-[660px]">
+      <div className="mobile-device-wrapper flex flex-col justify-between h-[100dvh] sm:h-[660px]">
         
         {/* Shimmering Solar Caustics Background layer */}
         <div className="caustics-backdrop" />
         
         {/* Futuristic Glassmorphic Status Bar Header */}
-        <header className="app-header w-full py-3 px-3 sm:px-5 z-10">
+        <header className="app-header w-full pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] px-3 sm:px-5 z-10">
           <div className="flex justify-between items-center">
             
             {/* Logo, Status, & Custom PeMA Identity */}
@@ -269,32 +269,13 @@ export default function App() {
                 <Award className="w-3 h-3 text-blue-500" />
                 <span className="text-custom-blue">{streak}d</span>
               </div>
-              <button
-                type="button"
-                onClick={() => { setCurrentScreen('checkin'); setShowDataPanel(false); setShowKeyPanel(v => !v); }}
-                aria-label="Your AI key"
-                title={hasKey ? 'Claude is on, with your own key' : 'Add your own AI key for personalised sessions'}
-                className="flex items-center justify-center w-6 h-6 bg-blue-50/40 border border-blue-100/30 rounded-full text-custom-blue cursor-pointer"
-              >
-                <KeyRound className={`w-3 h-3 ${hasKey ? '' : 'opacity-60'}`} />
-              </button>
-              <button
-                type="button"
-                onClick={() => { setCurrentScreen('checkin'); setShowKeyPanel(false); setShowDataPanel(v => !v); }}
-                className="flex items-center gap-1 bg-blue-50/40 border border-blue-100/30 px-2 py-0.5 rounded-full text-[9px] font-mono font-bold text-custom-blue cursor-pointer"
-                title="Your data stays on this device"
-              >
-                <Lock className="w-2.5 h-2.5" />
-                {/* Icon only on narrow phones so the header stays on one line */}
-                <span className="sr-only min-[400px]:not-sr-only">Private</span>
-              </button>
             </div>
 
           </div>
         </header>
 
         {/* Primary Interactive Viewport */}
-        <div className={`flex-1 relative px-1 py-1 z-10 ${currentScreen === 'checkin' ? 'overflow-hidden' : 'overflow-y-auto scroller-none'}`}>
+        <div className={`flex-1 relative px-1 py-1 z-10 ${currentScreen === 'checkin' ? 'overflow-hidden pb-9' : 'overflow-y-auto scroller-none'}`}>
           
           {/* Internal Error System */}
           {errorMessage && (
@@ -343,11 +324,37 @@ export default function App() {
           )}
 
           {/* Home pages, one at a time */}
-          {currentScreen === 'checkin' && tab === 'checkin' && <CheckIn onSubmit={handleStartSession} isLoading={isLoading} />}
+          {currentScreen === 'checkin' && tab === 'checkin' && <CheckIn onSubmit={handleStartSession} isLoading={isLoading} installTip={<InstallHelp />} />}
           {currentScreen === 'checkin' && tab === 'practise' && (
             <PracticeCards onStartSpa={() => setCurrentScreen('spa')} onStartReset={() => setCurrentScreen('reset')} />
           )}
           {currentScreen === 'checkin' && tab === 'guided' && <GuidedLibrary />}
+          {currentScreen === 'checkin' && tab === 'more' && (
+            <div className="px-4 pt-3 space-y-3 animate-fade-in">
+              <h1 className="text-xl font-serif italic font-medium text-amber-950 text-center">More</h1>
+              {([
+                [KeyRound, 'Your AI key', hasKey ? 'On: Claude uses your own key' : 'Add your key for personalised sessions', () => setShowKeyPanel(true)],
+                [Lock, 'Your data', 'Private on this device. Export or delete', () => setShowDataPanel(true)],
+              ] as const).map(([Icon, title, detail, open]) => (
+                <button
+                  key={title}
+                  type="button"
+                  onClick={open}
+                  className="w-full flex items-center gap-3 rounded-2xl p-3.5 glass-panel cursor-pointer text-left"
+                >
+                  <span className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #ffb547, #ff6b4a)' }}>
+                    <Icon className="w-5 h-5 text-white" />
+                  </span>
+                  <span className="flex-1">
+                    <span className="block font-display text-base text-stone-900">{title}</span>
+                    <span className="block text-[13px] text-stone-500">{detail}</span>
+                  </span>
+                  <ChevronRight className="w-5 h-5 text-orange-500" />
+                </button>
+              ))}
+              <InstallHelp />
+            </div>
+          )}
 
           {currentScreen === 'reset' && (
             <QuickReset
@@ -493,27 +500,24 @@ export default function App() {
             </div>
           )}
 
-          {/* Install tip floats at the bottom of the page instead of pushing it down */}
-          {currentScreen === 'checkin' && (
-            <div className="absolute inset-x-0 bottom-1 z-10"><InstallHelp /></div>
-          )}
         </div>
 
         {/* Bottom menu, only on the home pages; sessions use the full screen */}
         {currentScreen === 'checkin' && (
-          <nav className="app-footer w-full z-10 grid grid-cols-4" aria-label="Pages">
+          <nav className="app-footer w-full z-10 grid grid-cols-5 pb-[env(safe-area-inset-bottom)]" aria-label="Pages">
             {([
               ['checkin', 'Check-in', Home],
               ['practise', 'Practise', Sparkles],
               ['guided', 'Guided', PlayCircle],
               ['history', 'History', Calendar],
+              ['more', 'More', Menu],
             ] as const).map(([key, label, Icon]) => (
               <button
                 key={key}
                 type="button"
                 onClick={() => { setTab(key); setShowKeyPanel(false); setShowDataPanel(false); }}
                 aria-current={tab === key ? 'page' : undefined}
-                className={`flex flex-col items-center gap-0.5 pt-2 pb-1 text-[11px] cursor-pointer transition-colors ${tab === key ? 'text-orange-700 font-semibold' : 'text-stone-500'}`}
+                className={`flex flex-col items-center gap-0.5 pt-2 pb-1 text-[13px] cursor-pointer transition-colors ${tab === key ? 'text-orange-700 font-semibold' : 'text-stone-500'}`}
               >
                 <Icon className={`w-5 h-5 ${tab === key ? 'text-orange-600' : 'text-stone-400'}`} />
                 {label}
@@ -522,9 +526,12 @@ export default function App() {
           </nav>
         )}
 
-        <footer className="app-footer w-full pb-1.5 pt-0.5 px-5 z-10 text-center">
-          <p className="text-[10px] text-amber-900 leading-snug">Your app. Your data. Your choice.</p>
-        </footer>
+        {/* Tagline as a floating glass pill above the menu, on the home pages */}
+        {currentScreen === 'checkin' && (
+          <div className="absolute inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 flex justify-center pointer-events-none">
+            <p className="tagline-pill text-[12px] text-amber-900 px-4 py-1 rounded-full">Your app. Your data. Your choice.</p>
+          </div>
+        )}
 
       </div>
 

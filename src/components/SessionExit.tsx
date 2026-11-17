@@ -60,7 +60,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
 
   // Two short pages instead of one long one: reflect and save, then ideas for later
   return (
-    <div className="w-full h-full px-3 py-2 flex flex-col gap-3 animate-fade-in text-stone-800">
+    <div className="w-full h-full px-3 py-1 flex flex-col gap-2 animate-fade-in text-stone-800">
       <div className="text-center space-y-1">
         <h1 className="text-2xl font-serif italic font-medium text-amber-950 tracking-tight">
           {isSaved ? 'For later' : 'Welcome back'}
@@ -192,7 +192,7 @@ export default function SessionExit({ session, onSaveFeedback, onReturnToStart }
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Anything you noticed?"
-                className="w-full text-xs p-3 border border-orange-100/50 rounded-lg bg-white text-stone-800 placeholder-slate-400 resize-none h-14 focus:outline-none focus:ring-1 focus:ring-orange-500 font-sans"
+                className="w-full text-xs p-3 border border-orange-100/50 rounded-lg bg-white text-stone-800 placeholder-slate-400 resize-none h-12 focus:outline-none focus:ring-1 focus:ring-orange-500 font-sans"
               />
             </div>
 
