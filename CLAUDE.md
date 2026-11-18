@@ -34,6 +34,9 @@ Run: `npm run dev` (port 3000) or double-click `Start PeMA.command`. The owner v
 11. Done 30 Oct (v2.8): Mental SPA signature practice (src/components/MentalSpa.tsx; step names from the "5 Steps of Mental SPA" video description, guidance wording approved by owner 30 Oct) and "Guided by द्रष्टा (Drasta)" library (src/content.ts, src/components/GuidedLibrary.tsx) using click-to-load youtube-nocookie embeds and local colour tiles, so nothing loads from YouTube until play. Footer credit: Built by द्रष्टा (Drasta). v2.18 (18 Nov): each Mental SPA step is narrated in Drasta's own voice (ElevenLabs Instant Voice Clone "Drasta" on the owner's account, model Eleven v4, files public/audio/spa-1..5.mp3, cached offline by sw.js; Voice/Muted switch remembered as pema.spaVoice). Name in the app is always द्रष्टा (Drasta), never Dr Asta.
 12. Done 30 Oct (v2.10): 60-second reset (src/components/QuickReset.tsx, on-device, 4s in / 6s out x6); Mental SPA and reset count towards the streak via recordPractice (log.state optional); all forced capitals removed and labels in sentence case; wrapper uses overflow: clip to stop sideways scroll.
 
+## v3.0 structure (18 Nov 2026)
+Home = src/components/CheckIn.tsx (moods from src/moods.ts), Preparing.tsx while the relay works, SessionPlayer, SessionExit (one-tap end mood, closing), Journey.tsx (progress from src/progress.ts; tab label Journey), ShareButton.tsx (canvas card, APP_URL empty until hosted). No streak badge by design.
+
 ## Design rules from the owner (17 Nov 2026)
 - No vertical scrolling: one page at a time. More content goes on another page via the bottom menu or a Next step, never below the fold. Sideways swipe rows are fine.
 - Keep the Sunrise colours. Sentence case, no forced capitals. Name: द्रष्टा (Drasta).

@@ -84,3 +84,13 @@ Planned work, in priority order. Hours are rough estimates (about 60-80 hours in
 ## 11. Your own voice (done 18 Nov 2026)
 - [x] Mental SPA narrated in द्रष्टा (Drasta)'s cloned voice; clean audio (no clipping, noise about -87 dB); works offline; Voice/Muted switch.
 - [ ] Optional: replace the YouTube "5 steps" tile's AI voice by re-editing the video.
+
+## 12. World-class pass (18 Nov 2026, v3.0)
+- [x] Home: greeting, "How are you feeling?", nine plain-word moods, one Begin, 60-second reset link, PeMA's own daily reminder (removed quotes with made-up attributions).
+- [x] Breathing moment while a personalised session is prepared.
+- [x] Session ending: one-tap "How do you feel now?", calm closing with "Stressed → Calm" and one takeaway.
+- [x] Journey page (replaces History): week sessions, mindful minutes, days, kind milestones, what helps most; streak badge removed.
+- [x] Optional share cards made on the device (no moods or notes; no link until hosted).
+- [x] Readability (12px minimum in sessions) and visible keyboard focus.
+- [ ] Host PeMA and set APP_URL in src/components/ShareButton.tsx so shares carry a link.
+- [ ] Player: plainer technique names; optional calm voice for personalised sessions.
