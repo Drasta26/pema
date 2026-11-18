@@ -8,6 +8,8 @@ import GuidedLibrary, { PracticeCards } from './components/GuidedLibrary';
 import MentalSpa from './components/MentalSpa';
 import QuickReset from './components/QuickReset';
 import InstallHelp from './components/InstallHelp';
+import Preparing from './components/Preparing';
+import { moodLabel } from './moods';
 import YourDataPanel from './components/YourDataPanel';
 import { stripPauseMarkers } from './sessionText';
 // Keys from the old bring-your-own-key version are removed from the device
@@ -35,6 +37,7 @@ export default function App() {
   const [crisisFrom, setCrisisFrom] = useState<'checkin' | 'player' | 'exit'>('checkin');
   const [session, setSession] = useState<MeditationSession | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [preparingMood, setPreparingMood] = useState<string | undefined>(undefined);
   const [isLoadingFeedback, setIsLoadingFeedback] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -123,6 +126,7 @@ export default function App() {
       showCrisisSupport('checkin');
       return;
     }
+    setPreparingMood(data.explicitState ? moodLabel(data.explicitState) : undefined);
     setIsLoading(true);
     setErrorMessage(null);
     try {
@@ -305,7 +309,8 @@ export default function App() {
           )}
 
           {/* Home pages, one at a time */}
-          {currentScreen === 'checkin' && tab === 'checkin' && <CheckIn onSubmit={handleStartSession} isLoading={isLoading} installTip={<InstallHelp />} onQuickReset={() => setCurrentScreen('reset')} />}
+          {currentScreen === 'checkin' && tab === 'checkin' && isLoading && <Preparing mood={preparingMood} />}
+          {currentScreen === 'checkin' && tab === 'checkin' && !isLoading && <CheckIn onSubmit={handleStartSession} isLoading={isLoading} installTip={<InstallHelp />} onQuickReset={() => setCurrentScreen('reset')} />}
           {currentScreen === 'checkin' && tab === 'practise' && (
             <PracticeCards onStartSpa={() => setCurrentScreen('spa')} onStartReset={() => setCurrentScreen('reset')} />
           )}

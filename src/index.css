@@ -427,3 +427,15 @@ body {
 .mobile-device-wrapper .mood-chip-on {
   color: #ffffff !important;
 }
+
+/* Preparing: a slow breathing orb (4 s in, 4 s out) */
+.prep-orb {
+  background: radial-gradient(circle at 35% 30%, #ffd9a0 0%, #ff8a5c 45%, #e8458b 100%);
+  box-shadow: 0 20px 50px -15px rgba(232, 69, 139, 0.55);
+  transition: transform 4s ease-in-out;
+}
+.prep-orb-in { transform: scale(1); }
+.prep-orb-out { transform: scale(0.72); }
+@media (prefers-reduced-motion: reduce) {
+  .prep-orb { transition: none; transform: scale(0.85); }
+}
