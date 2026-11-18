@@ -9,6 +9,7 @@ import MentalSpa from './components/MentalSpa';
 import QuickReset from './components/QuickReset';
 import InstallHelp from './components/InstallHelp';
 import Preparing from './components/Preparing';
+import Journey from './components/Journey';
 import { moodLabel } from './moods';
 import YourDataPanel from './components/YourDataPanel';
 import { stripPauseMarkers } from './sessionText';
@@ -257,10 +258,6 @@ export default function App() {
 
             {/* Streak & User Status Indicator */}
             <div className="flex items-center gap-1.5 shrink-0 relative">
-              <div className="flex items-center gap-1 bg-blue-50/80 border border-blue-100 px-2 py-0.5 rounded-full text-[9px] font-mono font-bold text-custom-blue shadow-xs">
-                <Award className="w-3 h-3 text-blue-500" />
-                <span className="text-custom-blue">{streak}d</span>
-              </div>
             </div>
 
           </div>
@@ -400,89 +397,8 @@ export default function App() {
           )}
 
           {/* Local Session Logs inside mobile feed on dashboard screen */}
-          {currentScreen === 'checkin' && tab === 'history' && history.length === 0 && (
-            <div className="px-6 pt-16 text-center space-y-2 animate-fade-in">
-              <h1 className="text-xl font-serif italic font-medium text-amber-950">Your history</h1>
-              <p className="text-xs text-stone-500">Finish a session and it will appear here. It stays on this device.</p>
-            </div>
-          )}
-          {currentScreen === 'checkin' && tab === 'history' && history.length > 0 && (
-            <div className="px-4 pt-3 animate-fade-in">
-              <div className="space-y-4">
-                
-                <div className="flex justify-between items-center pb-1">
-                  <div className="flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4 text-orange-600" />
-                    <h3 className="text-[10px] font-mono font-bold tracking-wider text-amber-900">
-                      Your history
-                    </h3>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => { setShowDataPanel(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                    className="text-[10px] font-mono font-bold flex items-center gap-1 cursor-pointer py-1 px-2 rounded-md text-orange-600 hover:bg-orange-50"
-                  >
-                    <ShieldCheck className="w-3 h-3" />
-                    <span>Export or delete</span>
-                  </button>
-                </div>
-
-                {/* Vertical scroller for session records on mobile */}
-                <div className="space-y-3.5">
-                  {history.slice(0, 3).map((log) => (
-                    <div
-                      key={log.id}
-                      className="glass-panel rounded-2xl p-4 transition-all duration-300 hover:border-orange-200/50"
-                    >
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center text-[10px] text-stone-500 font-mono">
-                          <span>{new Date(log.date).toLocaleDateString(undefined, {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: 'numeric',
-                            minute: '2-digit'
-                          })}</span>
-                          <span className="font-mono font-bold text-orange-700 bg-orange-50/80 border border-orange-100 px-2 py-0.5 rounded-md">
-                            {log.rating === 'up' ? '👍 Calm' : log.rating === 'down' ? '👎 Tough' : 'Done'}
-                          </span>
-                        </div>
-                        
-                        <h4 className="font-display font-semibold text-xs text-stone-800">
-                          {log.technique}
-                        </h4>
-                        
-                        {log.notes && (
-                           <p className="text-[11px] text-stone-605 leading-relaxed italic border-l border-orange-200 pl-2.5">
-                            "{log.notes}"
-                          </p>
-                        )}
-                      </div>
-                      
-                      <div className="pt-2 mt-2 border-t border-orange-100/50 text-[9px] font-mono text-stone-500">
-                        <div className="flex flex-wrap items-center gap-1">
-                          {log.state && (
-                            <>
-                              <span>Starting:</span>
-                              <strong className="text-orange-600">{log.state}</strong>
-                            </>
-                          )}
-                          {log.endState && (
-                            <div className="flex items-center gap-1 font-mono">
-                              <span className="text-slate-400 px-0.5">&rarr;</span>
-                              <span>After session:</span>
-                              <strong className="text-emerald-700 bg-emerald-50 border border-emerald-150 px-1.5 py-0.5 rounded-md font-bold">
-                                {log.endState}
-                              </strong>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-              </div>
-            </div>
+          {currentScreen === 'checkin' && tab === 'history' && (
+            <Journey history={history} onOpenData={() => setShowDataPanel(true)} />
           )}
 
         </div>
@@ -494,7 +410,7 @@ export default function App() {
               ['checkin', 'Check-in', Home],
               ['practise', 'Practise', Sparkles],
               ['guided', 'Guided', PlayCircle],
-              ['history', 'History', Calendar],
+              ['history', 'Journey', Calendar],
               ['more', 'More', Menu],
             ] as const).map(([key, label, Icon]) => (
               <button
