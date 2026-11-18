@@ -6,14 +6,16 @@ export interface SpaStep {
   title: string;
   guidance: string;
   seconds: number;
+  // Narration in द्रष्टा (Drasta)'s own voice (ElevenLabs voice clone, wording as approved)
+  audio: string;
 }
 
 export const MENTAL_SPA_STEPS: SpaStep[] = [
-  { title: 'Self-massage', guidance: 'Rub your palms together until they feel warm. Rest them over your eyes. Then gently massage your temples, jaw and shoulders.', seconds: 60 },
-  { title: 'Embrace gratitude', guidance: "Bring to mind three things you're thankful for today, big or small. Let a soft smile come.", seconds: 60 },
-  { title: 'Befriend your breath', guidance: 'Breathe in gently through your nose, and out a little longer. No forcing. Let the breath be your friend.', seconds: 60 },
-  { title: 'Attend to the body', guidance: 'Move your attention slowly from the top of your head down to your toes. Notice each part, soften it, let it go.', seconds: 60 },
-  { title: 'Embrace compassion', guidance: 'Place a hand on your heart. Silently wish: may I be at peace, may I be happy. Then wish the same for someone you care about.', seconds: 60 },
+  { title: 'Self-massage', audio: '/audio/spa-1.mp3', guidance: 'Rub your palms together until they feel warm. Rest them over your eyes. Then gently massage your temples, jaw and shoulders.', seconds: 60 },
+  { title: 'Embrace gratitude', audio: '/audio/spa-2.mp3', guidance: "Bring to mind three things you're thankful for today, big or small. Let a soft smile come.", seconds: 60 },
+  { title: 'Befriend your breath', audio: '/audio/spa-3.mp3', guidance: 'Breathe in gently through your nose, and out a little longer. No forcing. Let the breath be your friend.', seconds: 60 },
+  { title: 'Attend to the body', audio: '/audio/spa-4.mp3', guidance: 'Move your attention slowly from the top of your head down to your toes. Notice each part, soften it, let it go.', seconds: 60 },
+  { title: 'Embrace compassion', audio: '/audio/spa-5.mp3', guidance: 'Place a hand on your heart. Silently wish: may I be at peace, may I be happy. Then wish the same for someone you care about.', seconds: 60 },
 ];
 
 export interface GuidedVideo {

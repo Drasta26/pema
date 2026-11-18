@@ -2,7 +2,9 @@
 // It never caches /api/ requests, so no check-in text or session content is stored here.
 // The build stamps CACHE_VERSION (see vite.config.ts), so each release installs a new worker.
 const CACHE_VERSION = 'pema-v1';
-const SHELL = ['/', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png', '/icons/favicon-32.png'];
+const SHELL = ['/', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png', '/icons/favicon-32.png',
+  // Mental SPA narration, so the voice works offline
+  '/audio/spa-1.mp3', '/audio/spa-2.mp3', '/audio/spa-3.mp3', '/audio/spa-4.mp3', '/audio/spa-5.mp3'];
 
 // Read the built index.html and precache every hashed /assets/ file it references
 async function precacheShell() {

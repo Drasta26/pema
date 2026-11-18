@@ -80,3 +80,7 @@ Planned work, in priority order. Hours are rough estimates (about 60-80 hours in
 - [ ] Keyboard use, screen-reader labels, reduced-motion support for the breathing animation, colour contrast.
 - [ ] Choose a static host (no server key, so no rate limiting or cost cap needed on our side).
 - [ ] Tag v1.0 and write a short user guide.
+
+## 11. Your own voice (done 18 Nov 2026)
+- [x] Mental SPA narrated in द्रष्टा (Drasta)'s cloned voice; clean audio (no clipping, noise about -87 dB); works offline; Voice/Muted switch.
+- [ ] Optional: replace the YouTube "5 steps" tile's AI voice by re-editing the video.
