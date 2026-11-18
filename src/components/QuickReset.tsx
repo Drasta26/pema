@@ -57,7 +57,7 @@ export default function QuickReset({ onExit, onComplete }: QuickResetProps) {
         >
           <span className="w-24 h-24 rounded-full bg-white/90 flex flex-col items-center justify-center">
             <span className="font-display text-xl text-orange-600">{phaseLeft}</span>
-            <span className="text-[11px] text-stone-700">{isInhale ? 'Breathe in' : 'Breathe out'}</span>
+            <span className="text-[13px] text-stone-700">{isInhale ? 'Breathe in' : 'Breathe out'}</span>
           </span>
         </div>
       </div>

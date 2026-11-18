@@ -45,7 +45,7 @@ export default function YourDataPanel({ historyCount, onExport, onDeleteAll, onC
           </button>
         </div>
         {confirming && (
-          <p className="text-[11px] text-stone-600">
+          <p className="text-[13px] text-stone-600">
             This removes your history and streak from this device. It can’t be undone.{' '}
             <button type="button" onClick={() => setConfirming(false)} className="underline cursor-pointer">Cancel</button>
           </p>

@@ -67,7 +67,7 @@ export default function GuidedLibrary() {
     <div className="h-full px-3 pt-2 pb-1 flex flex-col gap-2 animate-fade-in">
       <div className="text-center">
         <h1 className="text-xl font-serif italic font-medium text-amber-950">Guided by द्रष्टा (Drasta)</h1>
-        <p className="text-[11px] text-stone-500">Videos load only when you tap play.</p>
+        <p className="text-[13px] text-stone-500">Videos load only when you tap play.</p>
       </div>
 
       <div className="flex-1 min-h-0 flex items-center"><div className="w-full grid grid-cols-3 gap-2">
@@ -88,8 +88,8 @@ export default function GuidedLibrary() {
               <span className="absolute bottom-1 right-1 text-[9px] text-white bg-black/60 rounded px-1">{v.duration}</span>
             </div>
             <div className="px-1.5 py-1">
-              <span className="block text-[9px] text-blue-600 leading-tight">{v.tag}</span>
-              <span className="block text-[10px] text-stone-800 leading-tight line-clamp-2">{v.title}</span>
+              <span className="block text-[11px] text-blue-600 leading-tight">{v.tag}</span>
+              <span className="block text-[12px] text-stone-800 leading-tight line-clamp-2">{v.title}</span>
             </div>
           </button>
         ))}

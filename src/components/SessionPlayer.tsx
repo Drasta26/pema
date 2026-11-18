@@ -243,7 +243,7 @@ export default function SessionPlayer({
     }
   };
 
-  const chip = 'flex items-center justify-center gap-1 py-1.5 px-1 bg-white/50 border border-orange-100/60 text-[11px] text-stone-800 rounded-xl transition-all duration-300 cursor-pointer hover:bg-orange-50 disabled:opacity-50';
+  const chip = 'flex items-center justify-center gap-1 py-1.5 px-1 bg-white/50 border border-orange-100/60 text-[13px] text-stone-800 rounded-xl transition-all duration-300 cursor-pointer hover:bg-orange-50 disabled:opacity-50';
 
   // One page, no scrolling: header line, breathing orb, current step, quick adjustments
   return (
@@ -252,11 +252,11 @@ export default function SessionPlayer({
       {/* Technique, reflection, time and sound */}
       <div className="glass-panel rounded-2xl px-4 py-2.5 border border-orange-100/50 shadow-sm space-y-1.5">
         <div className="flex justify-between items-center gap-2">
-          <span className="text-[11px] text-orange-700 font-semibold truncate">{session.techniqueName}</span>
+          <span className="text-[13px] text-orange-700 font-semibold truncate">{session.techniqueName}</span>
           <button
             id="toggle-audio-btn"
             onClick={toggleAudioEngine}
-            className={`flex items-center gap-1 px-2 py-0.5 rounded-lg border text-[10px] font-semibold transition-all duration-300 cursor-pointer shrink-0 ${
+            className={`flex items-center gap-1 px-2 py-0.5 rounded-lg border text-[12px] font-semibold transition-all duration-300 cursor-pointer shrink-0 ${
               audioEnabled ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-transparent text-stone-500 border-black/10 hover:bg-orange-50'
             }`}
             aria-label={audioEnabled ? 'Turn background sound off' : 'Turn background sound on'}
@@ -274,7 +274,7 @@ export default function SessionPlayer({
               style={{ width: `${((initialDurationRef.current - sessionTimeRemaining) / initialDurationRef.current) * 100}%` }}
             />
           </div>
-          <span id="session-time-remaining-label" className="text-[10px] font-semibold text-orange-700 tabular-nums">
+          <span id="session-time-remaining-label" className="text-[12px] font-semibold text-orange-700 tabular-nums">
             {sessionTimeRemaining > 0 ? `${formatTime(sessionTimeRemaining)} left` : 'Complete'}
           </span>
         </div>
@@ -301,12 +301,12 @@ export default function SessionPlayer({
             {sessionTimeRemaining > 0 ? (
               <>
                 <span id="pacer-countdown-sec" className="text-lg font-display font-medium text-orange-700 tabular-nums">{secondsRemaining}s</span>
-                <span id="pacer-phase-label" className="text-[9px] font-semibold text-amber-900 text-center px-1 leading-tight">{getPhaseText()}</span>
+                <span id="pacer-phase-label" className="text-[12px] font-semibold text-amber-900 text-center px-1 leading-tight">{getPhaseText()}</span>
               </>
             ) : (
               <>
                 <span id="pacer-done-emoji" className="text-lg">🧘</span>
-                <span id="pacer-done-text" className="text-[10px] font-semibold text-orange-700">Done</span>
+                <span id="pacer-done-text" className="text-[12px] font-semibold text-orange-700">Done</span>
               </>
             )}
           </div>
@@ -348,7 +348,7 @@ export default function SessionPlayer({
           >
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
-          <span className="text-[11px] text-orange-700 font-semibold">Step {currentStepIndex + 1} of {session.steps.length}</span>
+          <span className="text-[13px] text-orange-700 font-semibold">Step {currentStepIndex + 1} of {session.steps.length}</span>
           {currentStepIndex < session.steps.length - 1 ? (
             <button
               onClick={() => setCurrentStepIndex((prev) => Math.min(session.steps.length - 1, prev + 1))}
@@ -360,7 +360,7 @@ export default function SessionPlayer({
           ) : (
             <button
               onClick={onExitSession}
-              className="px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-[11px] font-display font-semibold rounded-lg transition-all duration-300 cursor-pointer"
+              className="px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-[13px] font-display font-semibold rounded-lg transition-all duration-300 cursor-pointer"
             >
               End practice
             </button>
@@ -371,7 +371,7 @@ export default function SessionPlayer({
       {/* Quick adjustments */}
       <div className="glass-panel rounded-2xl px-3 py-2 border border-orange-100/50 shadow-xs">
         {isLoadingFeedback ? (
-          <div className="flex items-center justify-center gap-1.5 text-[11px] text-orange-600 py-1.5">
+          <div className="flex items-center justify-center gap-1.5 text-[13px] text-orange-600 py-1.5">
             <div className="w-3 h-3 border border-orange-600 border-t-transparent rounded-full animate-spin" />
             <span>Adapting your session…</span>
           </div>
@@ -390,17 +390,17 @@ export default function SessionPlayer({
             <button
               onClick={() => triggerAdaptive('freeform', customFeedbackText)}
               disabled={!customFeedbackText.trim()}
-              className="px-3 text-[11px] bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold cursor-pointer disabled:opacity-50"
+              className="px-3 text-[13px] bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold cursor-pointer disabled:opacity-50"
             >
               Adapt
             </button>
-            <button onClick={() => setShowFeedbackInput(false)} aria-label="Cancel" className="px-2 text-[11px] text-stone-500 rounded-lg cursor-pointer">
+            <button onClick={() => setShowFeedbackInput(false)} aria-label="Cancel" className="px-2 text-[13px] text-stone-500 rounded-lg cursor-pointer">
               Cancel
             </button>
           </div>
         ) : (
           <div className="space-y-1.5">
-            <p className="text-[11px] text-amber-900 text-center">How is it going?</p>
+            <p className="text-[13px] text-amber-900 text-center">How is it going?</p>
             <div className="grid grid-cols-4 gap-1.5">
               <button type="button" onClick={() => triggerAdaptive('distracted')} className={chip}>
                 <HelpCircle className="w-3.5 h-3.5 text-orange-700" /> Distracted

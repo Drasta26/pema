@@ -35,13 +35,13 @@ export default function CrisisSupport({ onContinue, onBack }: CrisisSupportProps
             </span>
             <span className="flex-1 min-w-0">
               <span className="block text-sm font-bold text-stone-900">{s.name} · {s.contact}</span>
-              <span className="block text-[11px] text-stone-500 leading-snug">{s.detail}</span>
+              <span className="block text-[13px] text-stone-500 leading-snug">{s.detail}</span>
             </span>
           </a>
         ))}
       </div>
 
-      <p className="text-[11px] text-stone-500 text-center leading-relaxed">
+      <p className="text-[13px] text-stone-500 text-center leading-relaxed">
         PeMA is a relaxation tool and can't provide crisis support.
       </p>
 
