@@ -10,6 +10,8 @@ import QuickReset from './components/QuickReset';
 import InstallHelp from './components/InstallHelp';
 import Preparing from './components/Preparing';
 import Journey from './components/Journey';
+import ShareButton from './components/ShareButton';
+import { summarise } from './progress';
 import { moodLabel } from './moods';
 import YourDataPanel from './components/YourDataPanel';
 import { stripPauseMarkers } from './sessionText';
@@ -389,6 +391,11 @@ export default function App() {
             <SessionExit
               session={session}
               onSaveFeedback={handleSaveExitReview}
+              shareSlot={() => (
+                <div className="flex justify-center">
+                  <ShareButton label="Share this calm" headline="I took five calm minutes for myself today." detail="A personalised meditation with PeMA." />
+                </div>
+              )}
               onReturnToStart={() => {
                 setSession(null);
                 setCurrentScreen('checkin');
@@ -398,7 +405,17 @@ export default function App() {
 
           {/* Local Session Logs inside mobile feed on dashboard screen */}
           {currentScreen === 'checkin' && tab === 'history' && (
-            <Journey history={history} onOpenData={() => setShowDataPanel(true)} />
+            <Journey
+              history={history}
+              onOpenData={() => setShowDataPanel(true)}
+              shareSlot={summarise(history, new Date()).weekMinutes > 0 ? (
+                <ShareButton
+                  label="Share my week"
+                  headline={`This week I gave myself ${summarise(history, new Date()).weekMinutes} mindful minutes.`}
+                  detail="Short, personalised meditations with PeMA."
+                />
+              ) : undefined}
+            />
           )}
 
         </div>
