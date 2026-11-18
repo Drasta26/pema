@@ -419,3 +419,11 @@ body {
 .install-arrow { transform: translateX(-50%); animation: install-bounce 1.2s ease-in-out infinite; }
 @keyframes install-bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 10px); } }
 @media (prefers-reduced-motion: reduce) { .install-arrow { animation: none; } }
+
+/* Selected mood on the home page */
+.mood-chip-on {
+  background: linear-gradient(120deg, #ff6b4a 0%, #f2577a 55%, #e8458b 100%);
+}
+.mobile-device-wrapper .mood-chip-on {
+  color: #ffffff !important;
+}

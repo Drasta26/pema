@@ -305,7 +305,7 @@ export default function App() {
           )}
 
           {/* Home pages, one at a time */}
-          {currentScreen === 'checkin' && tab === 'checkin' && <CheckIn onSubmit={handleStartSession} isLoading={isLoading} installTip={<InstallHelp />} />}
+          {currentScreen === 'checkin' && tab === 'checkin' && <CheckIn onSubmit={handleStartSession} isLoading={isLoading} installTip={<InstallHelp />} onQuickReset={() => setCurrentScreen('reset')} />}
           {currentScreen === 'checkin' && tab === 'practise' && (
             <PracticeCards onStartSpa={() => setCurrentScreen('spa')} onStartReset={() => setCurrentScreen('reset')} />
           )}
