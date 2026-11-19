@@ -57,21 +57,25 @@ export default function Practise({ onStartSpa, onStartReset }: PractiseProps) {
       </button>
 
       <div className="space-y-2">
-        <h2 className="font-display text-[17px] text-stone-900">Guided by द्रष्टा (Drasta)</h2>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="flex items-baseline justify-between">
+          <h2 className="font-display text-[17px] text-stone-900">Guided by द्रष्टा (Drasta)</h2>
+          <span className="text-[12px] text-stone-500">Swipe for more →</span>
+        </div>
+        {/* Four at a time (two by two); swipe sideways for more */}
+        <div className="-mx-4 px-4 grid grid-rows-2 grid-flow-col auto-cols-[calc(50%-4px)] gap-2 overflow-x-auto snap-x snap-mandatory scroll-px-4 scroller-none" aria-label="Guided videos, swipe for more">
           {GUIDED_VIDEOS.map((v, i) => (
             <button
               key={v.id}
               type="button"
               onClick={() => setPlayingId(v.id)}
               aria-label={`${v.title}, ${v.duration}`}
-              className="flex flex-col text-left glass-panel rounded-xl overflow-hidden cursor-pointer"
+              className={`flex flex-col text-left glass-panel rounded-xl overflow-hidden cursor-pointer ${i % 2 === 0 ? 'snap-start' : ''}`}
             >
-              <div className="relative h-8 flex items-center justify-center" style={{ background: TILE_GRADIENTS[i % TILE_GRADIENTS.length] }}>
-                <Play className="w-4 h-4 text-white" />
-                <span className="absolute bottom-0.5 right-1 text-[10px] text-white">{v.duration}</span>
+              <div className="relative h-12 flex items-center justify-center" style={{ background: TILE_GRADIENTS[i % TILE_GRADIENTS.length] }}>
+                <Play className="w-5 h-5 text-white" />
+                <span className="absolute bottom-1 right-1.5 text-[11px] text-white">{v.duration}</span>
               </div>
-              <span className="px-1.5 py-1 text-[12px] text-stone-800 leading-tight line-clamp-2 min-h-[2.4em]">{v.title}</span>
+              <span className="px-2 py-1.5 text-[13px] text-stone-800 leading-tight line-clamp-2 min-h-[2.6em]">{v.title}</span>
             </button>
           ))}
         </div>
