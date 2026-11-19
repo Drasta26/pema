@@ -46,7 +46,8 @@ export default function InstallHelp() {
   return (
     <div className="install-tip">
       <div className="glass-panel rounded-2xl p-3 flex items-center gap-3">
-        <img src="/icons/icon-192.png" alt="" className="w-9 h-9 rounded-xl shrink-0" />
+        {/* Same meditation mark as the header */}
+        <span aria-hidden className="w-9 h-9 rounded-xl shrink-0 flex items-center justify-center text-lg mood-chip-on shadow-sm">🧘</span>
         {/* Reads "[Add] PeMA to your home screen", where "Add" is the button. */}
         <button
           type="button"

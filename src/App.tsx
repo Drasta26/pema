@@ -4,7 +4,10 @@ import CheckIn from './components/CheckIn';
 import SessionPlayer from './components/SessionPlayer';
 import SessionExit from './components/SessionExit';
 import CrisisSupport from './components/CrisisSupport';
-import GuidedLibrary, { PracticeCards } from './components/GuidedLibrary';
+import Practise from './components/GuidedLibrary';
+import FeedbackPanel from './components/FeedbackPanel';
+import SupportPanel from './components/SupportPanel';
+import { FEEDBACK_EMAIL } from './links';
 import MentalSpa from './components/MentalSpa';
 import QuickReset from './components/QuickReset';
 import InstallHelp from './components/InstallHelp';
@@ -22,7 +25,7 @@ try { localStorage.removeItem('pema.anthropicKey'); } catch { /* storage unavail
 const loadClaude = () => import('./claudeService');
 import { registerServiceWorker } from './pwa';
 import { detectCrisis } from './safety';
-import { Calendar, ShieldCheck, Award, Info, Lock, RefreshCw, Home, Sparkles, PlayCircle, Menu, ChevronRight } from 'lucide-react';
+import { Calendar, ShieldCheck, Award, Info, Lock, RefreshCw, Home, Sparkles, PlayCircle, Menu, ChevronRight, Heart, MessageCircle } from 'lucide-react';
 
 interface LocalSessionLog {
   id: string;
@@ -48,8 +51,9 @@ export default function App() {
   const [history, setHistory] = useState<LocalSessionLog[]>([]);
   const [streak, setStreak] = useState(0);
   const [showDataPanel, setShowDataPanel] = useState(false);
+  const [morePanel, setMorePanel] = useState<'feedback' | 'support' | null>(null);
   // Pages on the home screen, chosen from the bottom menu; each fits without scrolling
-  const [tab, setTab] = useState<'checkin' | 'practise' | 'guided' | 'history' | 'more'>('checkin');
+  const [tab, setTab] = useState<'checkin' | 'practise' | 'history' | 'more'>('checkin');
   // Set when a new version of the app has been downloaded and is ready
   const [applyUpdate, setApplyUpdate] = useState<(() => void) | null>(null);
 
@@ -294,8 +298,10 @@ export default function App() {
           )}
 
           {/* Settings panels open over the page, so the page never grows or scrolls */}
-          {currentScreen === 'checkin' && showDataPanel && (
-            <div className="absolute inset-0 z-20 pt-1 bg-[#ffe3c2]/70 backdrop-blur-sm" onClick={e => { if (e.target === e.currentTarget) { setShowDataPanel(false); } }}>
+          {currentScreen === 'checkin' && (showDataPanel || morePanel) && (
+            <div className="absolute inset-0 z-20 pt-1 bg-[#ffe3c2]/70 backdrop-blur-sm" onClick={e => { if (e.target === e.currentTarget) { setShowDataPanel(false); setMorePanel(null); } }}>
+          {morePanel === 'feedback' && <FeedbackPanel onClose={() => setMorePanel(null)} />}
+          {morePanel === 'support' && <SupportPanel onClose={() => setMorePanel(null)} />}
           {showDataPanel && (
             <YourDataPanel
               historyCount={history.length}
@@ -311,13 +317,14 @@ export default function App() {
           {currentScreen === 'checkin' && tab === 'checkin' && isLoading && <Preparing mood={preparingMood} />}
           {currentScreen === 'checkin' && tab === 'checkin' && !isLoading && <CheckIn onSubmit={handleStartSession} isLoading={isLoading} installTip={<InstallHelp />} onQuickReset={() => setCurrentScreen('reset')} />}
           {currentScreen === 'checkin' && tab === 'practise' && (
-            <PracticeCards onStartSpa={() => setCurrentScreen('spa')} onStartReset={() => setCurrentScreen('reset')} />
+            <Practise onStartSpa={() => setCurrentScreen('spa')} onStartReset={() => setCurrentScreen('reset')} />
           )}
-          {currentScreen === 'checkin' && tab === 'guided' && <GuidedLibrary />}
           {currentScreen === 'checkin' && tab === 'more' && (
             <div className="px-4 pt-3 space-y-3 animate-fade-in">
               <h1 className="text-xl font-serif italic font-medium text-amber-950 text-center">More</h1>
               {([
+                [Heart, 'Support PeMA', 'Fund it, share it, follow along', () => setMorePanel('support')],
+                ...(FEEDBACK_EMAIL ? [[MessageCircle, 'Send feedback', 'Thumbs up or down, and a few words', () => setMorePanel('feedback')] as const] : []),
                 [Lock, 'Your data', 'Private on this device. Export or delete', () => setShowDataPanel(true)],
               ] as const).map(([Icon, title, detail, open]) => (
                 <button
@@ -422,18 +429,17 @@ export default function App() {
 
         {/* Bottom menu, only on the home pages; sessions use the full screen */}
         {currentScreen === 'checkin' && (
-          <nav className="app-footer w-full z-10 grid grid-cols-5 pb-[env(safe-area-inset-bottom)]" aria-label="Pages">
+          <nav className="app-footer w-full z-10 grid grid-cols-4 pb-[env(safe-area-inset-bottom)]" aria-label="Pages">
             {([
               ['checkin', 'Check-in', Home],
               ['practise', 'Practise', Sparkles],
-              ['guided', 'Guided', PlayCircle],
               ['history', 'Journey', Calendar],
               ['more', 'More', Menu],
             ] as const).map(([key, label, Icon]) => (
               <button
                 key={key}
                 type="button"
-                onClick={() => { setTab(key); setShowDataPanel(false); }}
+                onClick={() => { setTab(key); setShowDataPanel(false); setMorePanel(null); }}
                 aria-current={tab === key ? 'page' : undefined}
                 className={`flex flex-col items-center gap-0.5 pt-2 pb-1 text-[13px] cursor-pointer transition-colors ${tab === key ? 'text-orange-700 font-semibold' : 'text-stone-500'}`}
               >

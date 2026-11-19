@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Share2 } from 'lucide-react';
 
-// Where people can get PeMA. Empty until PeMA is hosted, so we never share a broken link.
-export const APP_URL = '';
+import { APP_URL } from '../links';
 
 // Draws a calm, branded card. It holds only the words passed in (never moods or notes),
 // is made on the device, and goes nowhere unless the person chooses to share it.

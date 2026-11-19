@@ -9,108 +9,92 @@ const TILE_GRADIENTS = [
   'linear-gradient(135deg, #ffcd66, #f2577a)',
 ];
 
-interface PracticeCardsProps {
+interface PractiseProps {
   onStartSpa: () => void;
   onStartReset: () => void;
 }
 
-// The on-device practices: the 60-second reset and the Mental SPA
-export function PracticeCards({ onStartSpa, onStartReset }: PracticeCardsProps) {
-  return (
-    <div className="px-4 pt-3 space-y-4 animate-fade-in">
-      <h1 className="text-xl font-serif italic font-medium text-amber-950 text-center">Practise</h1>
-      <button
-        type="button"
-        onClick={onStartReset}
-        className="w-full flex items-center gap-3 rounded-2xl p-3.5 glass-panel cursor-pointer transition-transform duration-300 hover:-translate-y-0.5 active:scale-[0.99] text-left"
-      >
-        <span className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #ffb547, #ff6b4a)' }}>
-          <Wind className="w-5 h-5 text-white" />
-        </span>
-        <span className="flex-1">
-          <span className="block font-display text-base text-stone-900">60-second reset</span>
-          <span className="block text-xs text-stone-500">One tap, six slow breaths, no typing</span>
-        </span>
-        <ChevronRight className="w-5 h-5 text-orange-500" />
-      </button>
-
-      <button
-        type="button"
-        onClick={onStartSpa}
-        className="w-full text-left rounded-2xl p-4 text-white cursor-pointer transition-transform duration-300 hover:-translate-y-0.5 active:scale-[0.99] shadow-lg"
-        style={{ background: 'linear-gradient(120deg, #ff6b4a 0%, #f2577a 55%, #e8458b 100%)' }}
-      >
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <span className="flex items-center gap-1.5 text-[11px] text-white/90">
-              <Sparkles className="w-3.5 h-3.5" /> Signature practice · 5 minutes
-            </span>
-            <span className="block font-display text-lg text-white mt-1">The Mental SPA</span>
-            <span className="block text-xs text-white/90 mt-0.5">Five gentle steps for peace, joy and love</span>
-          </div>
-          <ChevronRight className="w-5 h-5 text-white shrink-0" />
-        </div>
-      </button>
-      <p className="text-xs text-stone-500 text-center">Both work offline, on your device.</p>
-    </div>
-  );
-}
-
-// Videos load only when tapped, from youtube-nocookie.com, so nothing is
-// shared with YouTube until the user chooses to watch.
-// All videos sit in one grid so the page never scrolls; a video plays over the page.
-export default function GuidedLibrary() {
+// One page for every practice: the signature Mental SPA first, the 60-second reset,
+// then द्रष्टा (Drasta)'s guided videos. Nothing loads from YouTube until a video is opened.
+export default function Practise({ onStartSpa, onStartReset }: PractiseProps) {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const playing = GUIDED_VIDEOS.find(v => v.id === playingId);
 
   return (
-    <div className="h-full px-3 pt-2 pb-1 flex flex-col gap-2 animate-fade-in">
-      <div className="text-center">
-        <h1 className="text-xl font-serif italic font-medium text-amber-950">Guided by द्रष्टा (Drasta)</h1>
-        <p className="text-[13px] text-stone-500">Videos load only when you tap play.</p>
+    <div className="h-full px-4 py-1 flex flex-col justify-evenly gap-2.5 animate-fade-in">
+      <h1 className="font-display text-[24px] text-amber-950 text-center">Practise</h1>
+
+      <button
+        type="button"
+        onClick={onStartSpa}
+        className="w-full text-left rounded-2xl px-4 py-3 text-white cursor-pointer transition-transform duration-300 active:scale-[0.99] shadow-lg mood-chip-on"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <span className="flex items-center gap-1.5 text-[12px] text-white/90">
+              <Sparkles className="w-3.5 h-3.5" /> Signature · 5 minutes · in Drasta's voice
+            </span>
+            <span className="block font-display text-[20px] text-white mt-0.5">The Mental SPA</span>
+            <span className="block text-[13px] text-white/90">Five gentle steps for peace, joy and love</span>
+          </div>
+          <ChevronRight className="w-5 h-5 text-white shrink-0" />
+        </div>
+      </button>
+
+      <button
+        type="button"
+        onClick={onStartReset}
+        className="w-full flex items-center gap-3 rounded-2xl px-4 py-2.5 glass-panel cursor-pointer text-left"
+      >
+        <span className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #ffb547, #ff6b4a)' }}>
+          <Wind className="w-5 h-5 text-white" />
+        </span>
+        <span className="flex-1">
+          <span className="block font-display text-[16px] text-stone-900">60-second reset</span>
+          <span className="block text-[13px] text-stone-500">Six slow breaths, works offline</span>
+        </span>
+        <ChevronRight className="w-5 h-5 text-orange-500" />
+      </button>
+
+      <div className="space-y-2">
+        <h2 className="font-display text-[17px] text-stone-900">Guided by द्रष्टा (Drasta)</h2>
+        <div className="grid grid-cols-3 gap-2">
+          {GUIDED_VIDEOS.map((v, i) => (
+            <button
+              key={v.id}
+              type="button"
+              onClick={() => setPlayingId(v.id)}
+              aria-label={`${v.title}, ${v.duration}`}
+              className="flex flex-col text-left glass-panel rounded-xl overflow-hidden cursor-pointer"
+            >
+              <div className="relative h-8 flex items-center justify-center" style={{ background: TILE_GRADIENTS[i % TILE_GRADIENTS.length] }}>
+                <Play className="w-4 h-4 text-white" />
+                <span className="absolute bottom-0.5 right-1 text-[10px] text-white">{v.duration}</span>
+              </div>
+              <span className="px-1.5 py-1 text-[12px] text-stone-800 leading-tight line-clamp-2 min-h-[2.4em]">{v.title}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="flex-1 min-h-0 flex items-center"><div className="w-full grid grid-cols-3 gap-2">
-        {GUIDED_VIDEOS.map((v, i) => (
-          <button
-            key={v.id}
-            type="button"
-            onClick={() => setPlayingId(v.id)}
-            className="flex flex-col text-left glass-panel rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-0.5"
-          >
-            {/* Local colour tiles, not YouTube thumbnails, so nothing loads from Google until play */}
-            <div className="relative h-12" style={{ background: TILE_GRADIENTS[i % TILE_GRADIENTS.length] }}>
-              <span className="absolute inset-0 flex items-center justify-center">
-                <span className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center shadow">
-                  <Play className="w-3 h-3 text-orange-600 ml-0.5" />
-                </span>
-              </span>
-              <span className="absolute bottom-1 right-1 text-[9px] text-white bg-black/60 rounded px-1">{v.duration}</span>
-            </div>
-            <div className="px-1.5 py-1">
-              <span className="block text-[11px] text-blue-600 leading-tight">{v.tag}</span>
-              <span className="block text-[12px] text-stone-800 leading-tight line-clamp-2">{v.title}</span>
-            </div>
-          </button>
-        ))}
-      </div></div>
-
       {playing && (
-        <div className="absolute inset-0 z-20 flex flex-col justify-center gap-2 px-3 bg-[#2a1036]/80 backdrop-blur-sm animate-fade-in">
+        <div className="absolute inset-0 z-20 flex flex-col justify-center gap-3 px-3 bg-[#2a1036]/85 backdrop-blur-sm animate-fade-in">
           <div className="rounded-2xl overflow-hidden aspect-video bg-black">
+            {/* Standard YouTube player, started by the viewer, so plays count on the channel */}
             <iframe
               className="w-full h-full"
-              src={`https://www.youtube-nocookie.com/embed/${playing.id}?autoplay=1&rel=0`}
+              src={`https://www.youtube.com/embed/${playing.id}?rel=0&playsinline=1`}
               title={playing.title}
-              allow="autoplay; encrypted-media; picture-in-picture"
+              allow="encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen
             />
           </div>
-          <span className="block text-sm text-white text-center">{playing.title}</span>
+          <span className="block text-[15px] text-white text-center">{playing.title}</span>
+          <span className="block text-[12px] text-white/80 text-center">Tap play. This video plays from YouTube.</span>
           <button
             type="button"
             onClick={() => setPlayingId(null)}
-            className="mx-auto flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/90 text-sm text-stone-900 cursor-pointer"
+            className="mx-auto flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-white/90 text-[15px] text-stone-900 cursor-pointer"
           >
             <X className="w-4 h-4" /> Close
           </button>
