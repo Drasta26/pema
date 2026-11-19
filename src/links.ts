@@ -2,7 +2,7 @@
 // so PeMA never shows a link that goes nowhere.
 
 // Private feedback inbox (an addy.io alias, which forwards to the owner without revealing their address)
-export const FEEDBACK_EMAIL = '';
+export const FEEDBACK_EMAIL = 'dwib6cf3@anonaddy.me';
 
 // "Support anonymously" payment page (e.g. Ko-fi, Buy Me a Coffee or Stripe Payment Link)
 export const SUPPORT_URL = '';
