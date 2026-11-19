@@ -356,7 +356,7 @@ body {
 /* Ensure selected tags or active status icons stand out */
 .mobile-device-wrapper .text-orange-600,
 .mobile-device-wrapper .text-orange-700 {
-  color: #ec5233 !important;
+  color: #9e2b1b !important;
 }
 
 /* Custom Sapphire/Royal Blue utility class that overrides any other device-wrapper rules */
