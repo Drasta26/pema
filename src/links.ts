@@ -8,7 +8,7 @@ export const FEEDBACK_EMAIL = 'dwib6cf3@anonaddy.me';
 export const SUPPORT_URL = '';
 
 // Where people can get PeMA once it is hosted (also used on share cards)
-export const APP_URL = '';
+export const APP_URL = 'https://pema.bimuti.com';
 
 // Owner's channels
 export const SOCIALS: { label: string; url: string }[] = [
