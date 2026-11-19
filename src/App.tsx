@@ -238,7 +238,8 @@ export default function App() {
         
         {/* Shimmering Solar Caustics Background layer */}
         <div className="caustics-backdrop" />
-        
+        <div className="sunrise-glow" aria-hidden="true" />
+
         {/* Futuristic Glassmorphic Status Bar Header */}
         <header className="app-header w-full pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] px-3 sm:px-5 z-10">
           <div className="flex justify-between items-center">

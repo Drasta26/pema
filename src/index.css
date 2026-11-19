@@ -266,28 +266,30 @@ body {
 
 /* Living background: soft sunrise glows that drift and breathe very slowly.
    Moves only with transform and opacity (smooth on phones). Off for reduced motion. */
-.caustics-backdrop::after {
-  content: "";
+.sunrise-glow {
   position: absolute;
-  inset: 0;
+  inset: -15%;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(20px);
   background-image:
-    radial-gradient(ellipse 45% 35% at 25% 30%, rgba(255, 140, 100, 0.55) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 35% at 75% 65%, rgba(240, 110, 160, 0.5) 0%, transparent 70%),
-    radial-gradient(ellipse 35% 30% at 60% 20%, rgba(255, 200, 110, 0.5) 0%, transparent 70%);
-  animation: sunriseDrift 26s ease-in-out infinite alternate, sunriseBreathe 9s ease-in-out infinite;
+    radial-gradient(ellipse 50% 38% at 25% 30%, rgba(255, 130, 90, 0.8) 0%, transparent 70%),
+    radial-gradient(ellipse 45% 38% at 75% 65%, rgba(236, 95, 155, 0.45) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 32% at 60% 20%, rgba(255, 195, 100, 0.75) 0%, transparent 70%);
+  animation: sunriseDrift 18s ease-in-out infinite alternate, sunriseBreathe 7s ease-in-out infinite;
   will-change: transform, opacity;
 }
 @keyframes sunriseDrift {
-  0%   { transform: translate(-6%, -4%) scale(1); }
-  50%  { transform: translate(5%, 3%) scale(1.08); }
-  100% { transform: translate(-3%, 6%) scale(1.03); }
+  0%   { transform: translate(-12%, -8%) scale(1); }
+  50%  { transform: translate(10%, 6%) scale(1.15); }
+  100% { transform: translate(-6%, 12%) scale(1.06); }
 }
 @keyframes sunriseBreathe {
-  0%, 100% { opacity: 0.55; }
-  50%      { opacity: 0.9; }
+  0%, 100% { opacity: 0.45; }
+  50%      { opacity: 0.85; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .caustics-backdrop, .caustics-backdrop::after { animation: none; }
+  .caustics-backdrop, .sunrise-glow { animation: none; }
 }
 
 @media (max-width: 640px) {
