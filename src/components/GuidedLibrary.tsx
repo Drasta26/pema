@@ -62,7 +62,7 @@ export default function Practise({ onStartSpa, onStartReset }: PractiseProps) {
           <span className="text-[12px] text-stone-500">Swipe for more →</span>
         </div>
         {/* Four at a time (two by two); swipe sideways for more */}
-        <div className="-mx-4 px-4 grid grid-rows-2 grid-flow-col auto-cols-[calc(50%-4px)] gap-2 overflow-x-auto snap-x snap-mandatory scroll-px-4 scroller-none" aria-label="Guided videos, swipe for more">
+        <div className="grid grid-rows-2 grid-flow-col auto-cols-[calc(50%-4px)] gap-2 overflow-x-auto snap-x snap-mandatory scroller-none" aria-label="Guided videos, swipe for more">
           {GUIDED_VIDEOS.map((v, i) => (
             <button
               key={v.id}

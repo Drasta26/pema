@@ -25,7 +25,7 @@ try { localStorage.removeItem('pema.anthropicKey'); } catch { /* storage unavail
 const loadClaude = () => import('./claudeService');
 import { registerServiceWorker } from './pwa';
 import { detectCrisis } from './safety';
-import { Calendar, ShieldCheck, Award, Info, Lock, RefreshCw, Home, Sparkles, PlayCircle, Menu, ChevronRight, Heart, MessageCircle } from 'lucide-react';
+import { Calendar, ShieldCheck, Award, Info, Lock, RefreshCw, Home, Sparkles, PlayCircle, Menu, ChevronRight, Heart, MessageCircle, PenLine } from 'lucide-react';
 
 interface LocalSessionLog {
   id: string;
@@ -343,6 +343,16 @@ export default function App() {
                   <ChevronRight className="w-5 h-5 text-orange-500" />
                 </button>
               ))}
+              <div className="w-full flex items-center gap-3 rounded-2xl p-3.5 glass-panel text-left" aria-label="Some thoughts, coming soon">
+                <span className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #ffb547, #ff6b4a)' }}>
+                  <PenLine className="w-5 h-5 text-white" />
+                </span>
+                <span className="flex-1">
+                  <span className="block font-display text-base text-stone-900">Some thoughts</span>
+                  <span className="block text-[13px] text-stone-500">Blogs and writings</span>
+                </span>
+                <span className="shrink-0 text-[12px] text-orange-700 bg-orange-50 border border-orange-200 rounded-full px-2.5 py-0.5">Coming soon</span>
+              </div>
               <InstallHelp />
             </div>
           )}
@@ -451,7 +461,7 @@ export default function App() {
         )}
 
         {/* Tagline as a floating glass pill above the menu, on the home pages */}
-        {currentScreen === 'checkin' && (
+        {currentScreen === 'checkin' && tab !== 'practise' && (
           <div className="absolute inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 flex justify-center pointer-events-none">
             <p className="tagline-pill text-[12px] text-amber-900 px-4 py-1 rounded-full">Your app. Your data. Your choice.</p>
           </div>
