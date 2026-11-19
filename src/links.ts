@@ -4,7 +4,7 @@
 // Private feedback inbox (an addy.io alias, which forwards to the owner without revealing their address)
 export const FEEDBACK_EMAIL = 'dwib6cf3@anonaddy.me';
 
-// "Support anonymously" payment page (e.g. Ko-fi, Buy Me a Coffee or Stripe Payment Link)
+// "Support privately" payment page: the owner's personal Stripe Payment Link (customer chooses the amount)
 export const SUPPORT_URL = '';
 
 // Where people can get PeMA once it is hosted (also used on share cards)

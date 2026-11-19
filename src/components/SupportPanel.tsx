@@ -35,9 +35,9 @@ export default function SupportPanel({ onClose }: { onClose: () => void }) {
         {SUPPORT_URL && (
           <>
             <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" className="futuristic-btn flex items-center justify-center gap-2 w-full h-12 rounded-2xl font-display text-[16px] text-white">
-              <Heart className="w-4 h-4" /> Support anonymously
+              <Heart className="w-4 h-4" /> Support privately
             </a>
-            <p className="text-[12px] text-stone-500">Payments are handled securely by our payment provider. We never see your card or store your details.</p>
+            <p className="text-[12px] text-stone-500">Your name is never shown publicly. Payments are handled securely by Stripe; we never see your card details.</p>
           </>
         )}
 

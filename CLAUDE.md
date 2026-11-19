@@ -1,7 +1,7 @@
 # PeMA — Claude Code briefing
 
 PeMA = PErsonalised Mindfulness Assistant: picks and adapts a short guided meditation to the user's current emotional state, with breathing pacing, audio, post-session mood tracking and journal notes.
-Owner: Dr Asta Ratna Prajapati. UK English. Keep replies concise; put any owner action in a table: Action | Recommendation and reason | Importance and urgency.
+Owner: द्रष्टा (Drasta), personally. PeMA is a personal project: never link it to any company or employer (owner's rule, 19 Nov 2026). UK English. Keep replies concise; put any owner action in a table: Action | Recommendation and reason | Importance and urgency.
 
 ## Non-negotiables
 - Truth first: never invent facts, figures, sources, approvals, completion or capabilities. Mark unverified things as unverified.
@@ -50,4 +50,4 @@ The 3 USPs, which are non-negotiable:
 2. **You own everything.** Your app, your data. Export, delete or take it anywhere. Open-source code anyone can check.
 3. **Fair by design.** Free core. Pay what you want or one-off upgrades. No subscription traps. Open costs page.
 
-Build rules: **never ask users for an API key or any AI setup** (rule from Asta, 17 Nov 2026, replaces "bring your own key"; AI features must work with no setup, using on-device logic or the app's own server-side key with no logging); local-first storage; no analytics, trackers, ad networks or data-leaking third-party scripts; never log prompts or user content; always offer export and delete-all; never commit secrets (scan history before any push); made-up sample data only; MIT licence unless Asta says otherwise; truthful privacy claims ("we never see or store your data" if text goes to an AI provider). No adverts. A later support button uses "Support", not "Donate", with the copy "Built by one. Funded by many." UK English. If a request conflicts with this foundation, say so and suggest a compliant alternative.
+Build rules: **never ask users for an API key or any AI setup** (rule from Asta, 17 Nov 2026, replaces "bring your own key"; AI features must work with no setup, using on-device logic or the app's own server-side key with no logging); local-first storage; no analytics, trackers, ad networks or data-leaking third-party scripts; never log prompts or user content; always offer export and delete-all; never commit secrets (scan history before any push); made-up sample data only; MIT licence unless Asta says otherwise; truthful privacy claims ("we never see or store your data" if text goes to an AI provider). No adverts. A support button uses "Support privately", not "Donate" or "Support anonymously" (owner approved 19 Nov 2026), with the copy "Built by one. Funded by many." and "Your name is never shown publicly. Payments are handled securely by [provider]; we never see your card details." UK English. If a request conflicts with this foundation, say so and suggest a compliant alternative.
