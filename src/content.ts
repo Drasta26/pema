@@ -26,13 +26,13 @@ export interface GuidedVideo {
 }
 
 export const GUIDED_VIDEOS: GuidedVideo[] = [
-  { id: 'xCLOWjHs-cM', title: '5 steps of Mental SPA', duration: '3:57', tag: 'Signature' },
+  { id: 'QKld0vGIPAA', title: '5 steps of Mental SPA', duration: '3:57', tag: 'Signature' },
   { id: 'qGNa4T07nWQ', title: 'Tired from work? Chill and meditate', duration: '0:51', tag: 'Tired' },
   { id: 'I64mcXJCnlw', title: 'Beginners guided meditation', duration: '15 min', tag: 'Beginners' },
   { id: 'uh7diEofybI', title: 'Beginners guided meditation', duration: '30 min', tag: 'Beginners' },
   { id: 'RSdBkMhAwMU', title: 'Beginners guided meditation', duration: '1 hour', tag: 'Deep practice' },
   { id: 'hkJk7LDytE4', title: 'OM chanting', duration: '7:47', tag: 'Calm' },
   { id: 'aPw0E6F7d7w', title: 'Buddham Sharanam Gachami chanting', duration: '6:32', tag: 'Calm' },
-  { id: 'gb9KDtZ_xb4', title: 'The wishing game story', duration: '1:56', tag: 'Joy' },
+  { id: 'Ql0_96S9FhE', title: 'The wishing game story', duration: '2:13', tag: 'Joy' },
   { id: 'r0uqqfPKuGI', title: 'Guided meditation for kids', duration: '5 min', tag: 'Kids' },
 ];
