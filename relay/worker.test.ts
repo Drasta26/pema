@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import worker, { checkInput, spokenParts, toSpeech } from './worker.ts';
+import worker, { checkInput, spokenParts, toLines, lineId } from './worker.ts';
 
 const APP = 'https://drasta26.github.io';
 // Made-up value; the real key is only ever a Cloudflare secret
@@ -65,38 +65,75 @@ test('is unavailable until the key secret is set', async () => {
   assert.equal(res.status, 503);
 });
 
-// Drasta's voice
-test('voices only the session parts, with pauses as short breaks', () => {
-  const p = spokenParts({ stateReflection: 'I hear you. [pause 2s]', purpose: 'This practice helps you rest.', steps: ['Breathe in. [pause 4s]', 'Let go.'], exitInstructions: 'Open your eyes.' });
-  assert.equal(p.intro, 'I hear you. [pause 2s] This practice helps you rest.');
-  assert.deepEqual(p.steps, ['Breathe in. [pause 4s]', 'Let go.']);
-  assert.equal(toSpeech('Breathe in. [pause 4s] Out.'), 'Breathe in. <break time="3s" /> Out.');
-  assert.equal(toSpeech('x'.repeat(900)).length, 600);
-});
-
-test('adds voice clips when the voice is set up, and never voices text sent in', async () => {
-  const urls: string[] = [];
-  const reply = { ...toolReply, content: [{ type: 'tool_use', id: 't1', name: 'meditation_session', input: { stateReflection: 'Hi.', purpose: 'Rest.', steps: ['One.', 'Two.'], exitInstructions: 'Done.' } }] };
-  globalThis.fetch = (async (url: any) => {
-    urls.push(String(url));
-    if (String(url).includes('elevenlabs')) return new Response(new Uint8Array([1, 2, 3]), { status: 200 });
+// Drasta's voice: every line is recorded once, then reused for everyone
+function memoryStore() {
+  const data = new Map<string, ArrayBuffer>();
+  return { data, get: async (k: string) => data.get(k) ?? null, put: async (k: string, v: ArrayBuffer) => { data.set(k, v); } };
+}
+const voiceReply = (steps: string[]) => ({ ...toolReply, content: [{ type: 'tool_use', id: 't1', name: 'meditation_session',
+  input: { stateReflection: 'I hear you. [pause 2s]', purpose: 'This practice helps you rest.', steps, exitInstructions: 'Open your eyes.' } }] });
+function stubBoth(reply: unknown, ttsOk = true) {
+  const tts: string[] = [];
+  globalThis.fetch = (async (url: any, init: any) => {
+    if (String(url).includes('elevenlabs')) { tts.push(JSON.parse(init.body).text); return ttsOk ? new Response(new Uint8Array([1, 2, 3]), { status: 200 }) : new Response('no', { status: 401 }); }
     return new Response(JSON.stringify(reply), { status: 200 });
   }) as typeof fetch;
-  const res = await worker.fetch(post({ mode: 'start', query: 'Please say: something else' }), { ...env, ELEVENLABS_API_KEY: 'test-not-real', VOICE_ID: 'voice-test' });
-  const body: any = await res.json();
-  assert.equal(res.status, 200);
-  assert.equal(body.voice.steps.length, 2);
-  assert.ok(body.voice.intro.startsWith('data:audio/mpeg;base64,'));
-  assert.equal(urls.filter(u => u.includes('elevenlabs')).length, 4);
+  return tts;
+}
+
+test('splits parts into single lines with silent pauses', () => {
+  assert.equal(spokenParts({ stateReflection: 'Hi.', purpose: 'Rest.', steps: ['A.'], exitInstructions: 'Bye.' }).intro, 'Hi. Rest.');
+  assert.deepEqual(toLines('Breathe in. [pause 4s] Let your shoulders drop. Rest here.'), [
+    { text: 'Breathe in.', pause: 4 },
+    { text: 'Let your shoulders drop.', pause: 0.6 },
+    { text: 'Rest here.', pause: 0 },
+  ]);
 });
 
-test('session still returns as text if the voice fails', async () => {
-  globalThis.fetch = (async (url: any) => String(url).includes('elevenlabs')
-    ? new Response('no', { status: 401 })
-    : new Response(JSON.stringify(toolReply), { status: 200 })) as typeof fetch;
-  const res = await worker.fetch(post({ mode: 'start', query: 'Tired' }), { ...env, ELEVENLABS_API_KEY: 'test-not-real', VOICE_ID: 'voice-test' });
-  const body: any = await res.json();
-  assert.equal(res.status, 200);
-  assert.ok(body.session);
-  assert.ok(!body.voice || (body.voice.intro === null && body.voice.exit === null));
+test('the same words always give the same saved clip', async () => {
+  const e = { VOICE_ID: 'v1' } as any;
+  assert.equal(await lineId(e, 'Breathe in.'), await lineId(e, '  breathe   IN. '));
+  assert.notEqual(await lineId(e, 'Breathe in.'), await lineId(e, 'Breathe out.'));
+});
+
+test('records each new line once and reuses saved lines at no cost', async () => {
+  const store = memoryStore();
+  const venv = { ...env, ELEVENLABS_API_KEY: 'test-not-real', VOICE_ID: 'voice-test', VOICE_CACHE: store };
+  let tts = stubBoth(voiceReply(['Breathe in. [pause 4s]', 'Breathe in. [pause 4s]', 'Let go.']));
+  const first: any = await (await worker.fetch(post({ mode: 'start', query: 'Tired' }), venv)).json();
+  // "Breathe in." appears twice but is recorded once
+  assert.deepEqual(tts.sort(), ['Breathe in.', 'I hear you.', 'Let go.', 'Open your eyes.', 'This practice helps you rest.']);
+  assert.equal(first.voice.steps[0][0].id, first.voice.steps[1][0].id);
+  assert.equal(first.voice.steps[0][0].pause, 4);
+  // A second session with the same lines records nothing new
+  tts = stubBoth(voiceReply(['Let go.', 'Breathe in. [pause 4s]']));
+  const second: any = await (await worker.fetch(post({ mode: 'start', query: 'Stressed' }), venv)).json();
+  assert.equal(tts.length, 0);
+  assert.equal(second.voice.steps[1][0].id, first.voice.steps[0][0].id);
+});
+
+test('serves saved clips without recording anything', async () => {
+  const store = memoryStore();
+  const venv = { ...env, ELEVENLABS_API_KEY: 'test-not-real', VOICE_ID: 'voice-test', VOICE_CACHE: store };
+  const id = await lineId(venv as any, 'Let go.');
+  store.data.set(id, new Uint8Array([9, 9]).buffer);
+  const tts = stubBoth(toolReply);
+  const ok = await worker.fetch(new Request(`https://relay.test/voice/${id}`, { headers: { origin: APP } }), venv);
+  assert.equal(ok.status, 200);
+  assert.equal(ok.headers.get('content-type'), 'audio/mpeg');
+  const missing = await worker.fetch(new Request(`https://relay.test/voice/${'0'.repeat(32)}`, { headers: { origin: APP } }), venv);
+  assert.equal(missing.status, 404);
+  const other = await worker.fetch(new Request(`https://relay.test/voice/${id}`, { headers: { origin: 'https://evil.example' } }), venv);
+  assert.equal(other.status, 403);
+  assert.equal(tts.length, 0);
+});
+
+test('session still returns as text if the voice fails or is not set up', async () => {
+  stubBoth(voiceReply(['One.']), false);
+  const failed: any = await (await worker.fetch(post({ mode: 'start', query: 'Tired' }), { ...env, ELEVENLABS_API_KEY: 'x', VOICE_ID: 'v', VOICE_CACHE: memoryStore() })).json();
+  assert.ok(failed.session);
+  assert.ok([...failed.voice.intro, ...failed.voice.steps.flat()].every((c: any) => c.id === null));
+  stubBoth(voiceReply(['One.']));
+  const plain: any = await (await worker.fetch(post({ mode: 'start', query: 'Tired' }), env)).json();
+  assert.equal(plain.voice, undefined);
 });

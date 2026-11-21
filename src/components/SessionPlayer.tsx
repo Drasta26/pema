@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MeditationSession, FeedbackType, BreathPacing } from '../types';
+import { MeditationSession, FeedbackType, BreathPacing, VoiceClip } from '../types';
+import { clipUrl } from '../claudeService';
 import { Play, Pause, Volume2, VolumeX, ChevronLeft, ChevronRight, HelpCircle, Activity, Smile, MessageCircle } from 'lucide-react';
 import { MeditationAudioEngine } from './AudioHelper';
 
@@ -227,15 +228,25 @@ export default function SessionPlayer({
     return '';
   };
 
-  // Drasta's voice: opening, then each step as it appears, then the closing after the last step
+  // Drasta's voice: opening, then each step as it appears, then the closing after the last step.
+  // Each part is a list of saved lines played in order, with silence between them.
   const voice = session.voice;
   const voiceRef = useRef<HTMLAudioElement | null>(null);
+  const gapTimer = useRef<number | null>(null);
+  const runId = useRef(0);
   const stepRef = useRef(currentStepIndex);
   stepRef.current = currentStepIndex;
   const skipStepVoice = useRef(false);
   const [voiceBlocked, setVoiceBlocked] = useState(false);
+  const liveRef = useRef(audioEnabled && isPlaying);
+  liveRef.current = audioEnabled && isPlaying;
+  const pendingLine = useRef<(() => void) | null>(null);
 
   const stopVoice = () => {
+    runId.current++;
+    pendingLine.current = null;
+    if (gapTimer.current) window.clearTimeout(gapTimer.current);
+    gapTimer.current = null;
     if (voiceRef.current) {
       voiceRef.current.onended = null;
       voiceRef.current.pause();
@@ -243,27 +254,37 @@ export default function SessionPlayer({
     }
   };
 
-  const playClip = (src: string | null | undefined, part: 'intro' | 'step' | 'exit') => {
+  const playPart = (clips: VoiceClip[] | undefined, part: 'intro' | 'step' | 'exit') => {
     stopVoice();
-    if (!src) {
-      if (part === 'intro') playClip(voice?.steps[stepRef.current], 'step');
-      return;
-    }
-    const a = new Audio(src);
-    voiceRef.current = a;
-    a.onended = () => {
-      if (part === 'intro') playClip(voice?.steps[stepRef.current], 'step');
-      else if (part === 'step' && stepRef.current === session.steps.length - 1) playClip(voice?.exit, 'exit');
+    const run = runId.current;
+    const after = () => {
+      if (run !== runId.current) return;
+      if (part === 'intro') playPart(voice?.steps[stepRef.current], 'step');
+      else if (part === 'step' && stepRef.current === session.steps.length - 1) playPart(voice?.exit, 'exit');
     };
-    // Phones may block sound that starts after a wait; then a tap button appears
-    a.play().then(() => setVoiceBlocked(false)).catch(() => setVoiceBlocked(true));
+    const playLine = async (i: number) => {
+      if (run !== runId.current) return;
+      // Paused during a silence: wait, and carry on from here on resume
+      if (!liveRef.current) { pendingLine.current = () => playLine(i); return; }
+      if (!clips || i >= clips.length) return after();
+      const next = () => { gapTimer.current = window.setTimeout(() => playLine(i + 1), clips[i].pause * 1000); };
+      const url = clips[i].id ? await clipUrl(clips[i].id as string) : null;
+      if (run !== runId.current) return;
+      if (!url) return next();
+      const a = new Audio(url);
+      voiceRef.current = a;
+      a.onended = next;
+      // Phones may block sound that starts after a wait; then a tap button appears
+      a.play().then(() => setVoiceBlocked(false)).catch(() => setVoiceBlocked(true));
+    };
+    playLine(0);
   };
 
   // New or adapted session: start with the opening
   useEffect(() => {
     if (!voice) return;
     skipStepVoice.current = true;
-    if (audioEnabled && isPlaying) playClip(voice.intro, 'intro');
+    if (audioEnabled && isPlaying) playPart(voice.intro, 'intro');
     return stopVoice;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session.id]);
@@ -272,14 +293,20 @@ export default function SessionPlayer({
   useEffect(() => {
     if (!voice) return;
     if (skipStepVoice.current) { skipStepVoice.current = false; return; }
-    if (audioEnabled && isPlaying) playClip(voice.steps[currentStepIndex], 'step');
+    if (audioEnabled && isPlaying) playPart(voice.steps[currentStepIndex], 'step');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStepIndex]);
 
-  // Pause and sound off also pause the voice
+  // Pause and sound off also pause the voice; resuming continues the current line
   useEffect(() => {
+    if (audioEnabled && isPlaying && pendingLine.current) {
+      const resume = pendingLine.current;
+      pendingLine.current = null;
+      resume();
+      return;
+    }
     const a = voiceRef.current;
-    if (!a) return;
+    if (!a || a.ended) return;
     if (audioEnabled && isPlaying) a.play().catch(() => setVoiceBlocked(true));
     else a.pause();
   }, [audioEnabled, isPlaying]);
@@ -287,7 +314,7 @@ export default function SessionPlayer({
   const hearVoice = () => {
     setVoiceBlocked(false);
     if (voiceRef.current) voiceRef.current.play().catch(() => setVoiceBlocked(true));
-    else playClip(voice?.intro, 'intro');
+    else playPart(voice?.intro, 'intro');
   };
 
   const togglePlayback = () => {

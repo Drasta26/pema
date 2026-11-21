@@ -20,7 +20,15 @@ export interface Env {
   ELEVENLABS_API_KEY?: string;
   VOICE_ID?: string;
   VOICE_MODEL?: string;
+  // Store of lines already spoken in Drasta's voice (Cloudflare KV). Each line is recorded once, then reused for everyone.
+  VOICE_CACHE?: {
+    get(key: string, type: "arrayBuffer"): Promise<ArrayBuffer | null>;
+    put(key: string, value: ArrayBuffer): Promise<void>;
+  };
 }
+
+export interface Line { text: string; pause: number }
+export interface Clip { id: string | null; pause: number }
 
 // Spoken parts of a session, in play order: opening, each step, closing
 export function spokenParts(s: any): { intro: string; steps: string[]; exit: string } {
@@ -29,44 +37,67 @@ export function spokenParts(s: any): { intro: string; steps: string[]; exit: str
   return { intro: `${str(s?.stateReflection)} ${str(s?.purpose)}`.trim(), steps, exit: str(s?.exitInstructions) };
 }
 
-// "[pause 2s]" becomes a short spoken pause; text is capped so one session stays a few hundred credits
-export function toSpeech(text: string): string {
-  return text
-    .replace(/\[pause\s*(\d+(?:\.\d+)?)\s*s?\]/gi, (_m, n) => ` <break time="${Math.min(3, Number(n))}s" /> `)
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 600);
-}
-
-function toBase64(buf: ArrayBuffer): string {
-  const bytes = new Uint8Array(buf);
-  let bin = "";
-  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-  return btoa(bin);
-}
-
-// Voices only text Claude has just written for this session; the relay never voices text sent in by anyone
-async function speak(env: Env, text: string): Promise<string | null> {
-  const t = toSpeech(text);
-  if (!t) return null;
-  try {
-    const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${env.VOICE_ID}?output_format=mp3_44100_64`, {
-      method: "POST",
-      headers: { "content-type": "application/json", "xi-api-key": env.ELEVENLABS_API_KEY as string },
-      body: JSON.stringify({ text: t, model_id: env.VOICE_MODEL || "eleven_multilingual_v2" }),
-    });
-    if (!r.ok) return null;
-    return `data:audio/mpeg;base64,${toBase64(await r.arrayBuffer())}`;
-  } catch {
-    return null;
+// Splits a part into single lines. "[pause 4s]" becomes silence after the line (played by the app, costs nothing);
+// a short natural gap follows every other sentence. Short single lines repeat across sessions, so they are reused.
+export function toLines(text: string): Line[] {
+  const out: Line[] = [];
+  const chunks = text.split(/\[pause\s*(\d+(?:\.\d+)?)\s*s?\]/i);
+  for (let i = 0; i < chunks.length; i += 2) {
+    const pause = i + 1 < chunks.length ? Math.min(8, Number(chunks[i + 1]) || 0) : 0;
+    const sentences = chunks[i].replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+/).filter(Boolean);
+    sentences.forEach((t, j) => out.push({ text: t.slice(0, 300), pause: j === sentences.length - 1 ? pause : 0.6 }));
   }
+  return out.slice(0, 20);
+}
+
+// The same words always map to the same saved clip, whoever the session is for
+export async function lineId(env: Env, text: string): Promise<string> {
+  const key = `${env.VOICE_ID}|${env.VOICE_MODEL || "eleven_multilingual_v2"}|${text.toLowerCase().replace(/\s+/g, " ").trim()}`;
+  const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(key));
+  return [...new Uint8Array(hash)].slice(0, 16).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+// Returns the saved clip id, recording the line in Drasta's voice only if it has never been recorded before.
+// Only text Claude has just written for a session reaches here; the relay never voices text sent in by anyone.
+async function ensureLine(env: Env, text: string, made: Map<string, Promise<boolean>>): Promise<string | null> {
+  const id = await lineId(env, text);
+  if (!made.has(id)) {
+    made.set(id, (async () => {
+      if (await env.VOICE_CACHE!.get(id, "arrayBuffer")) return true;
+      try {
+        const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${env.VOICE_ID}?output_format=mp3_44100_64`, {
+          method: "POST",
+          headers: { "content-type": "application/json", "xi-api-key": env.ELEVENLABS_API_KEY as string },
+          body: JSON.stringify({ text, model_id: env.VOICE_MODEL || "eleven_multilingual_v2" }),
+        });
+        if (!r.ok) return false;
+        await env.VOICE_CACHE!.put(id, await r.arrayBuffer());
+        return true;
+      } catch {
+        return false;
+      }
+    })());
+  }
+  return (await made.get(id)) ? id : null;
 }
 
 async function voiceSession(env: Env, session: any) {
-  if (!env.ELEVENLABS_API_KEY || !env.VOICE_ID) return undefined;
+  if (!env.ELEVENLABS_API_KEY || !env.VOICE_ID || !env.VOICE_CACHE) return undefined;
   const p = spokenParts(session);
-  const [intro, exit, ...steps] = await Promise.all([speak(env, p.intro), speak(env, p.exit), ...p.steps.map(s => speak(env, s))]);
+  const made = new Map<string, Promise<boolean>>();
+  const clips = (text: string) => Promise.all(toLines(text).map(async l => ({ id: await ensureLine(env, l.text, made), pause: l.pause })));
+  const [intro, exit, ...steps] = await Promise.all([clips(p.intro), clips(p.exit), ...p.steps.map(clips)]);
   return { intro, steps, exit };
+}
+
+// Serves a saved clip. It never records anything, so it costs no credits.
+async function serveClip(env: Env, id: string, origin: string): Promise<Response> {
+  const audio = env.VOICE_CACHE ? await env.VOICE_CACHE.get(id, "arrayBuffer") : null;
+  if (!audio) return reply(404, { error: "not found" }, origin);
+  return new Response(audio, {
+    status: 200,
+    headers: { "content-type": "audio/mpeg", "cache-control": "public, max-age=31536000, immutable", ...cors(origin) },
+  });
 }
 
 type Mode = keyof typeof SYSTEMS;
@@ -83,7 +114,7 @@ export function checkInput(input: unknown): { mode: Mode; query: string } | null
 function cors(origin: string) {
   return {
     "access-control-allow-origin": origin,
-    "access-control-allow-methods": "POST, OPTIONS",
+    "access-control-allow-methods": "GET, POST, OPTIONS",
     "access-control-allow-headers": "content-type",
     "access-control-max-age": "600",
     vary: "Origin",
@@ -104,6 +135,8 @@ export default {
     const ok = allowed.includes(origin);
     if (request.method === "OPTIONS") return ok ? new Response(null, { status: 204, headers: cors(origin) }) : new Response(null, { status: 403 });
     if (!ok) return reply(403, { error: "forbidden" });
+    const clip = new URL(request.url).pathname.match(/^\/voice\/([0-9a-f]{32})$/);
+    if (request.method === "GET" && clip) return serveClip(env, clip[1], origin);
     if (request.method !== "POST") return reply(405, { error: "method" }, origin);
     if (!env.ANTHROPIC_API_KEY) return reply(503, { error: "not configured" }, origin);
 

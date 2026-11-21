@@ -1,4 +1,4 @@
-import { EmotionalState, MeditationSession, BreathPacing, FeedbackType, SessionVoice } from "./types";
+import { EmotionalState, MeditationSession, BreathPacing, FeedbackType, SessionVoice, VoiceClip } from "./types";
 
 // Personalised sessions go through the PeMA relay (relay/worker.ts, a Cloudflare Worker), which holds
 // the owner's Anthropic key as a secret. Users need no key or setup; the relay never logs or stores
@@ -19,25 +19,31 @@ async function callClaude(mode: "start" | "adapt", userQuery: string): Promise<a
 }
 
 // Drasta's voice clips sent with the session; only well-formed audio data is kept
-// Clips become local blob: addresses, which the site's security policy allows for audio
-function toBlobUrl(x: unknown): string | null {
-  if (typeof x !== "string" || !x.startsWith("data:audio/")) return null;
-  try {
-    const [head, b64] = x.split(",", 2);
-    const bin = atob(b64);
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return URL.createObjectURL(new Blob([bytes], { type: head.slice(5).split(";")[0] }));
-  } catch {
-    return null;
-  }
+// Drasta's voice: the relay sends ids of saved lines; each clip is fetched once and kept for this visit.
+// Clips become local blob: addresses, which the site's security policy allows for audio.
+function readVoice(v: any): SessionVoice | undefined {
+  const part = (x: unknown): VoiceClip[] =>
+    Array.isArray(x)
+      ? x.slice(0, 20).map((c: any) => ({
+          id: typeof c?.id === "string" && /^[0-9a-f]{32}$/.test(c.id) ? c.id : null,
+          pause: Math.min(8, Math.max(0, Number(c?.pause) || 0)),
+        }))
+      : [];
+  if (!v || !Array.isArray(v.steps)) return undefined;
+  const voice = { intro: part(v.intro), steps: v.steps.map(part), exit: part(v.exit) };
+  const any = [...voice.intro, ...voice.exit, ...voice.steps.flat()].some(c => c.id);
+  return any ? voice : undefined;
 }
 
-function readVoice(v: any): SessionVoice | undefined {
-  const clip = toBlobUrl;
-  if (!v || !Array.isArray(v.steps)) return undefined;
-  const voice = { intro: clip(v.intro), steps: v.steps.map(clip), exit: clip(v.exit) };
-  return voice.intro || voice.exit || voice.steps.some(Boolean) ? voice : undefined;
+const clipUrls = new Map<string, Promise<string | null>>();
+export function clipUrl(id: string): Promise<string | null> {
+  if (!clipUrls.has(id)) {
+    clipUrls.set(id, fetch(`${SESSION_RELAY.replace(/\/$/, "")}/voice/${id}`)
+      .then(r => (r.ok ? r.blob() : null))
+      .then(b => (b ? URL.createObjectURL(b) : null))
+      .catch(() => null));
+  }
+  return clipUrls.get(id)!;
 }
 
 // Guide layout configuration for prompt mapping

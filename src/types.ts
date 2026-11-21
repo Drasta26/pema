@@ -23,10 +23,16 @@ export interface BreathPacing {
   type: 'box' | 'extended' | 'cooling' | 'counting' | 'gentle' | 'none';
 }
 
+// One line in Drasta's voice (a saved clip on the relay) and the silence after it, in seconds
+export interface VoiceClip {
+  id: string | null;
+  pause: number;
+}
+
 export interface SessionVoice {
-  intro: string | null;
-  steps: (string | null)[];
-  exit: string | null;
+  intro: VoiceClip[];
+  steps: VoiceClip[][];
+  exit: VoiceClip[];
 }
 
 export interface MeditationSession {
