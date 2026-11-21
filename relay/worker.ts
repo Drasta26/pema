@@ -2,7 +2,7 @@
 // users need no key. It never logs or stores check-ins or sessions. It only accepts requests from
 // the PeMA app, runs only PeMA's own prompts, caps sizes, and rate-limits each visitor.
 // Plain fetch (no SDK) keeps the file small enough to paste into the Cloudflare dashboard.
-import { MEDITATION_SCHEMA, START_SYSTEM, ADAPT_SYSTEM } from "../src/prompts";
+import { LIBRARY_SCHEMA, LIBRARY_START_SYSTEM, LIBRARY_ADAPT_SYSTEM, assemble } from "../src/library";
 import { detectCrisis } from "../src/safety";
 
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
@@ -10,7 +10,7 @@ const MODEL = "claude-sonnet-5-5";
 const MAX_BODY_BYTES = 16 * 1024;
 // A start query is the check-in plus a short profile; an adapt query also carries the current session
 export const MAX_QUERY_CHARS = { start: 3000, adapt: 12000 } as const;
-const SYSTEMS = { start: START_SYSTEM, adapt: ADAPT_SYSTEM } as const;
+const SYSTEMS = { start: LIBRARY_START_SYSTEM, adapt: LIBRARY_ADAPT_SYSTEM } as const;
 
 export interface Env {
   ANTHROPIC_API_KEY?: string;
@@ -165,10 +165,10 @@ export default {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 4096,
+        max_tokens: 2048,
         fallbacks: "default",
         system: SYSTEMS[input.mode],
-        tools: [{ name: "meditation_session", description: "Return the meditation session.", input_schema: MEDITATION_SCHEMA }],
+        tools: [{ name: "meditation_session", description: "Return the meditation session.", input_schema: LIBRARY_SCHEMA }],
         // This model rejects forced tool_choice; "auto" plus the instruction below still returns the tool call
         tool_choice: { type: "auto" },
         messages: [{ role: "user", content: `${input.query}\n\nRespond only by calling the meditation_session tool.` }],
@@ -180,8 +180,11 @@ export default {
     if (msg.stop_reason === "refusal") return reply(502, { error: "declined" }, origin);
     const block = (msg.content || []).find((b: any) => b.type === "tool_use");
     if (!block) return reply(502, { error: "no session" }, origin);
-    // Drasta's voice for each part; if voicing fails, the session still comes back as text
-    const voice = await voiceSession(env, block.input);
-    return reply(200, voice ? { session: block.input, voice } : { session: block.input }, origin);
+    // Claude only chose library lines; the session is built from those recorded lines alone
+    const session = assemble(block.input);
+    if (!session) return reply(502, { error: "no session" }, origin);
+    // Drasta's voice for each line (saved once, reused); if voicing fails, the session still comes back as text
+    const voice = await voiceSession(env, session);
+    return reply(200, voice ? { session, voice } : { session }, origin);
   },
 };

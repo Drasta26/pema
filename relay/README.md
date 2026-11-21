@@ -6,7 +6,9 @@ Lets PeMA personalise sessions with Claude without users ever entering a key. Th
 
 ## What it does
 - Accepts requests only from the PeMA site (`ALLOWED_ORIGINS` in `wrangler.toml`).
-- Runs only PeMA's two prompts (`src/prompts.ts`): starting a session and adapting one. The model and output format are fixed; users cannot change them.
+- Runs only PeMA's two prompts (`src/library.ts`): starting a session and adapting one. Claude only chooses ids of lines from PeMA's fixed library of about 100 spoken lines; it cannot write words of its own. The relay builds the session from those lines. The model and output format are fixed; users cannot change them.
+- Voice (optional): each library line is recorded once in the owner's voice with ElevenLabs, saved in a Cloudflare KV store (`VOICE_CACHE`), and served at `GET /voice/<id>` to every user. A line is never recorded twice, so the most the library can ever cost is the one-off recording of all its lines. Needs the secret `ELEVENLABS_API_KEY`, the variable `VOICE_ID` and the `VOICE_CACHE` binding; without them, sessions are text only.
+- `src/prompts.ts` is the earlier free-wording version and is no longer used by the relay.
 - Caps sizes: 3,000 characters to start a session, 12,000 to adapt one (it includes the current session).
 - Rate-limits each visitor to about 10 requests a minute (approximate, per Cloudflare location).
 - Backstop safety check: crisis text is never sent to the AI (the app checks first).
