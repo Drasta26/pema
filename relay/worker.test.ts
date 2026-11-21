@@ -30,6 +30,8 @@ const libInput = (over: any = {}) => ({
 const replyWith = (input: unknown) => ({ id: 'msg_1', type: 'message', role: 'assistant', model: 'claude-sonnet-5-5', stop_reason: 'tool_use', usage: { input_tokens: 1, output_tokens: 1 },
   content: [{ type: 'tool_use', id: 't1', name: 'meditation_session', input }] });
 const toolReply = replyWith(libInput());
+const w = (id: string) => `${LINES[id].t} [pause ${LINES[id].p}s]`;
+
 
 test('accepts start and adapt requests within limits', () => {
   assert.deepEqual(checkInput({ mode: 'start', query: 'A bit stressed' }), { mode: 'start', query: 'A bit stressed' });
@@ -52,11 +54,11 @@ test('returns the session and uses only PeMA prompts and model', async () => {
   const res = await worker.fetch(post({ mode: 'start', query: 'A bit stressed' }), env);
   assert.equal(res.status, 200);
   const body: any = await res.json();
-  assert.equal(body.session.stateReflection, 'You sound tired. [pause 2s]');
-  assert.equal(body.session.purpose, 'This practice helps you rest.');
+  assert.equal(body.session.stateReflection, w('r02'));
+  assert.equal(body.session.purpose, LINES.p03.t);
   assert.equal(body.session.steps.length, 6);
-  assert.equal(body.session.steps[0], 'Sit or lie down in a comfortable position. [pause 2s] Close your eyes, or look softly at one spot. [pause 3s]');
-  assert.equal(body.session.exitInstructions, 'Slowly bring your attention back to the room. [pause 2s] When you are ready, open your eyes. [pause 2s]');
+  assert.equal(body.session.steps[0], `${w('s01')} ${w('s03')}`);
+  assert.equal(body.session.exitInstructions, `${w('c01')} ${w('c04')}`);
   assert.equal(body.session.durationText, 'Duration: 5 minutes');
   assert.equal(calls[0].model, 'claude-sonnet-5-5');
   assert.match(calls[0].system, /Personalised Meditation Coach/);
@@ -107,7 +109,8 @@ test('every library line is one short sentence that becomes exactly one saved cl
     assert.ok(l.t.length <= 80, `${id} is long`);
     assert.doesNotMatch(l.t, banned, id);
   }
-  assert.ok(Object.keys(LINES).length >= 90);
+  assert.ok(Object.keys(LINES).length >= 110);
+  assert.ok(Object.values(LINES).every(l => l.p >= 2 && l.p <= 8), 'pauses leave room to breathe');
   assert.equal(Object.keys(LINES).length, GROUPS.flatMap(g => Object.keys(g.lines)).length, 'ids are unique');
   for (const id of IDS('purpose')) assert.match(LINES[id].t, /^This practice helps you /);
 });
@@ -127,11 +130,11 @@ test('builds the session only from library lines and drops anything else', () =>
   const s = assemble(libInput({ steps: [['s01', 'NOPE'], ['b01'], ['b01', 'b02'], ['t01'], ['t02'], ['t03'], ['t04']], purpose: 'r01', reflection: ['r02', 'r03', 'r04'] }));
   assert.equal(s, null, 'a purpose that is not a purpose line is not usable');
   const ok = assemble(libInput({ steps: [['s01', 'NOPE'], ['b01'], ['b01', 'b02'], ['t01'], ['t02'], ['t03'], ['t04']], reflection: ['r02', 'r03', 'r04'] }))!;
-  assert.equal(ok.stateReflection, 'You sound tired. [pause 2s] It sounds like a lot is on your mind. [pause 2s]');
+  assert.equal(ok.stateReflection, `${w('r02')} ${w('r03')}`);
   assert.equal(ok.steps.length, 6);
   assert.ok(!ok.steps.join(' ').includes('NOPE'));
-  assert.equal(ok.steps[1], 'Take a slow breath in through your nose. [pause 2s]');
-  assert.equal(ok.steps[2], 'Breathe out slowly through your mouth. [pause 4s]', 'a line is never used twice in one session');
+  assert.equal(ok.steps[1], w('b01'));
+  assert.equal(ok.steps[2], w('b02'), 'a line is never used twice in one session');
   assert.equal(assemble(libInput({ steps: [['s01'], ['b01']] })), null);
   assert.equal(assemble(libInput({ exit: [] })), null);
   assert.equal(assemble('nonsense'), null);
@@ -169,7 +172,7 @@ test('records each library line once; a repeat session costs nothing', async () 
   // A different session that shares lines only records the lines it has never used
   tts = stubBoth(replyWith(libInput({ steps: [['s01', 's03'], ['b01', 'b02'], ['t01', 't02'], ['t03', 't04'], ['t05'], ['j02']], exit: ['c01', 'c06'] })));
   await worker.fetch(post({ mode: 'start', query: 'Happy' }), venv);
-  assert.deepEqual(tts.sort(), ['Let a small smile come to your face.', 'Well done for taking this time.']);
+  assert.deepEqual(tts.sort(), [LINES.j02.t, LINES.c06.t].sort());
 });
 
 test('the same clip ids come back for the same words, so every user hears the same recording', async () => {
@@ -178,7 +181,7 @@ test('the same clip ids come back for the same words, so every user hears the sa
   const a: any = await (await worker.fetch(post({ mode: 'start', query: 'one' }), venv)).json();
   const b: any = await (await worker.fetch(post({ mode: 'start', query: 'two' }), venv)).json();
   assert.equal(a.voice.steps[0][0].id, b.voice.steps[0][0].id);
-  assert.equal(a.voice.steps[0][0].pause, 2);
+  assert.equal(a.voice.steps[0][0].pause, LINES.s01.p);
 });
 
 test('serves saved clips without recording anything', async () => {
