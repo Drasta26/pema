@@ -5,7 +5,9 @@ compatibility_date = "2026-11-01"
 
 [vars]
 # Only these pages may use the relay (comma-separated, no trailing slash).
-ALLOWED_ORIGINS = "https://drasta26.github.io"
+ALLOWED_ORIGINS = "https://pema.bimuti.com,https://drasta26.github.io,http://localhost:3000,http://192.168.0.226:3000"
+# Drasta's ElevenLabs voice clone (an id, not a secret)
+VOICE_ID = "DxSQekDdcCdMtjip36sF"
 
 # About 10 requests a minute per visitor (approximate, per Cloudflare location).
 [[ratelimits]]
@@ -18,3 +20,10 @@ namespace_id = "1002"
 
 # The Anthropic key is NOT in this file. The owner adds it as a secret in the Cloudflare dashboard
 # (Settings > Variables and secrets > ANTHROPIC_API_KEY), or: npx wrangler secret put ANTHROPIC_API_KEY
+
+# Lines already spoken in Drasta's voice: each line is recorded once, then reused for every user.
+[[kv_namespaces]]
+binding = "VOICE_CACHE"
+id = "338b8c07dab0407eac466005cc1892df"
+
+# The ElevenLabs key is NOT in this file either. The owner adds it as a secret named ELEVENLABS_API_KEY.
