@@ -227,6 +227,69 @@ export default function SessionPlayer({
     return '';
   };
 
+  // Drasta's voice: opening, then each step as it appears, then the closing after the last step
+  const voice = session.voice;
+  const voiceRef = useRef<HTMLAudioElement | null>(null);
+  const stepRef = useRef(currentStepIndex);
+  stepRef.current = currentStepIndex;
+  const skipStepVoice = useRef(false);
+  const [voiceBlocked, setVoiceBlocked] = useState(false);
+
+  const stopVoice = () => {
+    if (voiceRef.current) {
+      voiceRef.current.onended = null;
+      voiceRef.current.pause();
+      voiceRef.current = null;
+    }
+  };
+
+  const playClip = (src: string | null | undefined, part: 'intro' | 'step' | 'exit') => {
+    stopVoice();
+    if (!src) {
+      if (part === 'intro') playClip(voice?.steps[stepRef.current], 'step');
+      return;
+    }
+    const a = new Audio(src);
+    voiceRef.current = a;
+    a.onended = () => {
+      if (part === 'intro') playClip(voice?.steps[stepRef.current], 'step');
+      else if (part === 'step' && stepRef.current === session.steps.length - 1) playClip(voice?.exit, 'exit');
+    };
+    // Phones may block sound that starts after a wait; then a tap button appears
+    a.play().then(() => setVoiceBlocked(false)).catch(() => setVoiceBlocked(true));
+  };
+
+  // New or adapted session: start with the opening
+  useEffect(() => {
+    if (!voice) return;
+    skipStepVoice.current = true;
+    if (audioEnabled && isPlaying) playClip(voice.intro, 'intro');
+    return stopVoice;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.id]);
+
+  // Moving to another step plays that step
+  useEffect(() => {
+    if (!voice) return;
+    if (skipStepVoice.current) { skipStepVoice.current = false; return; }
+    if (audioEnabled && isPlaying) playClip(voice.steps[currentStepIndex], 'step');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStepIndex]);
+
+  // Pause and sound off also pause the voice
+  useEffect(() => {
+    const a = voiceRef.current;
+    if (!a) return;
+    if (audioEnabled && isPlaying) a.play().catch(() => setVoiceBlocked(true));
+    else a.pause();
+  }, [audioEnabled, isPlaying]);
+
+  const hearVoice = () => {
+    setVoiceBlocked(false);
+    if (voiceRef.current) voiceRef.current.play().catch(() => setVoiceBlocked(true));
+    else playClip(voice?.intro, 'intro');
+  };
+
   const togglePlayback = () => {
     setIsPlaying(!isPlaying);
   };
@@ -259,11 +322,20 @@ export default function SessionPlayer({
             className={`flex items-center gap-1 px-2 py-0.5 rounded-lg border text-[12px] font-semibold transition-all duration-300 cursor-pointer shrink-0 ${
               audioEnabled ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-transparent text-stone-500 border-black/10 hover:bg-orange-50'
             }`}
-            aria-label={audioEnabled ? 'Turn background sound off' : 'Turn background sound on'}
+            aria-label={audioEnabled ? 'Turn sound off' : 'Turn sound on'}
           >
             {audioEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
             <span>Sound {audioEnabled ? 'on' : 'off'}</span>
           </button>
+          {voice && voiceBlocked && audioEnabled && (
+            <button
+              type="button"
+              onClick={hearVoice}
+              className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[12px] font-semibold text-white mood-chip-on cursor-pointer shrink-0"
+            >
+              <Play className="w-3.5 h-3.5" /> Hear Drasta
+            </button>
+          )}
         </div>
         <p className="text-stone-900 font-serif text-sm italic leading-snug line-clamp-2">{session.stateReflection}</p>
         <div className="flex items-center gap-2">

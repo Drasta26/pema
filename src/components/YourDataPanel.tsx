@@ -22,7 +22,7 @@ export default function YourDataPanel({ historyCount, onExport, onDeleteAll, onC
         </div>
 
         <p className="text-xs text-stone-700 leading-relaxed">
-          Your history is stored only on this device. There are no accounts and no tracking. To personalise a session, your check-in passes through PeMA's relay to Anthropic's AI. We never store or log it.
+          Your history is stored only on this device. There are no accounts and no tracking. To personalise a session, your check-in passes through PeMA's relay to Anthropic's AI. The session it writes, not your check-in, then goes to ElevenLabs to be spoken in Drasta's voice. We never store or log any of it.
         </p>
 
         <div className="flex flex-wrap gap-2">

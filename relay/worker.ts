@@ -16,6 +16,57 @@ export interface Env {
   ANTHROPIC_API_KEY?: string;
   ALLOWED_ORIGINS?: string;
   RATE_LIMITER?: { limit(opts: { key: string }): Promise<{ success: boolean }> };
+  // Drasta's voice (ElevenLabs). Optional: without them, sessions are text only.
+  ELEVENLABS_API_KEY?: string;
+  VOICE_ID?: string;
+  VOICE_MODEL?: string;
+}
+
+// Spoken parts of a session, in play order: opening, each step, closing
+export function spokenParts(s: any): { intro: string; steps: string[]; exit: string } {
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  const steps = Array.isArray(s?.steps) ? s.steps.map(str).slice(0, 8) : [];
+  return { intro: `${str(s?.stateReflection)} ${str(s?.purpose)}`.trim(), steps, exit: str(s?.exitInstructions) };
+}
+
+// "[pause 2s]" becomes a short spoken pause; text is capped so one session stays a few hundred credits
+export function toSpeech(text: string): string {
+  return text
+    .replace(/\[pause\s*(\d+(?:\.\d+)?)\s*s?\]/gi, (_m, n) => ` <break time="${Math.min(3, Number(n))}s" /> `)
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 600);
+}
+
+function toBase64(buf: ArrayBuffer): string {
+  const bytes = new Uint8Array(buf);
+  let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+
+// Voices only text Claude has just written for this session; the relay never voices text sent in by anyone
+async function speak(env: Env, text: string): Promise<string | null> {
+  const t = toSpeech(text);
+  if (!t) return null;
+  try {
+    const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${env.VOICE_ID}?output_format=mp3_44100_64`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "xi-api-key": env.ELEVENLABS_API_KEY as string },
+      body: JSON.stringify({ text: t, model_id: env.VOICE_MODEL || "eleven_multilingual_v2" }),
+    });
+    if (!r.ok) return null;
+    return `data:audio/mpeg;base64,${toBase64(await r.arrayBuffer())}`;
+  } catch {
+    return null;
+  }
+}
+
+async function voiceSession(env: Env, session: any) {
+  if (!env.ELEVENLABS_API_KEY || !env.VOICE_ID) return undefined;
+  const p = spokenParts(session);
+  const [intro, exit, ...steps] = await Promise.all([speak(env, p.intro), speak(env, p.exit), ...p.steps.map(s => speak(env, s))]);
+  return { intro, steps, exit };
 }
 
 type Mode = keyof typeof SYSTEMS;
@@ -96,6 +147,8 @@ export default {
     if (msg.stop_reason === "refusal") return reply(502, { error: "declined" }, origin);
     const block = (msg.content || []).find((b: any) => b.type === "tool_use");
     if (!block) return reply(502, { error: "no session" }, origin);
-    return reply(200, { session: block.input }, origin);
+    // Drasta's voice for each part; if voicing fails, the session still comes back as text
+    const voice = await voiceSession(env, block.input);
+    return reply(200, voice ? { session: block.input, voice } : { session: block.input }, origin);
   },
 };

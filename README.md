@@ -50,7 +50,7 @@ NODE_ENV=production npm start
 
 ## Privacy
 - Private by design: no accounts or cloud storage. Session history stays in your browser on your device.
-- We never store or log your data. Your history stays on your device. To personalise a session, your check-in passes through the PeMA relay to Anthropic; the relay never logs or stores it.
+- We never store or log your data. Your history stays on your device. To personalise a session, your check-in passes through the PeMA relay to Anthropic. The session text Claude writes (not the check-in) then goes to ElevenLabs to be spoken in Drasta's voice. The relay never logs or stores any of it.
 - Support messages: if a check-in suggests someone may need urgent help, PeMA pauses the session, shows UK contact details for people who can help, and does not send that text to the AI.
 - The offline cache stores only PeMA's own files, never check-in text or session content.
 - No analytics, trackers or third-party requests: the only other address PeMA contacts is api.anthropic.com, and only when you have added a key.

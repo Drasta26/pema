@@ -23,6 +23,12 @@ export interface BreathPacing {
   type: 'box' | 'extended' | 'cooling' | 'counting' | 'gentle' | 'none';
 }
 
+export interface SessionVoice {
+  intro: string | null;
+  steps: (string | null)[];
+  exit: string | null;
+}
+
 export interface MeditationSession {
   id: string;
   state: EmotionalState;
@@ -33,6 +39,8 @@ export interface MeditationSession {
   durationText: string;
   breathPacing: BreathPacing;
   exitInstructions: string;
+  // Drasta's voice for this session (audio clips from the relay); absent for on-device sessions
+  voice?: SessionVoice;
   // Metadata for optional enhancements
   enhancements?: {
     journalingPrompts: string[];

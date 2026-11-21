@@ -1,4 +1,4 @@
-import { EmotionalState, MeditationSession, BreathPacing, FeedbackType } from "./types";
+import { EmotionalState, MeditationSession, BreathPacing, FeedbackType, SessionVoice } from "./types";
 
 // Personalised sessions go through the PeMA relay (relay/worker.ts, a Cloudflare Worker), which holds
 // the owner's Anthropic key as a secret. Users need no key or setup; the relay never logs or stores
@@ -15,7 +15,29 @@ async function callClaude(mode: "start" | "adapt", userQuery: string): Promise<a
   });
   if (!res.ok) throw new Error(`relay ${res.status}`);
   const data = await res.json();
-  return data?.session ?? {};
+  return { ...(data?.session ?? {}), __voice: readVoice(data?.voice) };
+}
+
+// Drasta's voice clips sent with the session; only well-formed audio data is kept
+// Clips become local blob: addresses, which the site's security policy allows for audio
+function toBlobUrl(x: unknown): string | null {
+  if (typeof x !== "string" || !x.startsWith("data:audio/")) return null;
+  try {
+    const [head, b64] = x.split(",", 2);
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return URL.createObjectURL(new Blob([bytes], { type: head.slice(5).split(";")[0] }));
+  } catch {
+    return null;
+  }
+}
+
+function readVoice(v: any): SessionVoice | undefined {
+  const clip = toBlobUrl;
+  if (!v || !Array.isArray(v.steps)) return undefined;
+  const voice = { intro: clip(v.intro), steps: v.steps.map(clip), exit: clip(v.exit) };
+  return voice.intro || voice.exit || voice.steps.some(Boolean) ? voice : undefined;
 }
 
 // Guide layout configuration for prompt mapping
@@ -486,6 +508,8 @@ Pacing: ${JSON.stringify(defaultMeta.pacing)}` : `No default technique: classify
       durationText: data.durationText || "Duration: 5–10 minutes",
       breathPacing: data.breathPacing || defaultMeta.pacing,
       exitInstructions: data.exitInstructions || "Slowly bring your awareness back.",
+      // Voice only matches when the steps are Claude's own
+      voice: data.steps ? data.__voice : undefined,
       enhancements: data.enhancements
     };
 
@@ -544,6 +568,7 @@ Return a full, revised session object, adjusting steps so the user can continue 
       durationText: currentSession.durationText,
       breathPacing: data.breathPacing || currentSession.breathPacing,
       exitInstructions: data.exitInstructions || currentSession.exitInstructions,
+      voice: data.steps ? data.__voice : undefined,
       enhancements: data.enhancements || currentSession.enhancements
     };
   } catch (err: any) {
